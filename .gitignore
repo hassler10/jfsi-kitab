@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables (NEVER commit)
+.env
+.env.local
+.env.*.local
+
+# Database
+data/jfsi.db
+data/jfsi.db-wal
+data/jfsi.db-shm
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Test files
+**/test-*.html

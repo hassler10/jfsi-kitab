@@ -1,0 +1,1587 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Jardin des Frères et Sœurs en Islam</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <style>
+      /* ── HERO ── */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(
+            ellipse at 20% 50%,
+            rgba(45, 90, 61, 0.35) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 80% 20%,
+            rgba(201, 168, 76, 0.1) 0%,
+            transparent 50%
+          ),
+          var(--noir-doux);
+      }
+      .hero-ornement {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .cercle-deco {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(201, 168, 76, 0.12);
+      }
+      .cercle-1 {
+        width: 500px;
+        height: 500px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .cercle-2 {
+        width: 750px;
+        height: 750px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: rotate 60s linear infinite;
+      }
+      .cercle-3 {
+        width: 1000px;
+        height: 1000px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      @keyframes rotate {
+        from {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+      .hero-content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        padding: 0 20px;
+        animation: fadeInUp 1.2s ease both;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .hero-arabic {
+        font-family: "Amiri", serif;
+        font-size: clamp(24px, 4vw, 48px);
+        color: var(--or);
+        letter-spacing: 4px;
+        margin-bottom: 20px;
+        direction: rtl;
+        text-shadow: 0 0 40px rgba(201, 168, 76, 0.25);
+      }
+      .hero-divider {
+        width: 100px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--or), transparent);
+        margin: 18px auto;
+      }
+      .hero-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: clamp(36px, 7vw, 80px);
+        color: var(--blanc);
+        letter-spacing: 6px;
+        line-height: 1.1;
+        margin-bottom: 10px;
+      }
+      .hero-title span {
+        color: var(--or);
+      }
+      .hero-subtitle {
+        font-family: "Amiri", serif;
+        font-size: clamp(16px, 2.5vw, 24px);
+        color: var(--or-clair);
+        letter-spacing: 3px;
+        font-style: italic;
+        margin-bottom: 14px;
+      }
+      .hero-desc {
+        max-width: 580px;
+        margin: 0 auto 44px;
+        font-size: 15px;
+        color: rgba(249, 245, 236, 0.65);
+        line-height: 1.9;
+        font-weight: 300;
+      }
+      .hero-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .hero-scroll {
+        position: absolute;
+        bottom: 36px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.5;
+      }
+      .hero-scroll span {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--or);
+      }
+      .scroll-line {
+        width: 1px;
+        height: 46px;
+        background: linear-gradient(to bottom, var(--or), transparent);
+        animation: scrollAnim 2s ease infinite;
+      }
+      @keyframes scrollAnim {
+        0%,
+        100% {
+          opacity: 0;
+          transform: scaleY(0);
+          transform-origin: top;
+        }
+        50% {
+          opacity: 1;
+          transform: scaleY(1);
+        }
+      }
+
+      /* ── EXTRAITS LITTÉRAIRES ── */
+      .extraits-section {
+        padding: 80px 60px;
+        background: linear-gradient(
+          135deg,
+          rgba(26, 58, 42, 0.15),
+          rgba(13, 31, 21, 0.9)
+        );
+        position: relative;
+        overflow: hidden;
+      }
+      .extraits-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+          radial-gradient(
+            circle at 20% 80%,
+            rgba(201, 168, 76, 0.03) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(201, 168, 76, 0.02) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+      .extraits-container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+      .extrait-quote {
+        font-family: "Amiri", serif;
+        font-size: clamp(20px, 3vw, 32px);
+        color: var(--blanc);
+        line-height: 1.6;
+        margin-bottom: 24px;
+        position: relative;
+        animation: fadeInQuote 1.5s ease both;
+      }
+      .extrait-quote::before {
+        content: '"';
+        font-size: 60px;
+        color: var(--or);
+        position: absolute;
+        top: -20px;
+        left: -30px;
+        opacity: 0.3;
+      }
+      .extrait-quote::after {
+        content: '"';
+        font-size: 60px;
+        color: var(--or);
+        position: absolute;
+        bottom: -40px;
+        right: -30px;
+        opacity: 0.3;
+      }
+      .extrait-author {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 16px;
+        color: var(--or);
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        animation: fadeInAuthor 1.5s 0.3s ease both;
+      }
+      .extrait-source {
+        font-size: 12px;
+        color: var(--gris);
+        letter-spacing: 1px;
+        animation: fadeInSource 1.5s 0.6s ease both;
+      }
+      .extrait-nav {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 40px;
+      }
+      .extrait-btn {
+        width: 50px;
+        height: 50px;
+        border: 2px solid rgba(201, 168, 76, 0.3);
+        background: rgba(201, 168, 76, 0.05);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--or);
+      }
+      .extrait-btn:hover {
+        border-color: var(--or);
+        background: rgba(201, 168, 76, 0.1);
+        transform: scale(1.1);
+      }
+      .extrait-decoration {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        border: 1px solid rgba(201, 168, 76, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+      }
+      .extrait-decoration:nth-child(2) {
+        top: 60px;
+        right: 20px;
+        width: 80px;
+        height: 80px;
+        animation-delay: 2s;
+      }
+      .extrait-decoration:nth-child(3) {
+        bottom: 20px;
+        left: 40px;
+        width: 60px;
+        height: 60px;
+        animation-delay: 4s;
+      }
+      @keyframes fadeInQuote {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeInAuthor {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeInSource {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      /* ── ABOUT ── */
+      .about {
+        padding: 110px 60px;
+        background: linear-gradient(
+          180deg,
+          var(--noir-doux) 0%,
+          rgba(26, 58, 42, 0.25) 100%
+        );
+      }
+      .about-grid {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      .about-emblem {
+        width: 100%;
+        aspect-ratio: 1;
+        max-width: 380px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .emblem-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(201, 168, 76, 0.25);
+      }
+      .ring-1 {
+        width: 100%;
+        height: 100%;
+      }
+      .ring-2 {
+        width: 75%;
+        height: 75%;
+        border-color: rgba(201, 168, 76, 0.4);
+      }
+      .ring-3 {
+        width: 50%;
+        height: 50%;
+        border-color: rgba(201, 168, 76, 0.6);
+        animation: rotate 30s linear infinite reverse;
+      }
+      .emblem-center {
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        border: 2px solid var(--or);
+        overflow: hidden;
+        box-shadow: 0 0 50px rgba(201, 168, 76, 0.18);
+        z-index: 1;
+      }
+      .emblem-center img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .about-text h3 {
+        font-family: "Amiri", serif;
+        font-size: 28px;
+        color: var(--or);
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+      .about-text p {
+        font-size: 15px;
+        line-height: 2;
+        color: rgba(249, 245, 236, 0.78);
+        margin-bottom: 18px;
+        font-weight: 300;
+      }
+      .about-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 36px;
+      }
+      .stat {
+        text-align: center;
+        padding: 18px;
+        border: 1px solid rgba(201, 168, 76, 0.18);
+        border-radius: 4px;
+        background: rgba(201, 168, 76, 0.04);
+      }
+      .stat-number {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 26px;
+        color: var(--or);
+        display: block;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--gris);
+        letter-spacing: 2px;
+        margin-top: 4px;
+        display: block;
+      }
+
+      /* ── SERVICES ── */
+      .services {
+        padding: 110px 60px;
+        background: var(--noir-doux);
+      }
+      .services-grid {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 26px;
+      }
+      .service-card {
+        padding: 44px 32px;
+        border: 1px solid rgba(201, 168, 76, 0.13);
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.08),
+          rgba(13, 31, 21, 0.8)
+        );
+        border-radius: 6px;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+      }
+      .service-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(201, 168, 76, 0.04),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .service-card:hover {
+        transform: translateY(-7px);
+        border-color: rgba(201, 168, 76, 0.35);
+      }
+      .service-card:hover::before {
+        opacity: 1;
+      }
+      .service-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--vert-moyen), var(--vert));
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 24px;
+      }
+      .service-card h3 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 15px;
+        color: var(--or);
+        margin-bottom: 14px;
+        line-height: 1.4;
+      }
+      .service-card p {
+        font-size: 13px;
+        color: rgba(249, 245, 236, 0.65);
+        line-height: 1.9;
+        font-weight: 300;
+      }
+      .service-link {
+        display: inline-block;
+        margin-top: 18px;
+        font-size: 12px;
+        color: var(--or);
+        text-decoration: none;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+      }
+      .service-link:hover {
+        letter-spacing: 3px;
+      }
+
+      /* ── BIBLIOTHEQUE APERCU ── */
+      .biblio-apercu {
+        padding: 110px 60px;
+        background: linear-gradient(
+          180deg,
+          rgba(26, 58, 42, 0.18) 0%,
+          var(--noir-doux) 100%
+        );
+      }
+      .categories-grid {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+      .cat-card {
+        padding: 32px 20px;
+        text-align: center;
+        border: 1px solid rgba(201, 168, 76, 0.13);
+        border-radius: 6px;
+        background: rgba(13, 31, 21, 0.6);
+        transition: all 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+      }
+      .cat-card:hover {
+        border-color: var(--or);
+        transform: translateY(-4px);
+        background: rgba(45, 90, 61, 0.18);
+      }
+      .cat-icon {
+        font-size: 34px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .cat-card h4 {
+        font-family: "Amiri", serif;
+        font-size: 17px;
+        color: var(--or);
+        margin-bottom: 6px;
+      }
+      .cat-card p {
+        font-size: 11px;
+        color: var(--gris);
+        line-height: 1.6;
+      }
+      .cat-badge {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        font-size: 10px;
+        color: var(--or);
+        letter-spacing: 2px;
+      }
+
+      /* ── ABONNEMENTS ── */
+      .abonnements {
+        padding: 110px 60px;
+        background: linear-gradient(
+          135deg,
+          rgba(26, 58, 42, 0.28),
+          var(--noir-doux)
+        );
+      }
+      .plans-grid {
+        max-width: 1050px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 26px;
+      }
+      .plan-card {
+        padding: 44px 32px;
+        text-align: center;
+        border: 1px solid rgba(201, 168, 76, 0.18);
+        border-radius: 6px;
+        background: rgba(13, 31, 21, 0.8);
+        transition: all 0.4s;
+        position: relative;
+      }
+      .plan-card.featured {
+        border-color: var(--or);
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.35),
+          rgba(13, 31, 21, 0.9)
+        );
+        transform: scale(1.05);
+      }
+      .plan-badge {
+        position: absolute;
+        top: -13px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+        padding: 5px 18px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .plan-period {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gris);
+        margin-bottom: 18px;
+      }
+      .plan-price {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 42px;
+        color: var(--or);
+        line-height: 1;
+      }
+      .plan-currency {
+        font-size: 15px;
+        vertical-align: super;
+      }
+      .plan-unit {
+        font-size: 13px;
+        color: var(--gris);
+        margin-bottom: 28px;
+        display: block;
+        margin-top: 8px;
+      }
+      .plan-features {
+        list-style: none;
+        margin-bottom: 32px;
+      }
+      .plan-features li {
+        padding: 9px 0;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+        font-size: 13px;
+        color: rgba(249, 245, 236, 0.78);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+      }
+      .plan-features li::before {
+        content: "✦";
+        color: var(--or);
+        font-size: 9px;
+      }
+
+      /* ── BUREAU CTA ── */
+      .bureau-cta {
+        padding: 80px 60px;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          rgba(26, 58, 42, 0.5),
+          rgba(13, 31, 21, 0.9)
+        );
+        border-top: 1px solid rgba(201, 168, 76, 0.12);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+        position: relative;
+        z-index: 1;
+      }
+      .bureau-cta h2 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: clamp(20px, 3vw, 32px);
+        color: var(--blanc);
+        margin-bottom: 14px;
+      }
+      .bureau-cta h2 span {
+        color: var(--vert-clair);
+      }
+      .bureau-cta p {
+        font-size: 15px;
+        color: rgba(249, 245, 236, 0.6);
+        max-width: 500px;
+        margin: 0 auto 32px;
+        line-height: 1.8;
+      }
+      .bureau-cta .btn-bureau {
+        display: inline-block;
+        padding: 15px 40px;
+        border-radius: 2px;
+        background: linear-gradient(
+          135deg,
+          var(--vert-clair),
+          var(--vert-moyen)
+        );
+        color: var(--blanc);
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 20px rgba(61, 122, 82, 0.3);
+      }
+      .bureau-cta .btn-bureau:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(61, 122, 82, 0.4);
+      }
+
+      /* ── CONNEXION ── */
+      .connexion-section {
+        padding: 110px 60px;
+        background: var(--noir-doux);
+      }
+      .login-container {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 56px 44px;
+        border: 1px solid rgba(201, 168, 76, 0.22);
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.12),
+          rgba(13, 31, 21, 0.95)
+        );
+        backdrop-filter: blur(20px);
+        position: relative;
+      }
+      .login-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--or), transparent);
+      }
+      .login-arabic {
+        font-family: "Amiri", serif;
+        font-size: 20px;
+        color: var(--or);
+        text-align: center;
+        margin-bottom: 6px;
+        direction: rtl;
+      }
+      .login-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 18px;
+        color: var(--blanc);
+        text-align: center;
+        margin-bottom: 36px;
+      }
+      .otp-info {
+        padding: 14px;
+        border-radius: 4px;
+        background: rgba(201, 168, 76, 0.07);
+        border: 1px solid rgba(201, 168, 76, 0.18);
+        font-size: 12px;
+        color: var(--or-clair);
+        line-height: 1.7;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .otp-info strong {
+        color: var(--or);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .btn-login {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--noir-doux);
+        transition: all 0.3s;
+      }
+      .btn-login:hover {
+        box-shadow: 0 8px 28px rgba(201, 168, 76, 0.4);
+        transform: translateY(-2px);
+      }
+      .login-register {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 13px;
+        color: var(--gris);
+      }
+      .login-register a {
+        color: var(--or);
+        text-decoration: none;
+      }
+
+      @media (max-width: 1024px) {
+        .about-grid,
+        .plans-grid {
+          grid-template-columns: 1fr;
+        }
+        .services-grid,
+        .categories-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .plan-card.featured {
+          transform: scale(1);
+        }
+        .about,
+        .services,
+        .biblio-apercu,
+        .abonnements,
+        .connexion-section {
+          padding: 80px 30px;
+        }
+      }
+      @media (max-width: 768px) {
+        .services-grid,
+        .categories-grid {
+          grid-template-columns: 1fr;
+        }
+        .login-container {
+          padding: 36px 22px;
+        }
+        .bureau-cta {
+          padding: 60px 30px;
+        }
+        .extraits-section {
+          padding: 60px 30px;
+        }
+        .extrait-quote {
+          font-size: 18px;
+        }
+        .extrait-quote::before,
+        .extrait-quote::after {
+          font-size: 40px;
+        }
+        .extrait-decoration {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <!-- NAVBAR -->
+    <nav>
+      <div class="nav-logo">
+        <img src="images/logo.png" alt="Logo JFSI" class="logo-img" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="#about">À Propos</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="pages/bibliotheque.html">Bibliothèque</a></li>
+        <li><a href="pages/formations.html">Formations</a></li>
+        <li><a href="pages/abonnement.html">Abonnements</a></li>
+        <li><a href="pages/dictionnaire.html">Dictionnaire</a></li>
+        <li>
+          <a href="pages/salle-reunion.html" class="nav-bureau"
+            >🤝 Espace Bureau</a
+          >
+        </li>
+      </ul>
+      <div class="nav-right">
+        <button onclick="sessionManager.openLoginModal()" class="nav-cta">
+          Connexion
+        </button>
+        <a
+          href="admin/"
+          class="nav-admin"
+          style="
+            display: none;
+            color: var(--or);
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 700;
+          "
+          id="adminLink"
+        >
+          ⚙️ Admin
+        </a>
+      </div>
+      <div class="nav-burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="hero-ornement">
+        <div class="cercle-deco cercle-1"></div>
+        <div class="cercle-deco cercle-2"></div>
+        <div class="cercle-deco cercle-3"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <div class="hero-divider"></div>
+        <h1 class="hero-title">J<span>F</span>SI</h1>
+        <p class="hero-subtitle">Jardin des Frères & Sœurs en Islam</p>
+        <div class="hero-divider"></div>
+        <p class="hero-desc">
+          Un espace numérique d'excellence dédié à la connaissance islamique, à
+          la formation spirituelle et à la préservation du patrimoine
+          intellectuel musulman.
+        </p>
+        <div class="hero-buttons">
+          <a href="pages/bibliotheque.html" class="btn-primary"
+            >Explorer la Bibliothèque</a
+          >
+          <a href="pages/abonnement.html" class="btn-secondary"
+            >Nos Abonnements</a
+          >
+        </div>
+      </div>
+      <div class="hero-scroll">
+        <span>Découvrir</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- EXTRAITS LITTÉRAIRES -->
+    <section class="extraits-section">
+      <div class="extrait-decoration"></div>
+      <div class="extrait-decoration"></div>
+      <div class="extrait-decoration"></div>
+      <div class="extraits-container">
+        <div class="extrait-quote" id="extrait-quote">
+          "La connaissance est un trésor dont les clés sont la recherche
+          patiente et l'humilité."
+        </div>
+        <div class="extrait-author" id="extrait-author">Proverbe arabe</div>
+        <div class="extrait-source" id="extrait-source">Sagesse islamique</div>
+        <div class="extrait-nav">
+          <button class="extrait-btn" onclick="changeExtrait(-1)">‹</button>
+          <button class="extrait-btn" onclick="randomExtrait()">⟲</button>
+          <button class="extrait-btn" onclick="changeExtrait(1)">›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- À PROPOS -->
+    <section class="about" id="about">
+      <div class="section-header reveal">
+        <span class="section-tag">Notre Identité</span>
+        <h2 class="section-title">Qui sommes-nous <span>?</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="about-grid">
+        <div class="about-visual reveal">
+          <div class="about-emblem">
+            <div class="emblem-ring ring-1"></div>
+            <div class="emblem-ring ring-2"></div>
+            <div class="emblem-ring ring-3"></div>
+            <div class="emblem-center">
+              <img src="images/logo.png" alt="JFSI" />
+            </div>
+          </div>
+        </div>
+        <div class="about-text reveal">
+          <h3>« Recherchez la connaissance du berceau jusqu'à la tombe »</h3>
+          <p>
+            Le
+            <strong style="color: var(--or)"
+              >Jardin des Frères et Sœurs en Islam (JFSI)</strong
+            >
+            est une association dédiée à la diffusion du savoir islamique
+            authentique. Notre mission est de rendre accessible, en un seul
+            espace numérique, l'ensemble du patrimoine intellectuel et spirituel
+            de l'Islam.
+          </p>
+          <p>
+            Nous proposons une bibliothèque numérique complète, des programmes
+            de formations certifiants, ainsi que des ressources pédagogiques de
+            haute qualité pour accompagner chaque apprenant dans son parcours.
+          </p>
+          <div class="about-stats">
+            <div class="stat">
+              <span class="stat-number">500+</span
+              ><span class="stat-label">Ouvrages</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">50+</span
+              ><span class="stat-label">Formations</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">10K+</span
+              ><span class="stat-label">Membres</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="services" id="services">
+      <div class="section-header reveal">
+        <span class="section-tag">Ce Que Nous Offrons</span>
+        <h2 class="section-title">Nos <span>Services</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal">
+          <div class="service-icon">📚</div>
+          <h3>Bibliothèque Numérique</h3>
+          <p>
+            Plus de 500 ouvrages islamiques : Coran, Hadith, Fiqh, Sîra et
+            œuvres contemporaines.
+          </p>
+          <a
+            href="pages/bibliotheque.html"
+            class="service-link requires-auth"
+            data-auth-redirect="pages/bibliotheque.html"
+            >Accéder →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">🎓</div>
+          <h3>Formations Certifiantes</h3>
+          <p>
+            Programmes structurés animés par des enseignants qualifiés en langue
+            arabe et sciences islamiques.
+          </p>
+          <a href="pages/formations.html" class="service-link"
+            >Voir les formations →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">🎙️</div>
+          <h3>Conférences & Audio</h3>
+          <p>
+            Enregistrements de conférences et cours magistraux par des savants
+            reconnus.
+          </p>
+          <a href="pages/bibliotheque.html" class="service-link">Écouter →</a>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">📖</div>
+          <h3>Dictionnaire Islamique</h3>
+          <p>
+            Explorez les termes et expressions clés de la tradition islamique.
+            Un outil essentiel pour approfondir votre compréhension.
+          </p>
+          <a href="pages/dictionnaire.html" class="service-link">Consulter →</a>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">🌐</div>
+          <h3>Communauté & Entraide</h3>
+          <p>
+            Rejoignez une communauté de frères et sœurs partageant la même quête
+            du savoir.
+          </p>
+          <a href="#connexion" class="service-link">Rejoindre →</a>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">🏅</div>
+          <h3>Attestations & Ijâza</h3>
+          <p>
+            Obtenez des attestations de réussite et des Ijâzât pour les
+            programmes avancés.
+          </p>
+          <a href="pages/formations.html" class="service-link"
+            >En savoir plus →</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- BIBLIOTHÈQUE APERÇU -->
+    <section class="biblio-apercu" id="bibliotheque">
+      <div class="section-header reveal">
+        <span class="section-tag">Notre Collection</span>
+        <h2 class="section-title">La <span>Bibliothèque</span> JFSI</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="categories-grid">
+        <a href="pages/coran.html" class="cat-card reveal"
+          ><span class="cat-icon">📖</span>
+          <h4>Coran & Tafsîr</h4>
+          <p>Exégèses, traductions, Sciences coraniques</p>
+          <span class="cat-badge">120+ Ouvrages</span></a
+        >
+        <a href="pages/hadith.html" class="cat-card reveal"
+          ><span class="cat-icon">📜</span>
+          <h4>Hadith & Sunna</h4>
+          <p>Recueils, commentaires, sciences du Hadith</p>
+          <span class="cat-badge">90+ Ouvrages</span></a
+        >
+        <a href="pages/fiqh.html" class="cat-card reveal"
+          ><span class="cat-icon">⚖️</span>
+          <h4>Fiqh & Jurisprudence</h4>
+          <p>Les quatre madhabs et jurisprudence comparée</p>
+          <span class="cat-badge">80+ Ouvrages</span></a
+        >
+        <a href="pages/bibliotheque.html" class="cat-card reveal"
+          ><span class="cat-icon">🕌</span>
+          <h4>Aqîda & Théologie</h4>
+          <p>Fondements de la croyance islamique</p>
+          <span class="cat-badge">60+ Ouvrages</span></a
+        >
+        <a href="pages/bibliotheque.html" class="cat-card reveal"
+          ><span class="cat-icon">🌟</span>
+          <h4>Sîra & Histoire</h4>
+          <p>Biographie du Prophète ﷺ</p>
+          <span class="cat-badge">75+ Ouvrages</span></a
+        >
+        <a href="pages/bibliotheque.html" class="cat-card reveal"
+          ><span class="cat-icon">💎</span>
+          <h4>Spiritualité</h4>
+          <p>Purification de l'âme, voie spirituelle</p>
+          <span class="cat-badge">55+ Ouvrages</span></a
+        >
+        <a href="pages/bibliotheque.html" class="cat-card reveal"
+          ><span class="cat-icon">🔤</span>
+          <h4>Langue Arabe</h4>
+          <p>Grammaire, morphologie, littérature</p>
+          <span class="cat-badge">45+ Ouvrages</span></a
+        >
+        <a href="pages/dictionnaire.html" class="cat-card reveal"
+          ><span class="cat-icon">📚</span>
+          <h4>Dictionnaire Islamique</h4>
+          <p>Termes et expressions clés de l'islam</p>
+          <span class="cat-badge">150+ Termes</span></a
+        >
+      </div>
+      <div style="text-align: center; margin-top: 50px" class="reveal">
+        <a href="pages/bibliotheque.html" class="btn-primary"
+          >Voir toute la bibliothèque</a
+        >
+      </div>
+    </section>
+
+    <!-- ABONNEMENTS -->
+    <section class="abonnements" id="abonnements">
+      <div class="section-header reveal">
+        <span class="section-tag">Accès à la Bibliothèque</span>
+        <h2 class="section-title">Choisissez votre <span>Abonnement</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="plans-grid">
+        <div class="plan-card reveal">
+          <p class="plan-period">Accès Hebdomadaire</p>
+          <div class="plan-price"><span class="plan-currency">F</span>500</div>
+          <span class="plan-unit">par semaine</span>
+          <ul class="plan-features">
+            <li>Accès complet bibliothèque</li>
+            <li>Lecture en ligne illimitée</li>
+            <li>Code OTP sécurisé</li>
+            <li>Support email</li>
+          </ul>
+          <a
+            href="pages/abonnement.html"
+            class="btn-secondary"
+            style="display: block; text-align: center"
+            >Choisir</a
+          >
+        </div>
+        <div class="plan-card featured reveal">
+          <span class="plan-badge">✦ Populaire</span>
+          <p class="plan-period">Accès Mensuel</p>
+          <div class="plan-price"><span class="plan-currency">F</span>1000</div>
+          <span class="plan-unit">par mois</span>
+          <ul class="plan-features">
+            <li>Accès complet bibliothèque</li>
+            <li>Téléchargement d'ouvrages</li>
+            <li>Formations de base</li>
+            <li>Code OTP sécurisé</li>
+            <li>Support prioritaire</li>
+          </ul>
+          <a
+            href="pages/abonnement.html"
+            class="btn-primary"
+            style="display: block; text-align: center"
+            >Choisir</a
+          >
+        </div>
+        <div class="plan-card reveal">
+          <p class="plan-period">Accès Annuel</p>
+          <div class="plan-price"><span class="plan-currency">F</span>5000</div>
+          <span class="plan-unit">par an — Meilleure valeur</span>
+          <ul class="plan-features">
+            <li>Toutes les formations incluses</li>
+            <li>Téléchargement illimité</li>
+            <li>Certificats & Attestations</li>
+            <li>Nouvelles parutions</li>
+            <li>Support VIP</li>
+          </ul>
+          <a
+            href="pages/abonnement.html"
+            class="btn-secondary"
+            style="display: block; text-align: center"
+            >Choisir</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ESPACE BUREAU CTA -->
+    <div class="bureau-cta reveal">
+      <h2>Espace <span>Bureau & Administration</span></h2>
+      <p>
+        Réservé aux membres du bureau et administrateurs de l'association JFSI.
+        Salle de réunion virtuelle sécurisée avec code OTP.
+      </p>
+      <a
+        href="pages/salle-reunion.html"
+        class="btn-bureau"
+        class="requires-auth"
+        data-auth-redirect="pages/salle-reunion.html"
+        >🤝 Accéder à la Salle de Réunion</a
+      >
+    </div>
+
+    <!-- CONNEXION ABONNÉS -->
+    <section class="connexion-section" id="connexion">
+      <div class="section-header reveal">
+        <span class="section-tag">Espace Membre</span>
+        <h2 class="section-title">Connexion <span>Abonnés</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="login-container reveal">
+        <div class="login-arabic">أهلاً وسهلاً</div>
+        <h3 class="login-title">Connexion Sécurisée</h3>
+        <!-- Étape 1 -->
+        <div id="cx-step1">
+          <div class="field">
+            <label>Téléphone ou Email</label
+            ><input
+              type="text"
+              id="cx-contact"
+              placeholder="+225 00 00 00 00 ou email@exemple.com"
+            />
+          </div>
+          <div class="otp-info">
+            <strong>🔐 Code OTP</strong>Un code unique vous sera envoyé par SMS
+            ou e-mail. Valable 10 minutes.
+          </div>
+          <p
+            id="cx-msg1"
+            style="
+              font-size: 13px;
+              text-align: center;
+              margin-bottom: 12px;
+              min-height: 16px;
+              color: #e06060;
+            "
+          ></p>
+          <button class="btn-login" onclick="cxEnvoyer()">
+            Recevoir mon Code d'Accès
+          </button>
+        </div>
+        <!-- Étape 2 -->
+        <div id="cx-step2" style="display: none">
+          <p
+            style="
+              font-size: 13px;
+              color: var(--gris);
+              text-align: center;
+              margin-bottom: 16px;
+            "
+          >
+            Code envoyé à
+            <strong id="cx-contact-display" style="color: var(--or)"></strong>
+          </p>
+          <div class="field">
+            <label>Code à 6 chiffres</label>
+            <input
+              type="text"
+              id="cx-code"
+              placeholder="_ _ _ _ _ _"
+              style="
+                text-align: center;
+                font-size: 26px;
+                letter-spacing: 12px;
+                font-family: &quot;Cinzel Decorative&quot;, serif;
+              "
+              maxlength="6"
+              oninput="
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length === 6) cxValider();
+              "
+            />
+          </div>
+          <div
+            id="cx-timer"
+            style="
+              text-align: center;
+              font-family: &quot;Cinzel Decorative&quot;, serif;
+              font-size: 28px;
+              color: var(--or);
+              margin: 10px 0;
+            "
+          >
+            10:00
+          </div>
+          <p
+            id="cx-msg2"
+            style="
+              font-size: 13px;
+              text-align: center;
+              margin-bottom: 12px;
+              color: #e06060;
+              min-height: 16px;
+            "
+          ></p>
+          <button class="btn-login" onclick="cxValider()">
+            Accéder à mon Espace
+          </button>
+          <button
+            onclick="cxRetour()"
+            style="
+              width: 100%;
+              margin-top: 10px;
+              background: none;
+              border: 1px solid rgba(201, 168, 76, 0.2);
+              color: var(--gris);
+              padding: 10px;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 12px;
+              letter-spacing: 2px;
+              text-transform: uppercase;
+            "
+          >
+            ← Retour
+          </button>
+        </div>
+        <p class="login-register">
+          Pas encore membre ?
+          <a href="pages/abonnement.html">Souscrire un abonnement</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="images/logo.png" alt="JFSI" class="logo-img" />
+          <p>
+            Un espace numérique d'excellence dédié à la diffusion de la
+            connaissance islamique authentique et à l'élévation spirituelle de
+            la communauté musulmane.
+          </p>
+          <div class="footer-arabic">
+            جَنَّةُ الإِخْوَةِ وَالأَخَوَاتِ فِي الإِسْلَامِ
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#about">À Propos</a></li>
+            <li><a href="pages/bibliotheque.html">Bibliothèque</a></li>
+            <li><a href="pages/formations.html">Formations</a></li>
+            <li><a href="pages/abonnement.html">Abonnements</a></li>
+            <li><a href="pages/salle-reunion.html">Espace Bureau</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Bibliothèque</h4>
+          <ul>
+            <li><a href="pages/bibliotheque.html">Coran & Tafsîr</a></li>
+            <li><a href="pages/bibliotheque.html">Hadith & Sunna</a></li>
+            <li><a href="pages/bibliotheque.html">Fiqh</a></li>
+            <li><a href="pages/bibliotheque.html">Aqîda</a></li>
+            <li><a href="pages/bibliotheque.html">Sîra</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="#">contact@jfsi-asso.org</a></li>
+            <li><a href="#">+225 00 00 00 00</a></li>
+            <li><a href="#">WhatsApp</a></li>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Telegram</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 JFSI — Tous droits réservés. Fait avec ❤️ pour la Oumma.</p>
+        <p class="arabic-footer">اللَّهِ الرَّحْمَٰنِ</p>
+      </div>
+    </footer>
+
+    <script src="js/global.js"></script>
+    <script src="js/session.js"></script>
+    <script>
+      let _cxCode = "",
+        _cxTimer = null;
+
+      function cxEnvoyer() {
+        const contact = document.getElementById("cx-contact").value.trim();
+        const msg = document.getElementById("cx-msg1");
+        if (!contact) {
+          msg.textContent = "Entrez votre téléphone ou email.";
+          return;
+        }
+        _cxCode = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log(
+          "%c🔐 CODE OTP JFSI : " + _cxCode,
+          "color:#C9A84C;font-size:18px;font-weight:bold",
+        );
+        document.getElementById("cx-contact-display").textContent = contact;
+        document.getElementById("cx-step1").style.display = "none";
+        document.getElementById("cx-step2").style.display = "block";
+        cxLancerTimer(600);
+        notif("📱 Code OTP envoyé ! Voir console F12 pour tester.");
+      }
+
+      function cxLancerTimer(s) {
+        clearInterval(_cxTimer);
+        _cxTimer = setInterval(() => {
+          const m = String(Math.floor(s / 60)).padStart(2, "0");
+          const sec = String(s % 60).padStart(2, "0");
+          const el = document.getElementById("cx-timer");
+          if (el) el.textContent = m + ":" + sec;
+          if (--s < 0) {
+            clearInterval(_cxTimer);
+            if (el) el.textContent = "Expiré";
+          }
+        }, 1000);
+      }
+
+      function cxValider() {
+        const code = document.getElementById("cx-code").value.trim();
+        const msg = document.getElementById("cx-msg2");
+        if (code.length < 6) {
+          msg.textContent = "Entrez les 6 chiffres.";
+          return;
+        }
+        if (code !== _cxCode) {
+          msg.textContent = "❌ Code incorrect. Réessayez.";
+          document.getElementById("cx-code").value = "";
+          return;
+        }
+        clearInterval(_cxTimer);
+        notif("✅ Connexion réussie ! Bienvenue sur JFSI.");
+        setTimeout(() => {
+          window.location.href = "pages/bibliotheque.html";
+        }, 1400);
+      }
+
+      function cxRetour() {
+        clearInterval(_cxTimer);
+        document.getElementById("cx-step1").style.display = "block";
+        document.getElementById("cx-step2").style.display = "none";
+        document.getElementById("cx-code").value = "";
+        document.getElementById("cx-msg2").textContent = "";
+      }
+
+      // ── EXTRAITS LITTÉRAIRES ──
+      const EXTRAITS = [
+        {
+          quote:
+            "La connaissance est un trésor dont les clés sont la recherche patiente et l'humilité.",
+          author: "Proverbe arabe",
+          source: "Sagesse islamique",
+        },
+        {
+          quote: "﴿ وَقُلْ رَبِّ زِدْنِي عِلْمًا ﴾",
+          author: "Coran 20:114",
+          source: "Sourate Taha",
+        },
+        {
+          quote: "Le savoir sans action est comme un arbre sans fruit.",
+          author: "Imam Al-Ghazali",
+          source: "Ihya Ulum al-Din",
+        },
+        {
+          quote:
+            "La plume du savant est plus précieuse que le sang des martyrs.",
+          author: "Prophète Muhammad ﷺ",
+          source: "Hadith authentique",
+        },
+        {
+          quote:
+            "﴿ مَنْ يَشَاءُ اللَّهُ يُضْلِلْهُ وَمَنْ يَشَاءُ يَجْعَلْهُ عَلَىٰ صِرَاطٍ مُسْتَقِيمٍ ﴾",
+          author: "Coran 6:39",
+          source: "Sourate Al-An'am",
+        },
+        {
+          quote:
+            "La science est la vie de l'âme, et l'ignorance en est la mort.",
+          author: "Imam Ibn Hazm",
+          source: "Pensée andalouse",
+        },
+        {
+          quote: "Cherchez la science du berceau jusqu'à la tombe.",
+          author: "Prophète Muhammad ﷺ",
+          source: "Hadith",
+        },
+        {
+          quote: "﴿ وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ﴾",
+          author: "Coran 29:69",
+          source: "Sourate Al-Ankabut",
+        },
+        {
+          quote: "L'humilité est la couronne des savants.",
+          author: "Imam Malik",
+          source: "Sagesse islamique",
+        },
+        {
+          quote: "La foi sans connaissance est comme un corps sans âme.",
+          author: "Ibn Taymiyyah",
+          source: "Pensée islamique",
+        },
+        {
+          quote:
+            "﴿ يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَكُونُوا مَعَ الصَّادِقِينَ ﴾",
+          author: "Coran 9:119",
+          source: "Sourate At-Tawbah",
+        },
+        {
+          quote: "Le paradis est sous les pieds des mères.",
+          author: "Prophète Muhammad ﷺ",
+          source: "Hadith",
+        },
+      ];
+
+      let currentExtraitIndex = 0;
+      let autoScrollInterval = null;
+
+      function changeExtrait(direction) {
+        currentExtraitIndex =
+          (currentExtraitIndex + direction + EXTRAITS.length) % EXTRAITS.length;
+        updateExtrait();
+        resetAutoScroll();
+      }
+
+      function randomExtrait() {
+        currentExtraitIndex = Math.floor(Math.random() * EXTRAITS.length);
+        updateExtrait();
+        resetAutoScroll();
+      }
+
+      function updateExtrait() {
+        const extrait = EXTRAITS[currentExtraitIndex];
+        document.getElementById("extrait-quote").textContent = extrait.quote;
+        document.getElementById("extrait-author").textContent = extrait.author;
+        document.getElementById("extrait-source").textContent = extrait.source;
+      }
+
+      function startAutoScroll() {
+        autoScrollInterval = setInterval(() => {
+          currentExtraitIndex = (currentExtraitIndex + 1) % EXTRAITS.length;
+          updateExtrait();
+        }, 3000); // 3 secondes
+      }
+
+      function resetAutoScroll() {
+        clearInterval(autoScrollInterval);
+        startAutoScroll();
+      }
+
+      // Initialiser avec un extrait aléatoire au chargement et démarrer le défilement automatique
+      window.addEventListener("load", () => {
+        randomExtrait();
+        startAutoScroll();
+      });
+    </script>
+  </body>
+</html>

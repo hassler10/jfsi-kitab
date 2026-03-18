@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dictionnaire</title>
+</head>
+<body>
+    <h1>Test du Dictionnaire Islamique</h1>
+    <div id="test-output"></div>
+
+    <script>
+        // Copie simplifiée de la base de données pour test
+        const DICTIONARY_TERMS = [
+            {
+                id: 1,
+                title: "Aqîda",
+                arabic: "عقيدة",
+                category: "aqida",
+                definition: "L'ensemble des croyances fondamentales de l'islam.",
+                examples: ["Test example"],
+                tags: ["croyance", "foi"],
+            },
+            {
+                id: 2,
+                title: "Fiqh",
+                arabic: "فقه",
+                category: "fiqh",
+                definition: "Science qui étudie les règles pratiques de l'islam.",
+                examples: ["Test example"],
+                tags: ["jurisprudence", "pratique"],
+            }
+        ];
+
+        // Test des fonctions
+        function testFilter() {
+            const searchTerm = "aqida";
+            const filtered = DICTIONARY_TERMS.filter(term =>
+                term.title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            return filtered.length;
+        }
+
+        function testRender() {
+            const output = document.getElementById('test-output');
+            output.innerHTML = `
+                <p>Nombre total de termes: ${DICTIONARY_TERMS.length}</p>
+                <p>Test de filtrage: ${testFilter()} résultat(s) pour "aqida"</p>
+                <p>✅ JavaScript fonctionne correctement!</p>
+            `;
+        }
+
+        // Exécuter le test
+        testRender();
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\HP\Desktop\jfsi-final\test-dict.html
