@@ -3,10 +3,6 @@
   - Sert les fichiers statiques (site complet)
   - Fournit une API d'authentification OTP
   - Gère les sessions (cookie sécurisé)
-
-  Usage:
-    npm install
-    npm start
 */
 
 const fs = require("fs");
@@ -17,7 +13,7 @@ const cors = require("cors");
 const uid = require("uid-safe");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
-const Database = require("better-sqlite3");
+const sqlite3 = require("sqlite3").verbose();
 const stripe = require("stripe");
 
 dotenv.config();
@@ -51,17 +47,65 @@ const stripeClient = process.env.STRIPE_SECRET_KEY
 
 // Configuration base de données
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, "data", "jfsi.db");
-const db = new Database(DB_PATH);
+
+// Créer le dossier data si nécessaire
+if (!fs.existsSync(path.join(__dirname, "data"))) {
+  fs.mkdirSync(path.join(__dirname, "data"));
+}
+
+const db = new sqlite3.Database(DB_PATH, (err) => {
+  if (err) {
+    console.error("Erreur ouverture base de données:", err);
+  } else {
+    console.log("✅ Base de données connectée");
+    initDb();
+  }
+});
+
+// Promisify db.run et db.get pour usage async
+function dbRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) reject(err);
+      else resolve(this);
+    });
+  });
+}
+
+function dbGet(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
+    });
+  });
+}
+
+function dbAll(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
 
 // Initialiser la base de données
-const initDb = () => {
+function initDb() {
   const schemaPath = path.join(__dirname, "data", "schema.sql");
   if (fs.existsSync(schemaPath)) {
     const schema = fs.readFileSync(schemaPath, "utf-8");
-    db.exec(schema);
+    // Exécuter chaque instruction séparément
+    const statements = schema.split(";").filter((s) => s.trim());
+    statements.forEach((stmt) => {
+      db.run(stmt, (err) => {
+        if (err && !err.message.includes("already exists")) {
+          console.warn("Schema warning:", err.message);
+        }
+      });
+    });
   }
-};
-initDb();
+}
 
 // Warn if using default session secret in production
 const SESSION_SECRET = process.env.SESSION_SECRET || "jfsi-secret-demo";
@@ -82,72 +126,47 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24, // 1 jour
+      maxAge: 1000 * 60 * 60 * 24,
       sameSite: "strict",
     },
-  }),
+  })
 );
 
-// Fonctions base de données
-const dbFunctions = {
-  // Utilisateurs
-  findUser: db.prepare("SELECT * FROM users WHERE contact = ?"),
-  createUser: db.prepare("INSERT INTO users (contact, role) VALUES (?, ?)"),
-  updateUserRole: db.prepare(
-    "UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-  ),
-  getAllUsers: db.prepare(
-    "SELECT id, contact, role, created_at FROM users ORDER BY created_at DESC",
-  ),
+// Fonctions utilitaires base de données
+async function findUser(contact) {
+  return await dbGet("SELECT * FROM users WHERE contact = ?", [contact]);
+}
 
-  // Abonnements
-  findSubscription: db.prepare("SELECT * FROM subscriptions WHERE user_id = ?"),
-  createSubscription: db.prepare(`
-    INSERT INTO subscriptions (user_id, stripe_customer_id, stripe_subscription_id, status, plan, current_period_start, current_period_end)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `),
-  updateSubscription: db.prepare(`
-    UPDATE subscriptions SET status = ?, current_period_start = ?, current_period_end = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE user_id = ?
-  `),
+async function upsertUser(contact) {
+  const user = await findUser(contact);
+  if (user) return user;
+  await dbRun("INSERT INTO users (contact, role) VALUES (?, ?)", [
+    contact,
+    "free",
+  ]);
+  return await findUser(contact);
+}
 
-  // Contenu
-  getAllContent: db.prepare("SELECT * FROM content ORDER BY created_at DESC"),
-  getContentById: db.prepare("SELECT * FROM content WHERE id = ?"),
-  getContentByCategory: db.prepare(
-    "SELECT * FROM content WHERE category = ? ORDER BY created_at DESC",
-  ),
-  getPremiumContent: db.prepare(
-    "SELECT * FROM content WHERE is_premium = 1 ORDER BY created_at DESC",
-  ),
-  createContent: db.prepare(`
-    INSERT INTO content (title, description, type, category, file_path, is_premium)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `),
-  updateContent: db.prepare(`
-    UPDATE content SET title = ?, description = ?, type = ?, category = ?, file_path = ?, is_premium = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `),
-  deleteContent: db.prepare("DELETE FROM content WHERE id = ?"),
-
-  // Accès au contenu
-  grantContentAccess: db.prepare(
-    "INSERT OR IGNORE INTO user_content_access (user_id, content_id) VALUES (?, ?)",
-  ),
-  checkContentAccess: db.prepare(`
-    SELECT 1 FROM user_content_access uca
-    JOIN users u ON uca.user_id = u.id
-    WHERE u.contact = ? AND uca.content_id = ? AND (u.role = 'premium' OR u.role = 'admin')
-  `),
-};
-
-// Fonctions OTP (temporaire, en mémoire pour simplicité)
+// Fonctions OTP (en mémoire)
 const otpStore = new Map();
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+function setOtpEntry(contact, otp, expiresAt) {
+  otpStore.set(contact, { otp, expiresAt });
+}
+
+function getOtpEntry(contact) {
+  return otpStore.get(contact);
+}
+
+function deleteOtpEntry(contact) {
+  otpStore.delete(contact);
+}
+
+// ── API AUTH ──
 app.post("/api/auth/request-otp", async (req, res) => {
   const { contact } = req.body;
   if (!contact || typeof contact !== "string") {
@@ -155,7 +174,7 @@ app.post("/api/auth/request-otp", async (req, res) => {
   }
 
   const otp = generateOTP();
-  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 min
+  const expiresAt = Date.now() + 10 * 60 * 1000;
   setOtpEntry(contact, otp, expiresAt);
 
   const isEmail = contact.includes("@");
@@ -184,7 +203,7 @@ app.post("/api/auth/request-otp", async (req, res) => {
   });
 });
 
-app.post("/api/auth/verify-otp", (req, res) => {
+app.post("/api/auth/verify-otp", async (req, res) => {
   const { contact, otp } = req.body;
   if (!contact || !otp) {
     return res.status(400).json({ error: "Contact + OTP requis" });
@@ -205,14 +224,18 @@ app.post("/api/auth/verify-otp", (req, res) => {
   }
 
   deleteOtpEntry(contact);
-  const user = upsertUser(contact);
-  req.session.user = { contact: user.contact, loginTime: Date.now() };
-  return res.json({ ok: true, user: req.session.user });
+  try {
+    const user = await upsertUser(contact);
+    req.session.user = { contact: user.contact, loginTime: Date.now() };
+    return res.json({ ok: true, user: req.session.user });
+  } catch (err) {
+    return res.status(500).json({ error: "Erreur serveur" });
+  }
 });
 
-app.get("/api/auth/session", (req, res) => {
+app.get("/api/auth/session", async (req, res) => {
   if (req.session.user) {
-    const user = findUser(req.session.user.contact);
+    const user = await findUser(req.session.user.contact);
     return res.json({ authenticated: true, user: user || req.session.user });
   }
   return res.json({ authenticated: false });
@@ -224,55 +247,47 @@ app.post("/api/auth/logout", (req, res) => {
   });
 });
 
-// ── API ABONNEMENTS (Stripe) ──
-app.get("/api/subscription/status", (req, res) => {
+// ── API ABONNEMENTS ──
+app.get("/api/subscription/status", async (req, res) => {
   if (!req.session.user)
     return res.status(401).json({ error: "Non authentifié" });
 
-  const user = findUser(req.session.user.contact);
-  if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+  try {
+    const user = await findUser(req.session.user.contact);
+    if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
 
-  const subscription = dbFunctions.findSubscription.get(user.id);
-  res.json({
-    user: { contact: user.contact, role: user.role },
-    subscription,
-  });
+    const subscription = await dbGet(
+      "SELECT * FROM subscriptions WHERE user_id = ?",
+      [user.id]
+    );
+    res.json({ user: { contact: user.contact, role: user.role }, subscription });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 });
 
 app.post("/api/subscription/create-session", async (req, res) => {
-  if (!stripeClient) {
-    return res
-      .status(400)
-      .json({ error: "Stripe non configuré (clé manquante)" });
-  }
-
-  if (!process.env.PREMIUM_PRICE_ID) {
+  if (!stripeClient)
+    return res.status(400).json({ error: "Stripe non configuré" });
+  if (!process.env.PREMIUM_PRICE_ID)
     return res.status(400).json({ error: "PREMIUM_PRICE_ID non configuré" });
-  }
-
-  if (!req.session.user) {
+  if (!req.session.user)
     return res.status(401).json({ error: "Utilisateur non authentifié" });
-  }
 
   try {
-    const user = findUser(req.session.user.contact);
+    const user = await findUser(req.session.user.contact);
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
 
-    const session = await stripeClient.checkout.sessions.create({
+    const checkoutSession = await stripeClient.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: [
-        {
-          price: process.env.PREMIUM_PRICE_ID,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: process.env.PREMIUM_PRICE_ID, quantity: 1 }],
       mode: "subscription",
       success_url: `${req.protocol}://${req.get("host")}/pages/mes-abonnements.html?success=true`,
       cancel_url: `${req.protocol}://${req.get("host")}/pages/mes-abonnements.html?canceled=true`,
       client_reference_id: user.id.toString(),
     });
 
-    res.json({ url: session.url });
+    res.json({ url: checkoutSession.url });
   } catch (error) {
     console.error("Erreur Stripe:", error);
     res.status(500).json({ error: "Erreur lors de la création de la session" });
@@ -285,26 +300,29 @@ app.post("/api/subscription/cancel", async (req, res) => {
   if (!req.session.user)
     return res.status(401).json({ error: "Non authentifié" });
 
-  const user = findUser(req.session.user.contact);
-  if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
-
-  const sub = dbFunctions.findSubscription.get(user.id);
-  if (!sub || !sub.stripe_subscription_id) {
-    return res.status(400).json({ error: "Aucun abonnement actif trouvé" });
-  }
-
   try {
+    const user = await findUser(req.session.user.contact);
+    if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+
+    const sub = await dbGet(
+      "SELECT * FROM subscriptions WHERE user_id = ?",
+      [user.id]
+    );
+    if (!sub || !sub.stripe_subscription_id)
+      return res.status(400).json({ error: "Aucun abonnement actif trouvé" });
+
     await stripeClient.subscriptions.update(sub.stripe_subscription_id, {
       cancel_at_period_end: true,
     });
 
-    dbFunctions.updateSubscription.run(
-      "canceled",
-      new Date(sub.current_period_start),
-      new Date(sub.current_period_end),
-      user.id,
+    await dbRun(
+      "UPDATE subscriptions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+      ["canceled", user.id]
     );
-    dbFunctions.updateUserRole.run("free", user.id);
+    await dbRun(
+      "UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      ["free", user.id]
+    );
 
     res.json({ ok: true });
   } catch (error) {
@@ -327,74 +345,80 @@ app.post(
       event = stripeClient.webhooks.constructEvent(
         req.body,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET,
+        process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.log(`Webhook signature verification failed.`, err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     try {
       const handleSubscriptionUpdate = async (subscription) => {
-        const sub = db
-          .prepare(
-            "SELECT * FROM subscriptions WHERE stripe_subscription_id = ?",
-          )
-          .get(subscription.id);
+        const sub = await dbGet(
+          "SELECT * FROM subscriptions WHERE stripe_subscription_id = ?",
+          [subscription.id]
+        );
         if (!sub) return;
 
-        dbFunctions.updateSubscription.run(
-          subscription.status,
-          new Date(subscription.current_period_start * 1000),
-          new Date(subscription.current_period_end * 1000),
-          sub.user_id,
+        await dbRun(
+          "UPDATE subscriptions SET status = ?, current_period_start = ?, current_period_end = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+          [
+            subscription.status,
+            new Date(subscription.current_period_start * 1000),
+            new Date(subscription.current_period_end * 1000),
+            sub.user_id,
+          ]
         );
 
-        // Mettre à jour le rôle en fonction du statut
         const newRole =
           subscription.status === "active" || subscription.status === "trialing"
             ? "premium"
             : "free";
-        dbFunctions.updateUserRole.run(newRole, sub.user_id);
+        await dbRun(
+          "UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+          [newRole, sub.user_id]
+        );
       };
 
       if (event.type === "checkout.session.completed") {
-        const session = event.data.object;
-        const userId = parseInt(session.client_reference_id);
-
+        const checkoutSession = event.data.object;
+        const userId = parseInt(checkoutSession.client_reference_id);
         const subscription = await stripeClient.subscriptions.retrieve(
-          session.subscription,
+          checkoutSession.subscription
         );
 
-        dbFunctions.createSubscription.run(
-          userId,
-          session.customer,
-          session.subscription,
-          subscription.status,
-          "premium",
-          new Date(subscription.current_period_start * 1000),
-          new Date(subscription.current_period_end * 1000),
+        await dbRun(
+          `INSERT INTO subscriptions (user_id, stripe_customer_id, stripe_subscription_id, status, plan, current_period_start, current_period_end)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            userId,
+            checkoutSession.customer,
+            checkoutSession.subscription,
+            subscription.status,
+            "premium",
+            new Date(subscription.current_period_start * 1000),
+            new Date(subscription.current_period_end * 1000),
+          ]
         );
 
-        dbFunctions.updateUserRole.run("premium", userId);
+        await dbRun(
+          "UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+          ["premium", userId]
+        );
       }
 
       if (event.type === "customer.subscription.updated") {
-        const subscription = event.data.object;
-        await handleSubscriptionUpdate(subscription);
+        await handleSubscriptionUpdate(event.data.object);
       }
 
       if (event.type === "invoice.payment_failed") {
-        const invoice = event.data.object;
         const subscription = await stripeClient.subscriptions.retrieve(
-          invoice.subscription,
+          event.data.object.subscription
         );
         await handleSubscriptionUpdate(subscription);
       }
 
       if (event.type === "customer.subscription.deleted") {
-        const subscription = event.data.object;
-        await handleSubscriptionUpdate(subscription);
+        await handleSubscriptionUpdate(event.data.object);
       }
 
       res.json({ received: true });
@@ -402,18 +426,18 @@ app.post(
       console.error("Erreur webhook:", error);
       res.status(500).json({ error: "Erreur traitement webhook" });
     }
-  },
+  }
 );
 
 // ── API CONTENU ──
-app.get("/api/content", (req, res) => {
+app.get("/api/content", async (req, res) => {
   try {
-    const content = dbFunctions.getAllContent.all();
-    const user = req.session.user ? findUser(req.session.user.contact) : null;
-    const isPremium =
-      user && (user.role === "premium" || user.role === "admin");
+    const content = await dbAll(
+      "SELECT * FROM content ORDER BY created_at DESC"
+    );
+    const user = req.session.user ? await findUser(req.session.user.contact) : null;
+    const isPremium = user && (user.role === "premium" || user.role === "admin");
 
-    // Filtrer le contenu premium si l'utilisateur n'est pas premium
     const filteredContent = content.map((item) => ({
       ...item,
       file_path: isPremium || !item.is_premium ? item.file_path : null,
@@ -426,12 +450,14 @@ app.get("/api/content", (req, res) => {
   }
 });
 
-app.get("/api/content/:id", (req, res) => {
+app.get("/api/content/:id", async (req, res) => {
   try {
-    const content = dbFunctions.getContentById.get(req.params.id);
+    const content = await dbGet("SELECT * FROM content WHERE id = ?", [
+      req.params.id,
+    ]);
     if (!content) return res.status(404).json({ error: "Contenu non trouvé" });
 
-    const user = req.session.user ? findUser(req.session.user.contact) : null;
+    const user = req.session.user ? await findUser(req.session.user.contact) : null;
     const hasAccess =
       user &&
       (user.role === "premium" || user.role === "admin" || !content.is_premium);
@@ -447,12 +473,12 @@ app.get("/api/content/:id", (req, res) => {
   }
 });
 
-// ── API ADMIN (protégée) ──
-const requireAdmin = (req, res, next) => {
+// ── API ADMIN ──
+const requireAdmin = async (req, res, next) => {
   if (!req.session.user)
     return res.status(401).json({ error: "Non authentifié" });
 
-  const user = findUser(req.session.user.contact);
+  const user = await findUser(req.session.user.contact);
   if (!user || user.role !== "admin") {
     return res.status(403).json({ error: "Accès admin requis" });
   }
@@ -461,102 +487,86 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-app.get("/api/admin/users", requireAdmin, (req, res) => {
+app.get("/api/admin/users", requireAdmin, async (req, res) => {
   try {
-    const users = dbFunctions.getAllUsers.all();
+    const users = await dbAll(
+      "SELECT id, contact, role, created_at FROM users ORDER BY created_at DESC"
+    );
     res.json(users);
   } catch (error) {
-    console.error("Erreur récupération utilisateurs:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-app.put("/api/admin/users/:id/role", requireAdmin, (req, res) => {
+app.put("/api/admin/users/:id/role", requireAdmin, async (req, res) => {
   try {
     const { role } = req.body;
     if (!["free", "premium", "admin"].includes(role)) {
       return res.status(400).json({ error: "Rôle invalide" });
     }
-
-    dbFunctions.updateUserRole.run(role, req.params.id);
+    await dbRun(
+      "UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [role, req.params.id]
+    );
     res.json({ ok: true });
   } catch (error) {
-    console.error("Erreur mise à jour rôle:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-app.get("/api/admin/content", requireAdmin, (req, res) => {
+app.get("/api/admin/content", requireAdmin, async (req, res) => {
   try {
-    const content = dbFunctions.getAllContent.all();
+    const content = await dbAll(
+      "SELECT * FROM content ORDER BY created_at DESC"
+    );
     res.json(content);
   } catch (error) {
-    console.error("Erreur récupération contenu:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-app.post("/api/admin/content", requireAdmin, (req, res) => {
+app.post("/api/admin/content", requireAdmin, async (req, res) => {
   try {
     const { title, description, type, category, file_path, is_premium } =
       req.body;
-
-    const result = dbFunctions.createContent.run(
-      title,
-      description,
-      type,
-      category,
-      file_path,
-      is_premium ? 1 : 0,
+    const result = await dbRun(
+      "INSERT INTO content (title, description, type, category, file_path, is_premium) VALUES (?, ?, ?, ?, ?, ?)",
+      [title, description, type, category, file_path, is_premium ? 1 : 0]
     );
-
-    res.json({ id: result.lastInsertRowid, ok: true });
+    res.json({ id: result.lastID, ok: true });
   } catch (error) {
-    console.error("Erreur création contenu:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-app.put("/api/admin/content/:id", requireAdmin, (req, res) => {
+app.put("/api/admin/content/:id", requireAdmin, async (req, res) => {
   try {
     const { title, description, type, category, file_path, is_premium } =
       req.body;
-
-    dbFunctions.updateContent.run(
-      title,
-      description,
-      type,
-      category,
-      file_path,
-      is_premium ? 1 : 0,
-      req.params.id,
+    await dbRun(
+      "UPDATE content SET title = ?, description = ?, type = ?, category = ?, file_path = ?, is_premium = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [title, description, type, category, file_path, is_premium ? 1 : 0, req.params.id]
     );
-
     res.json({ ok: true });
   } catch (error) {
-    console.error("Erreur mise à jour contenu:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-app.delete("/api/admin/content/:id", requireAdmin, (req, res) => {
+app.delete("/api/admin/content/:id", requireAdmin, async (req, res) => {
   try {
-    dbFunctions.deleteContent.run(req.params.id);
+    await dbRun("DELETE FROM content WHERE id = ?", [req.params.id]);
     res.json({ ok: true });
   } catch (error) {
-    console.error("Erreur suppression contenu:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-// Fallback pour l'API si besoin
 app.get("/api/ping", (req, res) => res.json({ ok: true }));
 
-// Sert les fichiers statiques (site)
+// Sert les fichiers statiques
 app.use(express.static(__dirname));
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `✅ JFSI server démarré sur http://0.0.0.0:${PORT} (accessible depuis le réseau local)`,
-  );
+  console.log(`✅ JFSI server démarré sur http://0.0.0.0:${PORT}`);
 });
