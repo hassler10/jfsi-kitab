@@ -1,0 +1,3990 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Salle de Réunion Bureau</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      body {
+        overflow: hidden;
+      }
+
+      /* ════ ÉCRANS ════ */
+      .screen {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      .screen.active {
+        display: flex;
+      }
+
+      /* ════ ACCUEIL ════ */
+      #sc-accueil {
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background:
+          radial-gradient(
+            ellipse at 30% 50%,
+            rgba(45, 90, 61, 0.4) 0%,
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse at 75% 20%,
+            rgba(201, 168, 76, 0.07) 0%,
+            transparent 50%
+          ),
+          var(--noir-doux);
+      }
+      .accueil-header {
+        text-align: center;
+        margin-bottom: 44px;
+        animation: fadeDown 0.8s ease both;
+      }
+      .accueil-header img {
+        height: 80px;
+        filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.35));
+        margin-bottom: 14px;
+      }
+      .accueil-header h1 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 28px;
+        color: var(--or);
+        letter-spacing: 4px;
+      }
+      .accueil-header p {
+        font-size: 12px;
+        color: var(--gris);
+        letter-spacing: 3px;
+        margin-top: 5px;
+        text-transform: uppercase;
+      }
+      .divider-or {
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--or), transparent);
+        margin: 18px auto;
+      }
+      .accueil-verse {
+        font-family: "Amiri", serif;
+        font-size: 19px;
+        color: var(--or-clair);
+        font-style: italic;
+        text-align: center;
+        margin-bottom: 44px;
+        animation: fadeUp 0.8s 0.2s ease both;
+      }
+      .choix-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        max-width: 680px;
+        width: 90%;
+        animation: fadeUp 0.8s 0.35s ease both;
+      }
+      @media (max-width: 768px) {
+        .choix-grid {
+          grid-template-columns: 1fr;
+          max-width: 100%;
+        }
+      }
+      .choix-card {
+        padding: 36px 26px;
+        text-align: center;
+        border: 2px solid rgba(201, 168, 76, 0.18);
+        border-radius: 12px;
+        background: linear-gradient(
+          135deg,
+          rgba(13, 31, 21, 0.95),
+          rgba(13, 31, 21, 0.88)
+        );
+        cursor: pointer;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+      }
+      .choix-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--or), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .choix-card.bureau::before {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--vert-clair),
+          transparent
+        );
+      }
+      .choix-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.4s;
+        border-radius: 12px;
+      }
+      .choix-card.admin::after {
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(201, 168, 76, 0.08),
+          transparent 70%
+        );
+      }
+      .choix-card.bureau::after {
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(61, 122, 82, 0.12),
+          transparent 70%
+        );
+      }
+      .choix-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      }
+      .choix-card.admin:hover {
+        border-color: var(--or);
+        box-shadow: 0 20px 50px rgba(201, 168, 76, 0.25);
+      }
+      .choix-card.bureau:hover {
+        border-color: var(--vert-clair);
+        box-shadow: 0 20px 50px rgba(61, 122, 82, 0.25);
+      }
+      .choix-card:hover::before,
+      .choix-card:hover::after {
+        opacity: 1;
+      }
+      .choix-icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 16px;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .choix-card h3 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 16px;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .choix-card:hover h3 {
+        transform: scale(1.05);
+      }
+      .choix-card.admin h3 {
+        color: var(--or);
+      }
+      .choix-card.bureau h3 {
+        color: var(--vert-clair);
+      }
+      .choix-card p {
+        font-size: 12px;
+        color: var(--gris);
+        line-height: 1.7;
+        margin-bottom: 18px;
+      }
+      .choix-btns {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+      .c-btn {
+        padding: 7px 16px;
+        border-radius: 2px;
+        border: none;
+        font-family: "Lato", sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .c-btn.login-gold {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .c-btn.reg-gold {
+        background: transparent;
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        color: var(--or);
+      }
+      .c-btn.login-green {
+        background: linear-gradient(
+          135deg,
+          var(--vert-clair),
+          var(--vert-moyen)
+        );
+        color: var(--blanc);
+      }
+      .c-btn.reg-green {
+        background: transparent;
+        border: 1px solid rgba(61, 122, 82, 0.5);
+        color: var(--vert-clair);
+      }
+      .c-btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.88;
+      }
+      .back-home {
+        margin-top: 36px;
+        animation: fadeUp 0.8s 0.5s ease both;
+      }
+      .back-home a {
+        color: var(--gris);
+        font-size: 12px;
+        text-decoration: none;
+        letter-spacing: 2px;
+        transition: color 0.3s;
+      }
+      .back-home a:hover {
+        color: var(--or);
+      }
+
+      /* ════ FORMULAIRES ════ */
+      #sc-inscription,
+      #sc-connexion {
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        overflow-y: auto;
+        background:
+          radial-gradient(
+            ellipse at 50% 30%,
+            rgba(45, 90, 61, 0.2) 0%,
+            transparent 60%
+          ),
+          var(--noir-doux);
+      }
+      .form-box {
+        width: 100%;
+        max-width: 580px;
+        background: rgba(13, 31, 21, 0.92);
+        border: 1px solid rgba(201, 168, 76, 0.22);
+        border-radius: 12px;
+        padding: 50px 40px;
+        position: relative;
+        animation: fadeUp 0.6s ease both;
+      }
+      .form-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--or), transparent);
+      }
+      .fb-arabic {
+        font-family: "Amiri", serif;
+        font-size: 20px;
+        color: var(--or);
+        text-align: center;
+        margin-bottom: 6px;
+        direction: rtl;
+      }
+      .fb-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 17px;
+        color: var(--blanc);
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .fb-sub {
+        font-size: 12px;
+        color: var(--gris);
+        text-align: center;
+        margin-bottom: 26px;
+        letter-spacing: 1px;
+      }
+      .role-pill {
+        display: inline-block;
+        padding: 5px 16px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin: 0 auto 22px;
+        display: block;
+        width: fit-content;
+      }
+      .role-pill.admin {
+        background: rgba(201, 168, 76, 0.14);
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        color: var(--or);
+      }
+      .role-pill.bureau {
+        background: rgba(61, 122, 82, 0.14);
+        border: 1px solid rgba(61, 122, 82, 0.4);
+        color: var(--vert-clair);
+      }
+      .fgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .fgrid .full {
+        grid-column: 1/-1;
+      }
+      .btn-submit {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Lato", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+        transition: all 0.3s;
+        margin-top: 10px;
+      }
+      .btn-submit.green {
+        background: linear-gradient(
+          135deg,
+          var(--vert-clair),
+          var(--vert-moyen)
+        );
+        color: var(--blanc);
+      }
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(201, 168, 76, 0.35);
+      }
+      .btn-retour {
+        width: 100%;
+        padding: 12px;
+        background: none;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        color: var(--gris);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: 8px;
+        transition: all 0.3s;
+        font-family: "Lato", sans-serif;
+      }
+      .btn-retour:hover {
+        border-color: var(--or);
+        color: var(--or);
+      }
+
+      /* OTP */
+      .otp-step {
+        display: none;
+      }
+      .otp-step.active {
+        display: block;
+      }
+      .otp-info-box {
+        padding: 16px;
+        border-radius: 6px;
+        background: rgba(201, 168, 76, 0.06);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        font-size: 12px;
+        color: var(--or-clair);
+        text-align: center;
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+      .otp-info-box strong {
+        color: var(--or);
+        display: block;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+      .otp-digits {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .otp-digits input {
+        width: 50px;
+        height: 58px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        border-radius: 6px;
+        color: var(--or);
+        font-family: "Cinzel Decorative", serif;
+        font-size: 22px;
+        outline: none;
+        transition: all 0.3s;
+      }
+      .otp-digits input:focus {
+        border-color: var(--or);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+        background: rgba(255, 255, 255, 0.07);
+      }
+      .otp-timer {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 30px;
+        color: var(--or);
+        text-align: center;
+        margin: 14px 0;
+      }
+
+      /* ════ SALLE ════ */
+      #sc-salle {
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .salle-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 22px;
+        background: rgba(13, 31, 21, 0.97);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.18);
+        flex-shrink: 0;
+      }
+      .sh-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .sh-left img {
+        height: 38px;
+      }
+      .sh-title h2 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 13px;
+        color: var(--or);
+      }
+      .sh-title p {
+        font-size: 10px;
+        color: var(--gris);
+        letter-spacing: 1px;
+      }
+      .sh-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 7px 14px;
+        border-radius: 4px;
+        background: rgba(201, 168, 76, 0.07);
+        border: 1px solid rgba(201, 168, 76, 0.18);
+      }
+      .u-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 12px;
+      }
+      .u-avatar.admin {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .u-avatar.bureau {
+        background: linear-gradient(
+          135deg,
+          var(--vert-clair),
+          var(--vert-moyen)
+        );
+        color: var(--blanc);
+      }
+      .u-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--blanc);
+      }
+      .u-role {
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .u-role.admin {
+        color: var(--or);
+      }
+      .u-role.bureau {
+        color: var(--vert-clair);
+      }
+      .btn-quit {
+        padding: 7px 14px;
+        border-radius: 3px;
+        cursor: pointer;
+        background: rgba(231, 76, 60, 0.1);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+        color: #e74c3c;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-family: "Lato", sans-serif;
+        transition: all 0.3s;
+      }
+      .btn-quit:hover {
+        background: rgba(231, 76, 60, 0.2);
+      }
+
+      /* Layout salle */
+      .salle-body {
+        display: grid;
+        grid-template-columns: 250px 1fr 255px;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      /* Sidebar membres */
+      .sb-membres {
+        background: rgba(13, 31, 21, 0.55);
+        border-right: 1px solid rgba(201, 168, 76, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .sb-title {
+        padding: 16px 18px 12px;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--or);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .online-badge {
+        background: var(--success);
+        color: #fff;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+      .membres-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+      }
+      .membre-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        border-radius: 5px;
+        margin-bottom: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .membre-row:hover {
+        background: rgba(201, 168, 76, 0.05);
+      }
+      .m-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 13px;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .m-avatar.admin {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .m-avatar.bureau {
+        background: linear-gradient(
+          135deg,
+          var(--vert-clair),
+          var(--vert-moyen)
+        );
+        color: var(--blanc);
+      }
+      .dot {
+        position: absolute;
+        bottom: 1px;
+        right: 1px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        border: 2px solid var(--noir-doux);
+      }
+      .dot.on {
+        background: var(--success);
+      }
+      .dot.off {
+        background: var(--gris);
+      }
+      .m-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--blanc);
+      }
+      .m-role {
+        font-size: 10px;
+        color: var(--gris);
+      }
+      .m-tag {
+        font-size: 9px;
+        padding: 2px 7px;
+        border-radius: 8px;
+        margin-left: auto;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .m-tag.admin {
+        background: rgba(201, 168, 76, 0.13);
+        color: var(--or);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+      }
+      .m-tag.bureau {
+        background: rgba(61, 122, 82, 0.13);
+        color: var(--vert-clair);
+        border: 1px solid rgba(61, 122, 82, 0.3);
+      }
+
+      /* Zone chat */
+      .chat-zone {
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid rgba(201, 168, 76, 0.1);
+      }
+      .chat-tabs {
+        display: flex;
+        background: rgba(13, 31, 21, 0.4);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+      }
+      .ch-tab {
+        padding: 13px 22px;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--gris);
+        cursor: pointer;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: none;
+        font-family: "Lato", sans-serif;
+        transition: all 0.3s;
+      }
+      .ch-tab.active {
+        color: var(--or);
+        border-bottom-color: var(--or);
+      }
+      .ch-tab:hover {
+        color: var(--or-clair);
+      }
+      .chat-msgs {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .msg {
+        display: flex;
+        gap: 10px;
+        max-width: 76%;
+        animation: msgIn 0.3s ease both;
+      }
+      .msg.own {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+      .msg.sys {
+        align-self: center;
+        max-width: 100%;
+      }
+      @keyframes msgIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .m-msg-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+      .m-msg-avatar.admin {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .m-msg-avatar.bureau {
+        background: linear-gradient(
+          135deg,
+          var(--vert-clair),
+          var(--vert-moyen)
+        );
+        color: var(--blanc);
+      }
+      .msg-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .msg-meta {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .msg-from {
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .msg-from.admin {
+        color: var(--or);
+      }
+      .msg-from.bureau {
+        color: var(--vert-clair);
+      }
+      .msg-tag {
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 7px;
+        font-weight: 700;
+      }
+      .msg-tag.admin {
+        background: rgba(201, 168, 76, 0.12);
+        color: var(--or);
+      }
+      .msg-tag.bureau {
+        background: rgba(61, 122, 82, 0.12);
+        color: var(--vert-clair);
+      }
+      .msg-time {
+        font-size: 10px;
+        color: var(--gris);
+      }
+      .bubble {
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--blanc);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(201, 168, 76, 0.09);
+      }
+      .msg.own .bubble {
+        background: rgba(201, 168, 76, 0.1);
+        border-color: rgba(201, 168, 76, 0.22);
+      }
+      .sys-bubble {
+        padding: 7px 18px;
+        border-radius: 18px;
+        font-size: 11px;
+        color: var(--gris);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        letter-spacing: 1px;
+      }
+      .reactions {
+        display: flex;
+        gap: 5px;
+        margin-top: 3px;
+        flex-wrap: wrap;
+      }
+      .r-btn {
+        padding: 3px 8px;
+        border-radius: 9px;
+        border: none;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 12px;
+        transition: all 0.2s;
+        color: var(--blanc);
+      }
+      .r-btn:hover,
+      .r-btn.on {
+        background: rgba(201, 168, 76, 0.17);
+        transform: scale(1.1);
+      }
+      .chat-input {
+        padding: 14px 18px;
+        background: rgba(13, 31, 21, 0.6);
+        border-top: 1px solid rgba(201, 168, 76, 0.1);
+      }
+      .input-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.18);
+        border-radius: 8px;
+        padding: 9px 14px;
+        transition: border-color 0.3s;
+      }
+      .input-bar:focus-within {
+        border-color: rgba(201, 168, 76, 0.45);
+      }
+      .input-bar input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--blanc);
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+      }
+      .input-bar input::placeholder {
+        color: rgba(249, 245, 236, 0.22);
+      }
+      .emoji-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 17px;
+        opacity: 0.55;
+        transition: opacity 0.2s;
+      }
+      .emoji-toggle:hover {
+        opacity: 1;
+      }
+      .send-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        color: var(--noir-doux);
+      }
+      .send-btn:hover {
+        transform: scale(1.12);
+        box-shadow: 0 4px 14px rgba(201, 168, 76, 0.4);
+      }
+      .emoji-panel {
+        margin-top: 8px;
+        font-size: 20px;
+        letter-spacing: 5px;
+        display: none;
+      }
+
+      /* Sidebar droite */
+      .sb-infos {
+        background: rgba(13, 31, 21, 0.55);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .info-block {
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.07);
+      }
+      .ib-title {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--or);
+        margin-bottom: 14px;
+      }
+      .agenda-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 9px 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(201, 168, 76, 0.07);
+      }
+      .ag-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.13);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: var(--or);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .ag-txt {
+        font-size: 12px;
+        color: var(--blanc);
+        line-height: 1.45;
+      }
+      .ag-txt small {
+        color: var(--gris);
+        display: block;
+      }
+      .vote-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(201, 168, 76, 0.13);
+        border-radius: 7px;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+      .vote-q {
+        font-size: 12px;
+        color: var(--blanc);
+        margin-bottom: 12px;
+        line-height: 1.5;
+      }
+      .vote-opts {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .vote-opt {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 7px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(201, 168, 76, 0.08);
+        font-size: 12px;
+        color: var(--blanc);
+        transition: all 0.2s;
+      }
+      .vote-opt:hover {
+        background: rgba(201, 168, 76, 0.07);
+        border-color: rgba(201, 168, 76, 0.28);
+      }
+      .vote-opt input {
+        accent-color: var(--or);
+      }
+      .vote-bar-wrap {
+        margin-top: 10px;
+      }
+      .vote-bar-bg {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(201, 168, 76, 0.1);
+      }
+      .vote-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--or);
+        transition: width 0.5s;
+      }
+      .doc-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(201, 168, 76, 0.07);
+        margin-bottom: 7px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .doc-row:hover {
+        border-color: rgba(201, 168, 76, 0.3);
+        background: rgba(201, 168, 76, 0.04);
+      }
+      .doc-icon {
+        font-size: 18px;
+      }
+      .doc-name {
+        font-size: 11px;
+        color: var(--blanc);
+        flex: 1;
+      }
+      .doc-size {
+        font-size: 10px;
+        color: var(--gris);
+      }
+      .admin-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .a-btn {
+        padding: 9px 12px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: "Lato", sans-serif;
+        transition: all 0.3s;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .a-btn.gold {
+        background: rgba(201, 168, 76, 0.1);
+        color: var(--or);
+        border: 1px solid rgba(201, 168, 76, 0.28);
+      }
+      .a-btn.grn {
+        background: rgba(39, 174, 96, 0.1);
+        color: var(--success);
+        border: 1px solid rgba(39, 174, 96, 0.28);
+      }
+      .a-btn.red {
+        background: rgba(231, 76, 60, 0.08);
+        color: #e74c3c;
+        border: 1px solid rgba(231, 76, 60, 0.28);
+      }
+      .a-btn:hover {
+        transform: translateX(3px);
+      }
+
+      /* ════ ADMIN DASHBOARD ════ */
+      #sc-admin-dashboard {
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .admin-dashboard {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        flex: 1;
+        overflow: hidden;
+      }
+      .admin-sidebar {
+        background: rgba(13, 31, 21, 0.6);
+        border-right: 1px solid rgba(201, 168, 76, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .admin-nav-item {
+        padding: 12px 16px;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--gris);
+        transition: all 0.3s;
+        margin: 4px 0;
+      }
+      .admin-nav-item:hover {
+        background: rgba(201, 168, 76, 0.08);
+        color: var(--blanc);
+      }
+      .admin-nav-item.active {
+        background: rgba(201, 168, 76, 0.12);
+        color: var(--or);
+        border-left-color: var(--or);
+      }
+      .admin-content {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .admin-panel {
+        display: none;
+        padding: 20px;
+        animation: fadeUp 0.5s ease both;
+      }
+      .admin-panel.active {
+        display: block;
+      }
+      .admin-section-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 16px;
+        color: var(--or);
+        margin-bottom: 16px;
+      }
+      .content-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .content-form.full {
+        grid-template-columns: 1fr;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .form-group label {
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: var(--or);
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        border-radius: 4px;
+        color: var(--blanc);
+        font-family: "Lato", sans-serif;
+        font-size: 12px;
+        outline: none;
+        transition: all 0.3s;
+      }
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: var(--or);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+      }
+      .form-group textarea {
+        grid-column: 1/-1;
+        resize: vertical;
+        min-height: 80px;
+      }
+      .btn-form {
+        padding: 10px 16px;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none;
+        border-radius: 4px;
+        color: var(--noir-doux);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 12px;
+        letter-spacing: 1px;
+      }
+      .btn-form:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4);
+      }
+      .btn-form.danger {
+        background: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+        border: 1px solid rgba(231, 76, 60, 0.3);
+      }
+      .btn-form.danger:hover {
+        background: rgba(231, 76, 60, 0.25);
+      }
+      .content-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .content-card {
+        background: rgba(13, 31, 21, 0.5);
+        border: 1px solid rgba(201, 168, 76, 0.12);
+        border-radius: 6px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+      }
+      .content-card:hover {
+        border-color: rgba(201, 168, 76, 0.3);
+        transform: translateY(-2px);
+      }
+      .content-card-icon {
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .content-card-name {
+        font-size: 11px;
+        color: var(--blanc);
+        font-weight: 600;
+        word-break: break-word;
+        margin-bottom: 6px;
+      }
+      .content-card-info {
+        font-size: 10px;
+        color: var(--gris);
+      }
+      .content-card-actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: none;
+        gap: 4px;
+      }
+      .content-card:hover .content-card-actions {
+        display: flex;
+      }
+      .card-action-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.2);
+        border: none;
+        color: var(--or);
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .card-action-btn:hover {
+        background: rgba(201, 168, 76, 0.4);
+      }
+      .card-action-btn.delete {
+        background: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+      }
+      .card-action-btn.delete:hover {
+        background: rgba(231, 76, 60, 0.4);
+      }
+      .members-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .members-table thead {
+        background: rgba(201, 168, 76, 0.08);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+      }
+      .members-table th {
+        padding: 12px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: var(--or);
+        font-weight: 700;
+      }
+      .members-table td {
+        padding: 12px;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+        font-size: 12px;
+        color: var(--blanc);
+      }
+      .members-table tr:hover {
+        background: rgba(201, 168, 76, 0.04);
+      }
+      .member-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .member-action-btn {
+        padding: 6px 10px;
+        border-radius: 3px;
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        background: rgba(201, 168, 76, 0.1);
+        color: var(--or);
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 700;
+        transition: all 0.2s;
+      }
+      .member-action-btn:hover {
+        background: rgba(201, 168, 76, 0.2);
+      }
+      .member-action-btn.delete {
+        border-color: rgba(231, 76, 60, 0.3);
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+      }
+      .member-action-btn.delete:hover {
+        background: rgba(231, 76, 60, 0.2);
+      }
+
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 1100px) {
+        .salle-body {
+          grid-template-columns: 200px 1fr;
+        }
+        .sb-infos {
+          display: none;
+        }
+      }
+      @media (max-width: 768px) {
+        .salle-body {
+          grid-template-columns: 1fr;
+        }
+        .sb-membres {
+          display: none;
+        }
+        .choix-grid {
+          grid-template-columns: 1fr;
+        }
+        body {
+          overflow: auto;
+        }
+      }
+
+      /* ════ ACCUEIL AMÉLIORÉ ════ */
+      #sc-accueil {
+        overflow-y: auto;
+      }
+
+      /* Animations */
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Feature list items animation */
+      #sc-accueil li {
+        animation: slideIn 0.6s ease forwards;
+      }
+      #sc-accueil li:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      #sc-accueil li:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      #sc-accueil li:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      #sc-accueil li:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+      #sc-accueil li:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+      #sc-accueil li:nth-child(6) {
+        animation-delay: 0.6s;
+      }
+
+      #sc-accueil li {
+        opacity: 0;
+      }
+
+      /* ════ MODALS ════ */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none !important;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        animation: fadeIn 0.3s ease;
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .modal-content {
+        background: #0d2b1a;
+        border: 2px solid #c9a84c;
+        border-radius: 12px;
+        padding: 40px;
+        max-width: 420px;
+        width: 90%;
+        position: relative;
+        animation: slideUp 0.4s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      }
+      .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: #c9a84c;
+        font-size: 28px;
+        cursor: pointer;
+        transition: transform 0.3s;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-close:hover {
+        transform: scale(1.2);
+      }
+      .modal-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 20px;
+        color: #c9a84c;
+        text-align: center;
+        margin-bottom: 8px;
+        letter-spacing: 2px;
+      }
+      .modal-subtitle {
+        font-size: 12px;
+        color: var(--gris);
+        text-align: center;
+        margin-bottom: 24px;
+        letter-spacing: 1px;
+      }
+      .modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .modal-form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .modal-form-group label {
+        font-size: 11px;
+        color: #c9a84c;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .modal-form-group input,
+      .modal-form-group select {
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #c9a84c;
+        border-radius: 4px;
+        color: var(--blanc);
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: all 0.3s;
+      }
+      .modal-form-group input:focus,
+      .modal-form-group select:focus {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.2);
+      }
+      .modal-form-group select {
+        cursor: pointer;
+        color: #c9a84c;
+      }
+      .modal-form-group select option {
+        background: #0d2b1a;
+        color: var(--blanc);
+      }
+      .modal-role-display {
+        padding: 10px;
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid #c9a84c;
+        border-radius: 4px;
+        color: #c9a84c;
+        font-size: 12px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .modal-btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .modal-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        font-family: "Lato", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .modal-btn-submit {
+        background: #c9a84c;
+        color: #0d2b1a;
+      }
+      .modal-btn-submit:hover {
+        background: #d4b85d;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(201, 168, 76, 0.3);
+      }
+      .modal-btn-cancel {
+        background: transparent;
+        border: 1px solid #c9a84c;
+        color: #c9a84c;
+      }
+      .modal-btn-cancel:hover {
+        background: rgba(201, 168, 76, 0.1);
+      }
+      .modal-error {
+        color: #ff6b6b;
+        font-size: 11px;
+        text-align: center;
+        margin-top: 10px;
+        display: none;
+      }
+      .modal-error.show {
+        display: block;
+      }
+      .modal-role-pill {
+        display: inline-block;
+        background: rgba(201, 168, 76, 0.15);
+        border: 1px solid #c9a84c;
+        color: #c9a84c;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin: -8px auto 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <!-- ══ ACCUEIL ══ -->
+    <div id="sc-accueil" class="screen active">
+      <!-- Navigation Bar -->
+      <div
+        style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(26, 58, 42, 0.95),
+            rgba(26, 58, 42, 0.85)
+          );
+          border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+          z-index: 1000;
+          padding: 0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        "
+      >
+        <nav
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+          "
+        >
+          <a
+            href="../index.html"
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              text-decoration: none;
+              color: var(--or);
+              font-weight: 700;
+              font-size: 18px;
+            "
+          >
+            <span>🏠</span> JFSI
+          </a>
+          <ul
+            style="
+              display: flex;
+              list-style: none;
+              gap: 25px;
+              margin: 0;
+              padding: 0;
+              flex-wrap: wrap;
+              justify-content: center;
+            "
+          >
+            <li>
+              <a
+                href="../index.html"
+                style="
+                  color: var(--blanc);
+                  text-decoration: none;
+                  font-size: 14px;
+                  transition: color 0.3s;
+                "
+                >Accueil</a
+              >
+            </li>
+            <li>
+              <a
+                href="bibliotheque.html"
+                style="
+                  color: var(--blanc);
+                  text-decoration: none;
+                  font-size: 14px;
+                  transition: color 0.3s;
+                "
+                >📚 Bibliothèque</a
+              >
+            </li>
+            <li>
+              <a
+                href="formations.html"
+                style="
+                  color: var(--blanc);
+                  text-decoration: none;
+                  font-size: 14px;
+                  transition: color 0.3s;
+                "
+                >🎓 Formations</a
+              >
+            </li>
+            <li>
+              <a
+                href="abonnement.html"
+                style="
+                  color: var(--blanc);
+                  text-decoration: none;
+                  font-size: 14px;
+                  transition: color 0.3s;
+                "
+                >💳 Abonnements</a
+              >
+            </li>
+            <li>
+              <a
+                href="dictionnaire.html"
+                style="
+                  color: var(--blanc);
+                  text-decoration: none;
+                  font-size: 14px;
+                  transition: color 0.3s;
+                "
+                >📖 Dictionnaire</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div
+        style="
+          text-align: center;
+          width: 100%;
+          padding: 120px 20px 40px;
+          margin-top: 0;
+        "
+      >
+        <div class="accueil-header">
+          <img
+            src="../images/logo.png"
+            alt="JFSI"
+            onerror="this.style.display = 'none'"
+          />
+          <h1>JFSI</h1>
+          <p>Espace Bureau & Administration</p>
+        </div>
+        <div class="divider-or"></div>
+        <p class="accueil-verse">
+          « وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ » — Entraidez-vous dans
+          la piété et la dévotion
+        </p>
+        <div class="choix-grid" style="margin: 0 auto">
+          <div class="choix-card admin">
+            <span class="choix-icon">👑</span>
+            <h3>Administrateur</h3>
+            <p>
+              Accès complet — Gestion, modération et pilotage de l'association.
+            </p>
+            <div class="choix-btns">
+              <button
+                class="c-btn login-gold"
+                onclick="ouvrirModalConnexion('admin')"
+              >
+                Se connecter
+              </button>
+              <button
+                class="c-btn reg-gold"
+                onclick="ouvrirModalInscription('admin')"
+              >
+                S'inscrire
+              </button>
+            </div>
+          </div>
+          <div class="choix-card bureau">
+            <span class="choix-icon">🤝</span>
+            <h3>Membre du Bureau</h3>
+            <p>
+              Espace collaboratif — Échanges, votes, documents et suivi des
+              activités.
+            </p>
+            <div class="choix-btns">
+              <button
+                class="c-btn login-green"
+                onclick="ouvrirModalConnexion('bureau')"
+              >
+                Se connecter
+              </button>
+              <button
+                class="c-btn reg-green"
+                onclick="ouvrirModalInscription('bureau')"
+              >
+                S'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="back-home">
+          <a href="../index.html">← Retour au site principal</a>
+        </div>
+
+        <!-- Fonctionnalités Section -->
+        <div
+          style="
+            margin-top: 80px;
+            padding: 60px 20px;
+            background: rgba(45, 90, 61, 0.25);
+            border-radius: 12px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+          "
+        >
+          <h2
+            style="
+              color: var(--or);
+              text-align: center;
+              font-family: &quot;Cinzel Decorative&quot;, serif;
+              margin-bottom: 50px;
+            "
+          >
+            🎯 Fonctionnalités Disponibles
+          </h2>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 40px;
+              margin-bottom: 40px;
+            "
+          >
+            <!-- Admin Features -->
+            <div
+              style="
+                padding: 30px;
+                background: rgba(201, 168, 76, 0.1);
+                border-left: 4px solid var(--or);
+                border-radius: 8px;
+              "
+            >
+              <h3 style="color: var(--or); margin-bottom: 20px">
+                👑 Administrateur
+              </h3>
+              <ul style="list-style: none; padding: 0; color: var(--gris)">
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+                  "
+                >
+                  ✅ Gestion des membres
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+                  "
+                >
+                  ✅ Bibliothèque numérique
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+                  "
+                >
+                  ✅ Gestion multimédia
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+                  "
+                >
+                  ✅ Rapports statistiques
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+                  "
+                >
+                  ✅ Modération du contenu
+                </li>
+                <li style="padding: 8px 0">✅ Gestion des abonnements</li>
+              </ul>
+            </div>
+
+            <!-- Bureau Features -->
+            <div
+              style="
+                padding: 30px;
+                background: rgba(45, 90, 61, 0.5);
+                border-left: 4px solid var(--vert-soft);
+                border-radius: 8px;
+              "
+            >
+              <h3 style="color: var(--vert-soft); margin-bottom: 20px">
+                🤝 Membre du Bureau
+              </h3>
+              <ul style="list-style: none; padding: 0; color: var(--gris)">
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+                  "
+                >
+                  ✅ Salle de réunion collaborative
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+                  "
+                >
+                  ✅ Chat en direct avec l'équipe
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+                  "
+                >
+                  ✅ Système de vote
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+                  "
+                >
+                  ✅ Partage de documents
+                </li>
+                <li
+                  style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+                  "
+                >
+                  ✅ Ordre du jour collaboratif
+                </li>
+                <li style="padding: 8px 0">✅ Accès à la bibliothèque</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Section -->
+        <div
+          style="
+            margin-top: 60px;
+            padding: 40px 20px;
+            text-align: center;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+          "
+        >
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 30px;
+            "
+          >
+            <div>
+              <div style="font-size: 28px; margin-bottom: 10px">🔐</div>
+              <h4 style="color: var(--or); margin-bottom: 8px">Sécurisé</h4>
+              <p style="color: var(--gris); font-size: 13px">
+                Authentification OTP et chiffrement
+              </p>
+            </div>
+            <div>
+              <div style="font-size: 28px; margin-bottom: 10px">⚡</div>
+              <h4 style="color: var(--or); margin-bottom: 8px">Rapide</h4>
+              <p style="color: var(--gris); font-size: 13px">
+                Accès instantané à vos ressources
+              </p>
+            </div>
+            <div>
+              <div style="font-size: 28px; margin-bottom: 10px">🌍</div>
+              <h4 style="color: var(--or); margin-bottom: 8px">
+                24/7 Disponible
+              </h4>
+              <p style="color: var(--gris); font-size: 13px">
+                Accès à tout moment, n'importe où
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INSCRIPTION ══ -->
+    <div id="sc-inscription" class="screen">
+      <div class="form-box">
+        <div class="fb-arabic">تَسْجِيل الْعُضْوِيَّة</div>
+        <h2 class="fb-title">Inscription au Bureau</h2>
+        <p class="fb-sub">
+          Renseignez vos informations pour rejoindre la salle
+        </p>
+        <div style="text-align: center">
+          <span class="role-pill" id="ins-badge">Admin</span>
+        </div>
+        <div class="fgrid">
+          <div class="field">
+            <label for="i-prenom">Prénom *</label
+            ><input
+              id="i-prenom"
+              type="text"
+              name="prenom"
+              placeholder="Votre prénom"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="i-nom">Nom *</label
+            ><input
+              id="i-nom"
+              type="text"
+              name="nom"
+              placeholder="Votre nom"
+              required
+            />
+          </div>
+          <div class="field full">
+            <label for="i-email">Adresse e-mail *</label
+            ><input
+              id="i-email"
+              type="email"
+              name="email"
+              placeholder="email@exemple.com"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="i-tel">Téléphone *</label
+            ><input
+              id="i-tel"
+              type="tel"
+              name="tel"
+              placeholder="+225 00 00 00"
+              pattern="\+?[0-9\s\-\(\)]+"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Fonction dans l'association *</label>
+            <select id="i-fonc-asso">
+              <option value="">-- Choisir --</option>
+              <option>Président</option>
+              <option>Vice-Président</option>
+              <option>Secrétaire Général</option>
+              <option>Trésorier</option>
+              <option>Responsable Formation</option>
+              <option>Responsable Bibliothèque</option>
+              <option>Chargé Communication</option>
+              <option>Membre Actif</option>
+              <option>Administrateur Système</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="i-fonc-pro">Fonction professionnelle *</label
+            ><input
+              id="i-fonc-pro"
+              type="text"
+              name="fonc-pro"
+              placeholder="Ex: Enseignant, Médecin, Ingénieur..."
+              required
+            />
+          </div>
+        </div>
+        <button class="btn-submit" id="btn-inscrire" onclick="inscrire()">
+          Créer mon compte & recevoir le code
+        </button>
+        <button class="btn-retour" onclick="aller('sc-accueil')">
+          ← Retour
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ CONNEXION / OTP ══ -->
+    <div id="sc-connexion" class="screen">
+      <div class="form-box" style="max-width: 450px">
+        <!-- Étape 1 : email -->
+        <div class="otp-step active" id="step-email">
+          <div class="fb-arabic">تَسْجِيل الدُّخُول</div>
+          <h2 class="fb-title">Connexion Sécurisée</h2>
+          <p class="fb-sub">Entrez votre e-mail pour recevoir votre code OTP</p>
+          <div style="text-align: center">
+            <span class="role-pill" id="con-badge">Admin</span>
+          </div>
+          <div class="field" style="margin-bottom: 20px">
+            <label for="l-email">Adresse e-mail</label
+            ><input
+              id="l-email"
+              type="email"
+              name="email"
+              placeholder="votre@email.com"
+              required
+            />
+          </div>
+          <button class="btn-submit" onclick="envoyerCode()">
+            Recevoir mon code OTP
+          </button>
+          <button class="btn-retour" onclick="aller('sc-accueil')">
+            ← Retour
+          </button>
+        </div>
+        <!-- Étape 2 : OTP -->
+        <div class="otp-step" id="step-otp">
+          <div class="fb-arabic">رَمْز التَّحَقُّق</div>
+          <h2 class="fb-title">Entrez votre Code OTP</h2>
+          <div class="otp-info-box">
+            <strong>🔐 Code envoyé !</strong>
+            Code à 6 chiffres envoyé à
+            <span
+              id="otp-email-label"
+              style="color: var(--or); font-weight: 700"
+            ></span
+            ><br />
+            <small style="color: var(--gris)">Valable pendant :</small>
+          </div>
+          <div class="otp-timer" id="otp-timer">05:00</div>
+          <div class="otp-digits">
+            <input
+              type="text"
+              maxlength="1"
+              id="d1"
+              oninput="next(this, 'd2')"
+            />
+            <input
+              type="text"
+              maxlength="1"
+              id="d2"
+              oninput="next(this, 'd3')"
+              onkeydown="prev(event, 'd1')"
+            />
+            <input
+              type="text"
+              maxlength="1"
+              id="d3"
+              oninput="next(this, 'd4')"
+              onkeydown="prev(event, 'd2')"
+            />
+            <input
+              type="text"
+              maxlength="1"
+              id="d4"
+              oninput="next(this, 'd5')"
+              onkeydown="prev(event, 'd3')"
+            />
+            <input
+              type="text"
+              maxlength="1"
+              id="d5"
+              oninput="next(this, 'd6')"
+              onkeydown="prev(event, 'd4')"
+            />
+            <input
+              type="text"
+              maxlength="1"
+              id="d6"
+              oninput="checkAuto()"
+              onkeydown="prev(event, 'd5')"
+            />
+          </div>
+          <button class="btn-submit" onclick="validerOTP()">
+            Valider & Entrer dans la Salle
+          </button>
+          <button class="btn-retour" onclick="retourEmail()">
+            ← Renvoyer un code
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SALLE DE RÉUNION ══ -->
+    <div id="sc-salle" class="screen">
+      <!-- Navigation Links -->
+      <div
+        style="
+          position: absolute;
+          top: 10px;
+          right: 30px;
+          z-index: 100;
+          display: flex;
+          gap: 15px;
+        "
+      >
+        <a
+          href="bibliotheque.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >📚 Bibliothèque</a
+        >
+        <a
+          href="formations.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >🎓 Formations</a
+        >
+        <a
+          href="abonnement.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >💳 Abonnements</a
+        >
+        <a
+          href="dictionnaire.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >📖 Dictionnaire</a
+        >
+      </div>
+
+      <div class="salle-header">
+        <div class="sh-left">
+          <img
+            src="../images/logo.png"
+            alt="JFSI"
+            onerror="this.style.display = 'none'"
+          />
+          <div class="sh-title">
+            <h2>Salle de Réunion JFSI</h2>
+            <p id="sh-date">Chargement...</p>
+          </div>
+        </div>
+        <div class="sh-right">
+          <div class="user-pill">
+            <div class="u-avatar" id="hd-avatar">U</div>
+            <div>
+              <div class="u-name" id="hd-name">Utilisateur</div>
+              <div class="u-role" id="hd-role">Rôle</div>
+            </div>
+          </div>
+          <button class="btn-quit" onclick="quitter()">⏻ Quitter</button>
+        </div>
+      </div>
+
+      <div class="salle-body">
+        <!-- Membres -->
+        <div class="sb-membres">
+          <div class="sb-title">
+            Membres <span class="online-badge" id="nb-online">5</span>
+          </div>
+          <div class="membres-scroll" id="membres-list"></div>
+        </div>
+
+        <!-- Chat -->
+        <div class="chat-zone">
+          <div class="chat-tabs">
+            <button class="ch-tab active" onclick="switchTab(this, 'general')">
+              💬 Général
+            </button>
+            <button class="ch-tab" onclick="switchTab(this, 'annonces')">
+              📢 Annonces
+            </button>
+            <button class="ch-tab" onclick="switchTab(this, 'decisions')">
+              ⚖️ Décisions
+            </button>
+          </div>
+          <div class="chat-msgs" id="chat-msgs"></div>
+          <div class="chat-input">
+            <div class="input-bar">
+              <button class="emoji-toggle" onclick="toggleEmoji()">😊</button>
+              <input
+                type="text"
+                id="msg-input"
+                placeholder="Écrivez votre message..."
+                onkeydown="if (event.key === 'Enter') envoyer();"
+              />
+              <button class="emoji-toggle">📎</button>
+              <button class="send-btn" onclick="envoyer()">➤</button>
+            </div>
+            <div class="emoji-panel" id="emoji-panel">
+              😊 🤲 📖 ✅ 🕌 🌿 👍 ❤️ 🙏 ⭐ 📚 🎯 آمين
+            </div>
+          </div>
+        </div>
+
+        <!-- Infos -->
+        <div class="sb-infos">
+          <div class="info-block">
+            <div class="ib-title">📋 Ordre du Jour</div>
+            <div class="agenda-row">
+              <div class="ag-num">1</div>
+              <div class="ag-txt">
+                Bilan des activités du mois<small>15 min</small>
+              </div>
+            </div>
+            <div class="agenda-row">
+              <div class="ag-num">2</div>
+              <div class="ag-txt">
+                Lancement de la bibliothèque<small>20 min</small>
+              </div>
+            </div>
+            <div class="agenda-row">
+              <div class="ag-num">3</div>
+              <div class="ag-txt">
+                Planning des formations<small>15 min</small>
+              </div>
+            </div>
+            <div class="agenda-row">
+              <div class="ag-num">4</div>
+              <div class="ag-txt">Questions diverses<small>10 min</small></div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="ib-title">🗳️ Vote en Cours</div>
+            <div class="vote-box">
+              <div class="vote-q">
+                Valider le budget formation du prochain trimestre ?
+              </div>
+              <div class="vote-opts">
+                <label class="vote-opt"
+                  ><input type="radio" name="v1" onchange="voter(75)" /> ✅
+                  Approuvé</label
+                >
+                <label class="vote-opt"
+                  ><input type="radio" name="v1" onchange="voter(15)" /> ❌
+                  Refusé</label
+                >
+                <label class="vote-opt"
+                  ><input type="radio" name="v1" onchange="voter(10)" /> 🔄 À
+                  revoir</label
+                >
+              </div>
+              <div class="vote-bar-wrap">
+                <div
+                  style="
+                    font-size: 11px;
+                    color: var(--gris);
+                    margin-bottom: 5px;
+                  "
+                >
+                  ✅ Approuvé — <span id="vote-pct">0%</span>
+                </div>
+                <div class="vote-bar-bg">
+                  <div
+                    class="vote-bar-fill"
+                    id="vote-fill"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="ib-title">📁 Documents</div>
+            <div class="doc-row" onclick="notif('📄 Ouverture du document...')">
+              <span class="doc-icon">📄</span
+              ><span class="doc-name">PV Réunion précédente</span
+              ><span class="doc-size">PDF</span>
+            </div>
+            <div class="doc-row" onclick="notif('📊 Ouverture du tableau...')">
+              <span class="doc-icon">📊</span
+              ><span class="doc-name">Budget Prévisionnel</span
+              ><span class="doc-size">XLSX</span>
+            </div>
+            <div class="doc-row" onclick="notif('📋 Ouverture des statuts...')">
+              <span class="doc-icon">📋</span
+              ><span class="doc-name">Statuts de l\'Association</span
+              ><span class="doc-size">PDF</span>
+            </div>
+          </div>
+          <div class="info-block" id="admin-panel" style="display: none">
+            <div class="ib-title">⚙️ Actions Admin</div>
+            <div class="admin-btns">
+              <button
+                class="a-btn gold"
+                onclick="notif('📢 Annonce envoyée à tous les membres !')"
+              >
+                📢 Envoyer une annonce
+              </button>
+              <button
+                class="a-btn grn"
+                onclick="notif('📋 Point ajouté à l\'ordre du jour !')"
+              >
+                ➕ Ajouter un point
+              </button>
+              <button
+                class="a-btn gold"
+                onclick="notif('🗳️ Nouveau vote lancé !')"
+              >
+                🗳️ Lancer un vote
+              </button>
+              <button
+                class="a-btn red"
+                onclick="
+                  if (confirm('Fermer la salle de réunion ?')) quitter();
+                "
+              >
+                🔒 Fermer la salle
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DASHBOARD ADMIN ══ -->
+    <div id="sc-admin-dashboard" class="screen">
+      <!-- Navigation Links -->
+      <div
+        style="
+          position: absolute;
+          top: 10px;
+          right: 30px;
+          z-index: 100;
+          display: flex;
+          gap: 15px;
+        "
+      >
+        <a
+          href="bibliotheque.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >📚 Bibliothèque</a
+        >
+        <a
+          href="formations.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >🎓 Formations</a
+        >
+        <a
+          href="abonnement.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >💳 Abonnements</a
+        >
+        <a
+          href="dictionnaire.html"
+          style="
+            color: var(--or-clair);
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+          "
+          >📖 Dictionnaire</a
+        >
+      </div>
+
+      <div class="salle-header">
+        <div class="sh-left">
+          <img
+            src="../images/logo.png"
+            alt="JFSI"
+            onerror="this.style.display = 'none'"
+          />
+          <div class="sh-title">
+            <h2>Tableau de Bord Administrateur</h2>
+            <p id="admin-date">Chargement...</p>
+          </div>
+        </div>
+        <div class="sh-right">
+          <div class="user-pill">
+            <div class="u-avatar admin" id="admin-avatar">U</div>
+            <div>
+              <div class="u-name" id="admin-name">Administrateur</div>
+              <div class="u-role admin">Admin</div>
+            </div>
+          </div>
+          <button class="btn-quit" onclick="quitterAdmin()">⏻ Quitter</button>
+        </div>
+      </div>
+
+      <div class="admin-dashboard">
+        <!-- SIDEBAR -->
+        <div class="admin-sidebar">
+          <div
+            style="
+              padding: 16px 12px;
+              border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+            "
+          >
+            <div
+              style="
+                font-size: 10px;
+                letter-spacing: 2px;
+                color: var(--or);
+                margin-bottom: 12px;
+              "
+            >
+              GESTION
+            </div>
+          </div>
+          <div
+            class="admin-nav-item active"
+            onclick="switchAdminPanel('dashboard')"
+          >
+            ▣ Tableau de bord
+          </div>
+          <div class="admin-nav-item" onclick="switchAdminPanel('content')">
+            📚 Bibliothèque
+          </div>
+          <div class="admin-nav-item" onclick="switchAdminPanel('members')">
+            👥 Abonnés
+          </div>
+          <div class="admin-nav-item" onclick="switchAdminPanel('media')">
+            🎬 Multimédia
+          </div>
+          <div
+            style="
+              margin-top: auto;
+              padding: 12px;
+              border-top: 1px solid rgba(201, 168, 76, 0.1);
+            "
+          >
+            <button
+              class="btn-quit"
+              style="width: 100%"
+              onclick="quitterAdmin()"
+            >
+              🏠 Retour
+            </button>
+          </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="admin-content">
+          <!-- DASHBOARD PANEL -->
+          <div class="admin-panel active" id="panel-dashboard">
+            <div class="admin-section-title">📊 Tableau de Bord Général</div>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                margin-bottom: 20px;
+              "
+            >
+              <div
+                style="
+                  background: rgba(13, 31, 21, 0.5);
+                  border: 1px solid rgba(201, 168, 76, 0.12);
+                  padding: 14px;
+                  border-radius: 6px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--gris);
+                    margin-bottom: 8px;
+                  "
+                >
+                  MEMBRES
+                </div>
+                <div
+                  style="font-size: 24px; font-weight: 700; color: var(--or)"
+                  id="dash-members"
+                >
+                  0
+                </div>
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--success);
+                    margin-top: 6px;
+                  "
+                >
+                  Total actifs
+                </div>
+              </div>
+              <div
+                style="
+                  background: rgba(13, 31, 21, 0.5);
+                  border: 1px solid rgba(201, 168, 76, 0.12);
+                  padding: 14px;
+                  border-radius: 6px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--gris);
+                    margin-bottom: 8px;
+                  "
+                >
+                  DOCUMENTS
+                </div>
+                <div
+                  style="font-size: 24px; font-weight: 700; color: var(--or)"
+                  id="dash-docs"
+                >
+                  0
+                </div>
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--success);
+                    margin-top: 6px;
+                  "
+                >
+                  En bibliothèque
+                </div>
+              </div>
+              <div
+                style="
+                  background: rgba(13, 31, 21, 0.5);
+                  border: 1px solid rgba(201, 168, 76, 0.12);
+                  padding: 14px;
+                  border-radius: 6px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--gris);
+                    margin-bottom: 8px;
+                  "
+                >
+                  MULTIMÉDIA
+                </div>
+                <div
+                  style="font-size: 24px; font-weight: 700; color: var(--or)"
+                  id="dash-media"
+                >
+                  0
+                </div>
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--success);
+                    margin-top: 6px;
+                  "
+                >
+                  Fichiers stockés
+                </div>
+              </div>
+              <div
+                style="
+                  background: rgba(13, 31, 21, 0.5);
+                  border: 1px solid rgba(201, 168, 76, 0.12);
+                  padding: 14px;
+                  border-radius: 6px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--gris);
+                    margin-bottom: 8px;
+                  "
+                >
+                  FORMATIONS
+                </div>
+                <div
+                  style="font-size: 24px; font-weight: 700; color: var(--or)"
+                  id="dash-formations"
+                >
+                  0
+                </div>
+                <div
+                  style="
+                    font-size: 10px;
+                    color: var(--success);
+                    margin-top: 6px;
+                  "
+                >
+                  Actives
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                background: rgba(13, 31, 21, 0.5);
+                border: 1px solid rgba(201, 168, 76, 0.12);
+                padding: 16px;
+                border-radius: 6px;
+              "
+            >
+              <div
+                style="font-size: 12px; font-weight: 700; color: var(--blanc) margin-bottom: 12px;"
+              >
+                📋 Actions Rapides
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(2, 1fr);
+                  gap: 10px;
+                "
+              >
+                <button class="btn-form" onclick="switchAdminPanel('members')">
+                  ➕ Ajouter un membre
+                </button>
+                <button class="btn-form" onclick="switchAdminPanel('content')">
+                  📄 Ajouter un document
+                </button>
+                <button class="btn-form" onclick="switchAdminPanel('media')">
+                  🎬 Ajouter un média
+                </button>
+                <button
+                  class="btn-form"
+                  onclick="notif('📊 Rapports en cours de préparation...')"
+                >
+                  📊 Générer rapports
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENT PANEL -->
+          <div class="admin-panel" id="panel-content">
+            <div class="admin-section-title">📚 Gestion de la Bibliothèque</div>
+
+            <div style="margin-bottom: 20px">
+              <h3
+                style="
+                  font-size: 13px;
+                  color: var(--blanc);
+                  margin-bottom: 12px;
+                "
+              >
+                ➕ Ajouter un Document
+              </h3>
+              <div class="content-form">
+                <div class="form-group">
+                  <label>Titre</label>
+                  <input
+                    type="text"
+                    id="doc-title"
+                    placeholder="Titre du document"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Catégorie</label>
+                  <select id="doc-category">
+                    <option value="coran">Coran & Tafsir</option>
+                    <option value="fiqh">Fiqh & Jurisprudence</option>
+                    <option value="hadith">Hadith</option>
+                    <option value="formations">Formations</option>
+                    <option value="autres">Autres ressources</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Auteur</label>
+                  <input
+                    type="text"
+                    id="doc-author"
+                    placeholder="Nom de l'auteur"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Type de fichier</label>
+                  <select id="doc-type">
+                    <option value="pdf">📄 PDF</option>
+                    <option value="epub">📖 EPUB</option>
+                    <option value="text">📝 Texte</option>
+                    <option value="video">🎬 Vidéo</option>
+                    <option value="audio">🎧 Audio</option>
+                  </select>
+                </div>
+                <div class="form-group full">
+                  <label>Description</label>
+                  <textarea
+                    id="doc-desc"
+                    placeholder="Description du document..."
+                  ></textarea>
+                </div>
+              </div>
+              <button class="btn-form" onclick="ajouterDocument()">
+                ✅ Ajouter le document
+              </button>
+            </div>
+
+            <hr
+              style="
+                border: none;
+                border-top: 1px solid rgba(201, 168, 76, 0.1);
+                margin: 20px 0;
+              "
+            />
+
+            <h3
+              style="font-size: 13px; color: var(--blanc); margin-bottom: 12px"
+            >
+              📑 Documents existants
+            </h3>
+            <div class="content-list" id="content-list"></div>
+          </div>
+
+          <!-- MEMBERS PANEL -->
+          <div class="admin-panel" id="panel-members">
+            <div class="admin-section-title">👥 Gestion des Abonnés</div>
+
+            <div style="margin-bottom: 20px">
+              <h3
+                style="
+                  font-size: 13px;
+                  color: var(--blanc);
+                  margin-bottom: 12px;
+                "
+              >
+                ➕ Ajouter un Abonné
+              </h3>
+              <div class="content-form">
+                <div class="form-group">
+                  <label>Prénom</label>
+                  <input type="text" id="member-prenom" placeholder="Prénom" />
+                </div>
+                <div class="form-group">
+                  <label>Nom</label>
+                  <input type="text" id="member-nom" placeholder="Nom" />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    id="member-email"
+                    placeholder="email@example.com"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Téléphone</label>
+                  <input
+                    type="tel"
+                    id="member-tel"
+                    placeholder="+225 00000000"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Rôle</label>
+                  <select id="member-role">
+                    <option value="bureau">Membre du Bureau</option>
+                    <option value="admin">Administrateur</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Fonction</label>
+                  <input
+                    type="text"
+                    id="member-fonc"
+                    placeholder="Poste/Fonction"
+                  />
+                </div>
+              </div>
+              <button class="btn-form" onclick="ajouterMembre()">
+                ✅ Ajouter l'abonné
+              </button>
+            </div>
+
+            <hr
+              style="
+                border: none;
+                border-top: 1px solid rgba(201, 168, 76, 0.1);
+                margin: 20px 0;
+              "
+            />
+
+            <h3
+              style="font-size: 13px; color: var(--blanc); margin-bottom: 12px"
+            >
+              📋 Liste des Abonnés
+            </h3>
+            <div style="overflow-x: auto">
+              <table class="members-table">
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Fonction</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="members-list"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- MEDIA PANEL -->
+          <div class="admin-panel" id="panel-media">
+            <div class="admin-section-title">🎬 Gestion du Multimédia</div>
+
+            <div style="margin-bottom: 20px">
+              <h3
+                style="
+                  font-size: 13px;
+                  color: var(--blanc);
+                  margin-bottom: 12px;
+                "
+              >
+                ➕ Ajouter un Média
+              </h3>
+              <div class="content-form">
+                <div class="form-group">
+                  <label>Titre</label>
+                  <input
+                    type="text"
+                    id="media-title"
+                    placeholder="Titre du média"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Type</label>
+                  <select id="media-type">
+                    <option value="video">🎬 Vidéo</option>
+                    <option value="audio">🎧 Audio</option>
+                    <option value="image">🖼️ Image</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Catégorie</label>
+                  <select id="media-cat">
+                    <option value="formations">Formations</option>
+                    <option value="conferences">Conférences</option>
+                    <option value="recitations">Récitations Coran</option>
+                    <option value="autres">Autres</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Durée/Taille</label>
+                  <input
+                    type="text"
+                    id="media-size"
+                    placeholder="Ex: 45min ou 12.5MB"
+                  />
+                </div>
+                <div class="form-group full">
+                  <label>Description</label>
+                  <textarea
+                    id="media-desc"
+                    placeholder="Description du média..."
+                  ></textarea>
+                </div>
+              </div>
+              <button class="btn-form" onclick="ajouterMedia()">
+                ✅ Ajouter le média
+              </button>
+            </div>
+
+            <hr
+              style="
+                border: none;
+                border-top: 1px solid rgba(201, 168, 76, 0.1);
+                margin: 20px 0;
+              "
+            />
+
+            <h3
+              style="font-size: 13px; color: var(--blanc); margin-bottom: 12px"
+            >
+              🎬 Médias existants
+            </h3>
+            <div class="content-list" id="media-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL CONNEXION ══ -->
+    <div id="modal-login" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" onclick="fermerModal('modal-login')">
+          ✕
+        </button>
+        <h2 class="modal-title">Connexion</h2>
+        <p class="modal-subtitle" id="login-role-text">Administrateur</p>
+        <div class="modal-role-pill" id="login-role-badge">
+          👑 Administrateur
+        </div>
+        <form
+          class="modal-form"
+          id="form-login"
+          onsubmit="soumettrConnexion(event)"
+        >
+          <div class="modal-form-group">
+            <label for="login-email">Adresse E-mail</label>
+            <input
+              type="email"
+              id="login-email"
+              placeholder="votre@email.com"
+              required
+            />
+          </div>
+          <div class="modal-form-group">
+            <label for="login-password">Mot de Passe</label>
+            <input
+              type="password"
+              id="login-password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div class="modal-error" id="login-error"></div>
+          <div class="modal-btn-group">
+            <button type="submit" class="modal-btn modal-btn-submit">
+              Se Connecter
+            </button>
+            <button
+              type="button"
+              class="modal-btn modal-btn-cancel"
+              onclick="fermerModal('modal-login')"
+            >
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ══ MODAL INSCRIPTION ══ -->
+    <div id="modal-register" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" onclick="fermerModal('modal-register')">
+          ✕
+        </button>
+        <h2 class="modal-title">Inscription</h2>
+        <p class="modal-subtitle" id="register-role-text">Administrateur</p>
+        <div class="modal-role-pill" id="register-role-badge">
+          👑 Administrateur
+        </div>
+        <form
+          class="modal-form"
+          id="form-register"
+          onsubmit="soumettrInscription(event)"
+        >
+          <div class="modal-form-group">
+            <label for="register-fullname">Nom Complet</label>
+            <input
+              type="text"
+              id="register-fullname"
+              placeholder="Jean Dupont"
+              required
+            />
+          </div>
+          <div class="modal-form-group">
+            <label for="register-email">Adresse E-mail</label>
+            <input
+              type="email"
+              id="register-email"
+              placeholder="votre@email.com"
+              required
+            />
+          </div>
+          <div class="modal-form-group">
+            <label for="register-password">Mot de Passe</label>
+            <input
+              type="password"
+              id="register-password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div class="modal-form-group">
+            <label for="register-password-confirm"
+              >Confirmer le Mot de Passe</label
+            >
+            <input
+              type="password"
+              id="register-password-confirm"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div class="modal-error" id="register-error"></div>
+          <div class="modal-btn-group">
+            <button type="submit" class="modal-btn modal-btn-submit">
+              S'Inscrire
+            </button>
+            <button
+              type="button"
+              class="modal-btn modal-btn-cancel"
+              onclick="fermerModal('modal-register')"
+            >
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Validation de session (doit être en premier) -->
+    <script src="../js/admin-session.js"></script>
+    <!-- Intégration avec session backend -->
+    <script src="../js/salle-integration.js"></script>
+    <script src="../js/global.js"></script>
+    <script>
+      // ── ÉTAT ──
+      let role = "bureau",
+        otpCode = "",
+        timerInterval = null,
+        moi = null;
+
+      // Membres démo
+      const MEMBRES = [
+        {
+          nom: "Ibrahim Al-Amine",
+          ini: "IA",
+          role: "admin",
+          fonc: "Administrateur",
+          on: true,
+        },
+        {
+          nom: "Fatima Koné",
+          ini: "FK",
+          role: "bureau",
+          fonc: "Présidente",
+          on: true,
+        },
+        {
+          nom: "Youssouf Diallo",
+          ini: "YD",
+          role: "bureau",
+          fonc: "Secrétaire Général",
+          on: true,
+        },
+        {
+          nom: "Aïcha Traoré",
+          ini: "AT",
+          role: "bureau",
+          fonc: "Trésorière",
+          on: true,
+        },
+        {
+          nom: "Hassan Coulibaly",
+          ini: "HC",
+          role: "bureau",
+          fonc: "Resp. Formation",
+          on: false,
+        },
+        {
+          nom: "Maryam Bamba",
+          ini: "MB",
+          role: "bureau",
+          fonc: "Resp. Bibliothèque",
+          on: false,
+        },
+      ];
+
+      const MSGS_DEMO = [
+        {
+          sys: true,
+          txt: "La salle de réunion a été ouverte — Bienvenue à tous",
+        },
+        {
+          nom: "Fatima Koné",
+          ini: "FK",
+          role: "bureau",
+          txt: "السلام عليكم ورحمة الله وبركاته — Bonjour à tous ! 🤲",
+          time: "09:00",
+          reac: ["🤲 3", "❤️ 2"],
+        },
+        {
+          nom: "Ibrahim Al-Amine",
+          ini: "IA",
+          role: "admin",
+          txt: "Wa alaykum assalam ! Je déclare la séance ouverte. Nous avons 4 points à l'ordre du jour aujourd'hui.",
+          time: "09:02",
+          reac: ["✅ 4"],
+        },
+        {
+          nom: "Youssouf Diallo",
+          ini: "YD",
+          role: "bureau",
+          txt: "Présent. Le bilan du mois est très positif : plus de 150 nouvelles inscriptions à la bibliothèque. 📚",
+          time: "09:05",
+          reac: ["👍 5", "⭐ 2"],
+        },
+        {
+          nom: "Aïcha Traoré",
+          ini: "AT",
+          role: "bureau",
+          txt: "Excellent ! J'ai préparé un document récapitulatif du budget dans la section Documents. 📊",
+          time: "09:07",
+          reac: ["📚 3"],
+        },
+      ];
+
+      // ── NAVIGATION ──
+      function aller(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      function ouvrirInscription(r) {
+        role = r;
+        const b = document.getElementById("ins-badge");
+        b.textContent =
+          r === "admin" ? "👑 Administrateur" : "🤝 Membre du Bureau";
+        b.className = "role-pill " + r;
+        aller("sc-inscription");
+      }
+
+      function ouvrirConnexion(r) {
+        role = r;
+
+        // Check if admin - redirect to dashboard
+        if (r === "admin") {
+          const users = getUsers();
+          const adminUser = users.find((u) => u.role === "admin");
+          if (adminUser) {
+            moi = adminUser;
+            window.location.href = "./admin-dashboard.html";
+            return;
+          }
+        }
+
+        const b = document.getElementById("con-badge");
+        b.textContent =
+          r === "admin" ? "👑 Administrateur" : "🤝 Membre du Bureau";
+        b.className = "role-pill " + r;
+        document.getElementById("step-email").classList.add("active");
+        document.getElementById("step-otp").classList.remove("active");
+        aller("sc-connexion");
+      }
+
+      // ── INSCRIPTION ──
+      function getUsers() {
+        try {
+          return JSON.parse(localStorage.getItem("jfsi_bureau") || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveUsers(u) {
+        try {
+          localStorage.setItem("jfsi_bureau", JSON.stringify(u));
+        } catch (e) {}
+      }
+
+      function inscrire() {
+        const p = document.getElementById("i-prenom").value.trim();
+        const n = document.getElementById("i-nom").value.trim();
+        const e = document.getElementById("i-email").value.trim();
+        const t = document.getElementById("i-tel").value.trim();
+        const fa = document.getElementById("i-fonc-asso").value;
+        const fp = document.getElementById("i-fonc-pro").value.trim();
+        if (!p || !n || !e || !t || !fa || !fp) {
+          notif("⚠️ Veuillez remplir tous les champs", true);
+          return;
+        }
+        if (!e.includes("@")) {
+          notif("⚠️ Email invalide", true);
+          return;
+        }
+        const users = getUsers();
+        if (users.find((u) => u.email === e)) {
+          notif("⚠️ Ce compte existe déjà", true);
+          return;
+        }
+        users.push({
+          prenom: p,
+          nom: n,
+          email: e,
+          tel: t,
+          fonc_asso: fa,
+          fonc_pro: fp,
+          role,
+          ini: (p[0] + n[0]).toUpperCase(),
+          created: new Date().toISOString(),
+        });
+        saveUsers(users);
+        notif("✅ Compte créé ! Connectez-vous maintenant.");
+        setTimeout(() => ouvrirConnexion(role), 1500);
+      }
+
+      // ── OTP ──
+      function envoyerCode() {
+        const e = document.getElementById("l-email").value.trim();
+        if (!e || !e.includes("@")) {
+          notif("⚠️ Email invalide", true);
+          return;
+        }
+        const users = getUsers();
+        const user = users.find((u) => u.email === e);
+        moi = user || {
+          prenom: "Utilisateur",
+          nom: "Démo",
+          email: e,
+          role,
+          ini: "UD",
+          fonc_asso: role === "admin" ? "Administrateur" : "Membre du Bureau",
+        };
+        otpCode = "123456"; // Code de test pour développement
+        console.log(`🔐 CODE OTP (test) : ${otpCode}`);
+        document.getElementById("otp-email-label").textContent = e;
+        document.getElementById("step-email").classList.remove("active");
+        document.getElementById("step-otp").classList.add("active");
+        ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
+          (id) => (document.getElementById(id).value = ""),
+        );
+        document.getElementById("d1").focus();
+        lancerTimer(300);
+        notif(`📧 Code OTP envoyé à ${e} — voir console F12 pour tester`);
+      }
+
+      function lancerTimer(s) {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          const m = String(Math.floor(s / 60)).padStart(2, "0");
+          const sec = String(s % 60).padStart(2, "0");
+          document.getElementById("otp-timer").textContent = `0${m}:${sec}`;
+          if (--s < 0) {
+            clearInterval(timerInterval);
+            document.getElementById("otp-timer").textContent = "Expiré";
+          }
+        }, 1000);
+      }
+
+      function next(el, nid) {
+        if (el.value && nid) document.getElementById(nid).focus();
+      }
+      function prev(e, pid) {
+        if (e.key === "Backspace" && !e.target.value && pid)
+          document.getElementById(pid).focus();
+      }
+      function checkAuto() {
+        const c = getCode();
+        if (c.length === 6) setTimeout(validerOTP, 200);
+      }
+      function getCode() {
+        return ["d1", "d2", "d3", "d4", "d5", "d6"]
+          .map((id) => document.getElementById(id).value)
+          .join("");
+      }
+
+      function validerOTP() {
+        const c = getCode();
+        if (c.length < 6) {
+          notif("⚠️ Entrez les 6 chiffres", true);
+          return;
+        }
+        if (c === otpCode) {
+          clearInterval(timerInterval);
+          notif("✅ Accès validé ! Bienvenue dans la salle.");
+          setTimeout(entrerSalle, 700);
+        } else {
+          notif("❌ Code incorrect. Réessayez.", true);
+          ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
+            (id) => (document.getElementById(id).value = ""),
+          );
+          document.getElementById("d1").focus();
+        }
+      }
+
+      function retourEmail() {
+        clearInterval(timerInterval);
+        document.getElementById("step-email").classList.add("active");
+        document.getElementById("step-otp").classList.remove("active");
+      }
+
+      // ── SALLE ──
+      function entrerSalle() {
+        const r = moi ? moi.role : role;
+
+        // Rediriger admin vers tableau de bord
+        if (r === "admin") {
+          entrerTableauAdmin();
+          return;
+        }
+
+        aller("sc-salle");
+        const nom = moi ? `${moi.prenom} ${moi.nom}` : "Utilisateur";
+        const ini = moi ? moi.ini : "U";
+        const fonc = moi
+          ? moi.fonc_asso
+          : r === "admin"
+            ? "Administrateur"
+            : "Membre du Bureau";
+        const now = new Date();
+        document.getElementById("sh-date").textContent = now.toLocaleDateString(
+          "fr-FR",
+          { weekday: "long", year: "numeric", month: "long", day: "numeric" },
+        );
+        document.getElementById("hd-name").textContent = nom;
+        document.getElementById("hd-role").textContent = fonc;
+        document.getElementById("hd-role").className = "u-role " + r;
+        document.getElementById("hd-avatar").textContent = ini;
+        document.getElementById("hd-avatar").className = "u-avatar " + r;
+        if (r === "admin")
+          document.getElementById("admin-panel").style.display = "block";
+        renderMembres();
+        renderMsgs();
+      }
+
+      function renderMembres() {
+        const nb = MEMBRES.filter((m) => m.on).length;
+        document.getElementById("nb-online").textContent = nb;
+        document.getElementById("membres-list").innerHTML = MEMBRES.map(
+          (m) => `
+    <div class="membre-row">
+      <div class="m-avatar ${m.role}">${m.ini}<div class="dot ${m.on ? "on" : "off"}"></div></div>
+      <div><div class="m-name">${m.nom}</div><div class="m-role">${m.fonc}</div></div>
+      <span class="m-tag ${m.role}">${m.role === "admin" ? "Admin" : "Bureau"}</span>
+    </div>`,
+        ).join("");
+      }
+
+      function renderMsgs() {
+        const z = document.getElementById("chat-msgs");
+        z.innerHTML = "";
+        MSGS_DEMO.forEach((m) => {
+          if (m.sys) {
+            z.innerHTML += `<div class="msg sys"><div class="sys-bubble">🕌 ${m.txt}</div></div>`;
+            return;
+          }
+          const reac = (m.reac || [])
+            .map((r) => `<button class="r-btn">${r}</button>`)
+            .join("");
+          z.innerHTML += `<div class="msg"><div class="m-msg-avatar ${m.role}">${m.ini}</div><div class="msg-content"><div class="msg-meta"><span class="msg-from ${m.role}">${m.nom}</span><span class="msg-tag ${m.role}">${m.role === "admin" ? "Admin" : "Bureau"}</span><span class="msg-time">${m.time}</span></div><div class="bubble">${m.txt}</div><div class="reactions">${reac}</div></div></div>`;
+        });
+        if (moi) {
+          const t = now();
+          z.innerHTML += `<div class="msg sys"><div class="sys-bubble">👋 ${moi.prenom} ${moi.nom} vient de rejoindre la salle</div></div>`;
+        }
+        z.scrollTop = z.scrollHeight;
+      }
+
+      function envoyer() {
+        const inp = document.getElementById("msg-input");
+        const txt = inp.value.trim();
+        if (!txt) return;
+        const z = document.getElementById("chat-msgs");
+        const r = moi ? moi.role : role;
+        const ini = moi ? moi.ini : "U";
+        const nom = moi ? `${moi.prenom} ${moi.nom}` : "Utilisateur";
+        const t = now();
+        z.innerHTML += `<div class="msg own"><div class="m-msg-avatar ${r}">${ini}</div><div class="msg-content"><div class="msg-meta" style="flex-direction:row-reverse"><span class="msg-from ${r}">${nom}</span><span class="msg-tag ${r}">${r === "admin" ? "Admin" : "Bureau"}</span><span class="msg-time">${t}</span></div><div class="bubble">${txt}</div><div class="reactions"><button class="r-btn" onclick="this.classList.toggle('on')">👍</button><button class="r-btn" onclick="this.classList.toggle('on')">🤲</button></div></div></div>`;
+        inp.value = "";
+        z.scrollTop = z.scrollHeight;
+      }
+
+      function now() {
+        const d = new Date();
+        return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+      }
+
+      function switchTab(el, tab) {
+        document
+          .querySelectorAll(".ch-tab")
+          .forEach((t) => t.classList.remove("active"));
+        el.classList.add("active");
+        const z = document.getElementById("chat-msgs");
+        if (tab === "annonces") {
+          z.innerHTML = `<div class="msg sys"><div class="sys-bubble">📢 Canal Annonces — Seul l'administrateur peut publier</div></div>`;
+        } else if (tab === "decisions") {
+          z.innerHTML = `<div class="msg sys"><div class="sys-bubble">⚖️ Canal Décisions — Historique des décisions officielles</div></div>`;
+        } else renderMsgs();
+      }
+
+      function toggleEmoji() {
+        const p = document.getElementById("emoji-panel");
+        p.style.display = p.style.display === "none" ? "block" : "none";
+      }
+
+      function voter(pct) {
+        document.getElementById("vote-pct").textContent = pct + "%";
+        document.getElementById("vote-fill").style.width = pct + "%";
+        notif("🗳️ Vote enregistré !");
+      }
+
+      function quitter() {
+        moi = null;
+        otpCode = "";
+        clearInterval(timerInterval);
+        aller("sc-accueil");
+        notif("👋 Vous avez quitté la salle.");
+      }
+
+      // ── ADMIN DASHBOARD ──
+      let adminData = {
+        documents: [],
+        media: [],
+        membres: getUsers(),
+      };
+
+      function entrerTableauAdmin() {
+        aller("sc-admin-dashboard");
+        const now = new Date();
+        document.getElementById("admin-date").textContent =
+          now.toLocaleDateString("fr-FR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+        document.getElementById("admin-name").textContent = moi
+          ? `${moi.prenom} ${moi.nom}`
+          : "Administrateur";
+        document.getElementById("admin-avatar").textContent = moi
+          ? moi.ini
+          : "A";
+        updateAdminDashboard();
+        renderContentList();
+        renderMediaList();
+        renderMembersList();
+      }
+
+      function switchAdminPanel(panelId) {
+        document
+          .querySelectorAll(".admin-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("panel-" + panelId).classList.add("active");
+        document
+          .querySelectorAll(".admin-nav-item")
+          .forEach((i) => i.classList.remove("active"));
+        event.target.classList.add("active");
+      }
+
+      function updateAdminDashboard() {
+        document.getElementById("dash-members").textContent =
+          adminData.membres.length;
+        document.getElementById("dash-docs").textContent =
+          adminData.documents.length;
+        document.getElementById("dash-media").textContent =
+          adminData.media.length;
+        document.getElementById("dash-formations").textContent = Math.floor(
+          Math.random() * 8 + 2,
+        );
+      }
+
+      function ajouterDocument() {
+        const titre = document.getElementById("doc-title").value;
+        const categorie = document.getElementById("doc-category").value;
+        const auteur = document.getElementById("doc-author").value;
+        const type = document.getElementById("doc-type").value;
+        const desc = document.getElementById("doc-desc").value;
+
+        if (!titre || !auteur) {
+          notif("⚠️ Veuillez remplir tous les champs obligatoires", true);
+          return;
+        }
+
+        adminData.documents.push({
+          id: Date.now(),
+          titre,
+          categorie,
+          auteur,
+          type,
+          desc,
+          date: new Date().toLocaleDateString("fr-FR"),
+        });
+
+        notif("✅ Document ajouté avec succès !");
+        document.getElementById("doc-title").value = "";
+        document.getElementById("doc-author").value = "";
+        document.getElementById("doc-desc").value = "";
+        renderContentList();
+        updateAdminDashboard();
+      }
+
+      function ajouterMedia() {
+        const titre = document.getElementById("media-title").value;
+        const type = document.getElementById("media-type").value;
+        const cat = document.getElementById("media-cat").value;
+        const size = document.getElementById("media-size").value;
+        const desc = document.getElementById("media-desc").value;
+
+        if (!titre || !size) {
+          notif("⚠️ Veuillez remplir tous les champs obligatoires", true);
+          return;
+        }
+
+        adminData.media.push({
+          id: Date.now(),
+          titre,
+          type,
+          cat,
+          size,
+          desc,
+          date: new Date().toLocaleDateString("fr-FR"),
+        });
+
+        notif("✅ Média ajouté avec succès !");
+        document.getElementById("media-title").value = "";
+        document.getElementById("media-size").value = "";
+        document.getElementById("media-desc").value = "";
+        renderMediaList();
+        updateAdminDashboard();
+      }
+
+      function ajouterMembre() {
+        const prenom = document.getElementById("member-prenom").value;
+        const nom = document.getElementById("member-nom").value;
+        const email = document.getElementById("member-email").value;
+        const tel = document.getElementById("member-tel").value;
+        const role = document.getElementById("member-role").value;
+        const fonc = document.getElementById("member-fonc").value;
+
+        if (!prenom || !nom || !email || !tel || !fonc) {
+          notif("⚠️ Veuillez remplir tous les champs obligatoires", true);
+          return;
+        }
+
+        if (!email.includes("@")) {
+          notif("⚠️ Email invalide", true);
+          return;
+        }
+
+        const users = getUsers();
+        if (users.find((u) => u.email === email)) {
+          notif("⚠️ Cet email existe déjà", true);
+          return;
+        }
+
+        const newMember = {
+          prenom,
+          nom,
+          email,
+          tel,
+          fonc_asso: fonc,
+          role,
+          ini: (prenom[0] + nom[0]).toUpperCase(),
+          created: new Date().toISOString(),
+        };
+
+        users.push(newMember);
+        saveUsers(users);
+        adminData.membres = users;
+
+        notif("✅ Abonné ajouté avec succès !");
+        document.getElementById("member-prenom").value = "";
+        document.getElementById("member-nom").value = "";
+        document.getElementById("member-email").value = "";
+        document.getElementById("member-tel").value = "";
+        document.getElementById("member-fonc").value = "";
+        renderMembersList();
+        updateAdminDashboard();
+      }
+
+      function supprimerMembre(email) {
+        if (
+          !confirm(
+            "Êtes-vous sûr de vouloir supprimer cet abonné ? Cette action est irréversible.",
+          )
+        )
+          return;
+
+        let users = getUsers();
+        users = users.filter((u) => u.email !== email);
+        saveUsers(users);
+        adminData.membres = users;
+
+        notif("✅ Abonné supprimé avec succès !");
+        renderMembersList();
+        updateAdminDashboard();
+      }
+
+      function modifierMembre(email) {
+        const users = getUsers();
+        const member = users.find((u) => u.email === email);
+        if (!member) return;
+
+        const newFonc = prompt("Nouveau poste/fonction :", member.fonc_asso);
+        if (newFonc === null) return;
+
+        member.fonc_asso = newFonc;
+        saveUsers(users);
+        adminData.membres = users;
+
+        notif("✅ Abonné modifié avec succès !");
+        renderMembersList();
+      }
+
+      function supprimerDocument(id) {
+        if (!confirm("Supprimer ce document ?")) return;
+        adminData.documents = adminData.documents.filter((d) => d.id !== id);
+        notif("✅ Document supprimé !");
+        renderContentList();
+        updateAdminDashboard();
+      }
+
+      function supprimerMedia(id) {
+        if (!confirm("Supprimer ce média ?")) return;
+        adminData.media = adminData.media.filter((m) => m.id !== id);
+        notif("✅ Média supprimé !");
+        renderMediaList();
+        updateAdminDashboard();
+      }
+
+      function renderContentList() {
+        const list = document.getElementById("content-list");
+        if (adminData.documents.length === 0) {
+          list.innerHTML =
+            '<div style="text-align: center; padding: 40px; color: var(--gris);">Aucun document ajouté</div>';
+          return;
+        }
+
+        list.innerHTML = adminData.documents
+          .map(
+            (doc) => `
+          <div class="content-card">
+            <div class="content-card-icon">${doc.type === "pdf" ? "📄" : doc.type === "video" ? "🎬" : doc.type === "audio" ? "🎧" : "📝"}</div>
+            <div class="content-card-name">${doc.titre}</div>
+            <div class="content-card-info">${doc.auteur} • ${doc.date}</div>
+            <div class="content-card-info" style="font-size: 9px; color: var(--or);">${doc.categorie}</div>
+            <div class="content-card-actions">
+              <button class="card-action-btn" onclick="notif('👁️ Affichage...')">👁️</button>
+              <button class="card-action-btn delete" onclick="supprimerDocument(${doc.id})">🗑️</button>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function renderMediaList() {
+        const list = document.getElementById("media-list");
+        if (adminData.media.length === 0) {
+          list.innerHTML =
+            '<div style="text-align: center; padding: 40px; color: var(--gris);">Aucun média ajouté</div>';
+          return;
+        }
+
+        list.innerHTML = adminData.media
+          .map(
+            (media) => `
+          <div class="content-card">
+            <div class="content-card-icon">${media.type === "video" ? "🎬" : media.type === "audio" ? "🎧" : "🖼️"}</div>
+            <div class="content-card-name">${media.titre}</div>
+            <div class="content-card-info">${media.size} • ${media.date}</div>
+            <div class="content-card-info" style="font-size: 9px; color: var(--or);">${media.cat}</div>
+            <div class="content-card-actions">
+              <button class="card-action-btn" onclick="notif('▶️ Lecture...')">▶️</button>
+              <button class="card-action-btn delete" onclick="supprimerMedia(${media.id})">🗑️</button>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function renderMembersList() {
+        const tbody = document.getElementById("members-list");
+        if (adminData.membres.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--gris);">Aucun abonné</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = adminData.membres
+          .map(
+            (member) => `
+          <tr>
+            <td>${member.prenom} ${member.nom}</td>
+            <td>${member.email}</td>
+            <td><span style="background: ${member.role === "admin" ? "rgba(201, 168, 76, 0.15)" : "rgba(61, 122, 82, 0.15)"}; padding: 2px 8px; border-radius: 3px; color: ${member.role === "admin" ? "var(--or)" : "var(--vert-clair)"}; font-size: 10px;">${member.role === "admin" ? "👑 Admin" : "🤝 Bureau"}</span></td>
+            <td>${member.fonc_asso}</td>
+            <td>
+              <div class="member-actions">
+                <button class="member-action-btn" onclick="modifierMembre('${member.email}')">✏️ Modifier</button>
+                <button class="member-action-btn delete" onclick="supprimerMembre('${member.email}')">🗑️ Retirer</button>
+              </div>
+            </td>
+          </tr>
+        `,
+          )
+          .join("");
+      }
+
+      function quitterAdmin() {
+        moi = null;
+        aller("sc-accueil");
+        notif("👋 Vous avez quitté le tableau de bord.");
+      }
+
+      // ── MODALS AUTHENTIFICATION ──
+      function ouvrirModalConnexion(roleType) {
+        role = roleType;
+        const modal = document.getElementById("modal-login");
+        const roleBadge = document.getElementById("login-role-badge");
+        roleBadge.textContent =
+          roleType === "admin" ? "👑 Administrateur" : "🤝 Membre du Bureau";
+        modal.classList.add("active");
+        // Focus sur le premier champ
+        setTimeout(() => modal.querySelector("input").focus(), 100);
+      }
+
+      function ouvrirModalInscription(roleType) {
+        role = roleType;
+        const modal = document.getElementById("modal-register");
+        const roleBadge = document.getElementById("register-role-badge");
+        roleBadge.textContent =
+          roleType === "admin" ? "👑 Administrateur" : "🤝 Membre du Bureau";
+        modal.classList.add("active");
+        // Focus sur le premier champ
+        setTimeout(() => modal.querySelector("input").focus(), 100);
+      }
+
+      function fermerModal(modalId = null) {
+        if (modalId) {
+          // Fermeture spécifique d'une modal
+          const modal = document.getElementById(modalId);
+          if (modal) {
+            modal.classList.remove("active");
+          }
+        } else {
+          // Fermeture de toutes les modals
+          const modals = document.querySelectorAll(".modal-overlay");
+          modals.forEach((modal) => {
+            modal.classList.remove("active");
+          });
+        }
+        // Clear form fields
+        document.getElementById("login-email").value = "";
+        document.getElementById("login-password").value = "";
+        document.getElementById("register-fullname").value = "";
+        document.getElementById("register-email").value = "";
+        document.getElementById("register-password").value = "";
+        document.getElementById("register-confirm").value = "";
+      }
+
+      function soumettrConnexion(event) {
+        event.preventDefault();
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value.trim();
+
+        if (!email || !password) {
+          notif("⚠️ Veuillez remplir tous les champs", true);
+          return;
+        }
+
+        if (!email.includes("@")) {
+          notif("⚠️ Email invalide", true);
+          return;
+        }
+
+        // Pour la démo, accepter n'importe quel email/mot de passe
+        // En production, vérifier avec une API
+        const users = getUsers();
+        const user = users.find((u) => u.email === email && u.role === role);
+
+        if (user || (role === "admin" && email === "admin@jfsi.org")) {
+          // Simulation de connexion réussie
+          moi = user || {
+            prenom: "Admin",
+            nom: "JFSI",
+            email: email,
+            role: "admin",
+            ini: "AJ",
+            fonc_asso: "Administrateur",
+          };
+
+          notif("✅ Connexion réussie ! Redirection...");
+          fermerModal();
+
+          setTimeout(() => {
+            if (role === "admin") {
+              window.location.href = "./admin-dashboard.html";
+            } else {
+              entrerSalle();
+            }
+          }, 1000);
+        } else {
+          notif("❌ Email ou mot de passe incorrect", true);
+        }
+      }
+
+      function soumettrInscription(event) {
+        event.preventDefault();
+        const fullname = document
+          .getElementById("register-fullname")
+          .value.trim();
+        const email = document.getElementById("register-email").value.trim();
+        const password = document
+          .getElementById("register-password")
+          .value.trim();
+        const confirm = document
+          .getElementById("register-password-confirm")
+          .value.trim();
+
+        if (!fullname || !email || !password || !confirm) {
+          notif("⚠️ Veuillez remplir tous les champs", true);
+          return;
+        }
+
+        if (!email.includes("@")) {
+          notif("⚠️ Email invalide", true);
+          return;
+        }
+
+        if (password.length < 6) {
+          notif("⚠️ Le mot de passe doit contenir au moins 6 caractères", true);
+          return;
+        }
+
+        if (password !== confirm) {
+          notif("⚠️ Les mots de passe ne correspondent pas", true);
+          return;
+        }
+
+        const users = getUsers();
+        if (users.find((u) => u.email === email)) {
+          notif("⚠️ Cet email est déjà utilisé", true);
+          return;
+        }
+
+        // Créer le compte
+        const nameParts = fullname.split(" ");
+        const prenom = nameParts[0] || "";
+        const nom = nameParts.slice(1).join(" ") || "";
+
+        const newUser = {
+          prenom: prenom,
+          nom: nom,
+          email: email,
+          role: role,
+          ini: (prenom[0] + nom[0]).toUpperCase(),
+          fonc_asso: role === "admin" ? "Administrateur" : "Membre du Bureau",
+          created: new Date().toISOString(),
+        };
+
+        users.push(newUser);
+        saveUsers(users);
+
+        notif(
+          "✅ Compte créé avec succès ! Vous pouvez maintenant vous connecter.",
+        );
+        fermerModal();
+
+        // Ouvrir automatiquement la modal de connexion après 1.5s
+        setTimeout(() => ouvrirModalConnexion(role), 1500);
+      }
+
+      // Fermer modal en cliquant sur l'overlay
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".modal-overlay").forEach((modal) => {
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+              fermerModal();
+            }
+          });
+        });
+
+        // Fermer modal avec Échap
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            fermerModal();
+          }
+        });
+      });
+    </script>
+    <script src="../js/session.js"></script>
+  </body>
+</html>

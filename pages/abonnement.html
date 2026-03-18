@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Abonnements</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      .page-hero {
+        padding: 140px 60px 60px;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          rgba(26, 58, 42, 0.3),
+          var(--noir-doux)
+        );
+      }
+      .page-hero .hero-arabic {
+        font-family: "Amiri", serif;
+        font-size: clamp(20px, 3vw, 36px);
+        color: var(--or);
+        direction: rtl;
+        margin-bottom: 16px;
+      }
+
+      .abonnement-section {
+        padding: 40px 60px 100px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Plans */
+      .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        margin-bottom: 70px;
+      }
+      .plan-card {
+        padding: 50px 36px;
+        text-align: center;
+        border: 1px solid rgba(201, 168, 76, 0.18);
+        border-radius: 10px;
+        background: rgba(13, 31, 21, 0.8);
+        transition: all 0.4s;
+        position: relative;
+      }
+      .plan-card.featured {
+        border-color: var(--or);
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.4),
+          rgba(13, 31, 21, 0.95)
+        );
+        transform: scale(1.05);
+      }
+      .plan-card:hover {
+        border-color: rgba(201, 168, 76, 0.5);
+        transform: translateY(-6px);
+      }
+      .plan-card.featured:hover {
+        transform: scale(1.05) translateY(-6px);
+      }
+      .plan-badge-top {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+        padding: 6px 22px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        white-space: nowrap;
+      }
+      .plan-icon {
+        font-size: 46px;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .plan-name {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 16px;
+        color: var(--or);
+        margin-bottom: 6px;
+      }
+      .plan-period {
+        font-size: 11px;
+        color: var(--gris);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+      .plan-price-box {
+        margin-bottom: 28px;
+      }
+      .plan-price {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 52px;
+        color: var(--blanc);
+        line-height: 1;
+      }
+      .plan-fcfa {
+        font-size: 18px;
+        vertical-align: super;
+        color: var(--or);
+      }
+      .plan-unit {
+        font-size: 13px;
+        color: var(--gris);
+        display: block;
+        margin-top: 6px;
+      }
+      .plan-saving {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 3px 12px;
+        border-radius: 20px;
+        background: rgba(39, 174, 96, 0.15);
+        border: 1px solid rgba(39, 174, 96, 0.3);
+        color: #27ae60;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .plan-features {
+        list-style: none;
+        margin-bottom: 34px;
+        text-align: left;
+      }
+      .plan-features li {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.07);
+        font-size: 13px;
+        color: rgba(249, 245, 236, 0.8);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .plan-features li .check {
+        color: var(--or);
+        font-size: 12px;
+      }
+      .plan-features li .no {
+        color: rgba(249, 245, 236, 0.25);
+        font-size: 12px;
+      }
+      .btn-plan {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+      }
+      .btn-plan.or {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .btn-plan.outline {
+        background: transparent;
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        color: var(--or);
+      }
+      .btn-plan:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(201, 168, 76, 0.3);
+      }
+
+      /* Formulaire inscription */
+      .inscription-form {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 50px 44px;
+        background: rgba(13, 31, 21, 0.9);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        border-radius: 12px;
+        position: relative;
+      }
+      .inscription-form::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--or), transparent);
+      }
+      .form-arabic {
+        font-family: "Amiri", serif;
+        font-size: 20px;
+        color: var(--or);
+        text-align: center;
+        margin-bottom: 6px;
+        direction: rtl;
+      }
+      .form-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 18px;
+        color: var(--blanc);
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .form-subtitle {
+        font-size: 12px;
+        color: var(--gris);
+        text-align: center;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+      }
+      .form-plan-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+      .plan-selector-btn {
+        flex: 1;
+        padding: 12px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        background: transparent;
+        color: var(--gris);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: "Lato", sans-serif;
+        text-align: center;
+      }
+      .plan-selector-btn.active {
+        background: rgba(201, 168, 76, 0.12);
+        border-color: var(--or);
+        color: var(--or);
+      }
+      .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .form-grid-2 .full {
+        grid-column: 1/-1;
+      }
+      .paiement-methods {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .pay-method {
+        flex: 1;
+        min-width: 100px;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+      }
+      .pay-method.active {
+        border-color: var(--or);
+        background: rgba(201, 168, 76, 0.08);
+      }
+      .pay-icon {
+        font-size: 22px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .pay-name {
+        font-size: 11px;
+        color: var(--or-clair);
+      }
+      .btn-souscrire {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--noir-doux);
+        transition: all 0.3s;
+        margin-top: 10px;
+      }
+      .btn-souscrire:hover {
+        box-shadow: 0 8px 28px rgba(201, 168, 76, 0.4);
+        transform: translateY(-2px);
+      }
+      .secure-note {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 11px;
+        color: var(--gris);
+      }
+
+      /* Comparaison */
+      .compare-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 60px;
+      }
+      .compare-table th {
+        padding: 16px 20px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--or);
+        border-bottom: 2px solid rgba(201, 168, 76, 0.2);
+      }
+      .compare-table td {
+        padding: 14px 20px;
+        font-size: 13px;
+        color: rgba(249, 245, 236, 0.75);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.07);
+      }
+      .compare-table tr:hover td {
+        background: rgba(201, 168, 76, 0.03);
+      }
+      .yes {
+        color: #27ae60;
+        font-size: 16px;
+      }
+      .no {
+        color: rgba(249, 245, 236, 0.2);
+        font-size: 16px;
+      }
+      .partial {
+        color: var(--or);
+        font-size: 16px;
+      }
+
+      @media (max-width: 1024px) {
+        .plans-grid {
+          grid-template-columns: 1fr;
+        }
+        .plan-card.featured {
+          transform: scale(1);
+        }
+        .abonnement-section {
+          padding: 40px 30px 80px;
+        }
+      }
+      @media (max-width: 768px) {
+        .form-grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .form-grid-2 .full {
+          grid-column: 1;
+        }
+        .inscription-form {
+          padding: 36px 22px;
+        }
+        .page-hero {
+          padding: 120px 30px 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <nav>
+      <div class="nav-logo">
+        <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="bibliotheque.html">Bibliothèque</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="abonnement.html" class="active">Abonnements</a></li>
+        <li><a href="dictionnaire.html">Dictionnaire</a></li>
+        <li>
+          <a href="salle-reunion.html" class="nav-bureau">🤝 Espace Bureau</a>
+        </li>
+      </ul>
+      <div class="nav-right">
+        <button onclick="sessionManager.openLoginModal()" class="nav-cta">
+          Connexion
+        </button>
+      </div>
+      <div class="nav-burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+
+    <div class="page-hero">
+      <div class="hero-arabic">اشْتِرَاكُ الْعُضْوِيَّة</div>
+      <span class="section-tag">Accès Complet à la Bibliothèque</span>
+      <h1
+        class="section-title"
+        style="font-family: &quot;Cinzel Decorative&quot;, serif"
+      >
+        Nos <span>Abonnements</span>
+      </h1>
+      <p
+        style="
+          color: var(--gris);
+          font-size: 15px;
+          max-width: 500px;
+          margin: 14px auto;
+          line-height: 1.8;
+        "
+      >
+        Choisissez la formule adaptée à vos besoins et accédez immédiatement à
+        toutes les ressources JFSI.
+      </p>
+    </div>
+
+    <div class="abonnement-section">
+      <!-- PLANS -->
+      <div class="section-header reveal">
+        <span class="section-tag">Tarifs transparents</span>
+        <h2 class="section-title">Choisissez votre <span>Formule</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="plans-grid">
+        <div class="plan-card reveal">
+          <span class="plan-icon">🌿</span>
+          <div class="plan-name">Hebdomadaire</div>
+          <div class="plan-period">Accès 7 jours</div>
+          <div class="plan-price-box">
+            <div class="plan-price"><span class="plan-fcfa">F</span>500</div>
+            <span class="plan-unit">par semaine</span>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <span class="check">✦</span> Accès complet à la bibliothèque
+            </li>
+            <li><span class="check">✦</span> Lecture en ligne illimitée</li>
+            <li><span class="check">✦</span> Conférences audio</li>
+            <li><span class="check">✦</span> Connexion OTP sécurisée</li>
+            <li><span class="no">–</span> Téléchargement PDF</li>
+            <li><span class="no">–</span> Formations certifiantes</li>
+            <li><span class="no">–</span> Attestations</li>
+          </ul>
+          <button class="btn-plan outline" onclick="selectionnerPlan('hebdo')">
+            Choisir cette formule
+          </button>
+        </div>
+
+        <div class="plan-card featured reveal">
+          <span class="plan-badge-top">✦ Recommandé</span>
+          <span class="plan-icon">⭐</span>
+          <div class="plan-name">Mensuel</div>
+          <div class="plan-period">Accès 30 jours</div>
+          <div class="plan-price-box">
+            <div class="plan-price"><span class="plan-fcfa">F</span>1000</div>
+            <span class="plan-unit">par mois</span>
+            <span class="plan-saving">Économisez 1 000 F vs hebdo</span>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <span class="check">✦</span> Accès complet à la bibliothèque
+            </li>
+            <li><span class="check">✦</span> Lecture en ligne illimitée</li>
+            <li><span class="check">✦</span> Conférences audio</li>
+            <li><span class="check">✦</span> Connexion OTP sécurisée</li>
+            <li><span class="check">✦</span> Téléchargement PDF (10/mois)</li>
+            <li><span class="check">✦</span> Formations de base</li>
+            <li><span class="no">–</span> Attestations et diplômes</li>
+          </ul>
+          <button class="btn-plan or" onclick="selectionnerPlan('mensuel')">
+            Choisir cette formule
+          </button>
+        </div>
+
+        <div class="plan-card reveal">
+          <span class="plan-icon">💎</span>
+          <div class="plan-name">Annuel</div>
+          <div class="plan-period">Accès 12 mois</div>
+          <div class="plan-price-box">
+            <div class="plan-price"><span class="plan-fcfa">F</span>5000</div>
+            <span class="plan-unit">par an</span>
+            <span class="plan-saving"
+              >Meilleure valeur — 7 000 F économisés</span
+            >
+          </div>
+          <ul class="plan-features">
+            <li>
+              <span class="check">✦</span> Accès complet à la bibliothèque
+            </li>
+            <li><span class="check">✦</span> Toutes les formations incluses</li>
+            <li><span class="check">✦</span> Téléchargement illimité</li>
+            <li><span class="check">✦</span> Attestations & Certificats</li>
+            <li>
+              <span class="check">✦</span> Nouvelles parutions en avant-première
+            </li>
+            <li><span class="check">✦</span> Support VIP prioritaire</li>
+            <li><span class="check">✦</span> Badge Membre Premium</li>
+          </ul>
+          <button class="btn-plan outline" onclick="selectionnerPlan('annuel')">
+            Choisir cette formule
+          </button>
+        </div>
+      </div>
+
+      <!-- FORMULAIRE INSCRIPTION -->
+      <div class="section-header reveal">
+        <span class="section-tag">Rejoignez-nous</span>
+        <h2 class="section-title">Formulaire <span>d'Inscription</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="inscription-form reveal">
+        <div class="form-arabic">تَسْجِيل الاشْتِرَاك</div>
+        <h3 class="form-title">Inscription Abonné JFSI</h3>
+        <p class="form-subtitle">
+          Renseignez vos informations pour créer votre compte
+        </p>
+
+        <div class="form-plan-selector">
+          <button
+            class="plan-selector-btn"
+            id="btn-hebdo"
+            onclick="choisirFormule('hebdo')"
+          >
+            🌿 Hebdo — 500F
+          </button>
+          <button
+            class="plan-selector-btn active"
+            id="btn-mensuel"
+            onclick="choisirFormule('mensuel')"
+          >
+            ⭐ Mensuel — 1 000F
+          </button>
+          <button
+            class="plan-selector-btn"
+            id="btn-annuel"
+            onclick="choisirFormule('annuel')"
+          >
+            💎 Annuel — 5 000F
+          </button>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field">
+            <label for="ab-prenom">Prénom *</label
+            ><input
+              type="text"
+              id="ab-prenom"
+              name="prenom"
+              placeholder="Votre prénom"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="ab-nom">Nom *</label
+            ><input
+              type="text"
+              id="ab-nom"
+              name="nom"
+              placeholder="Votre nom"
+              required
+            />
+          </div>
+          <div class="field full">
+            <label for="ab-email">Adresse E-mail *</label
+            ><input
+              type="email"
+              id="ab-email"
+              name="email"
+              placeholder="email@exemple.com"
+              required
+            />
+          </div>
+          <div class="field full">
+            <label for="ab-tel">Numéro de Téléphone *</label
+            ><input
+              type="tel"
+              id="ab-tel"
+              name="tel"
+              placeholder="+225 00 00 00 00"
+              pattern="\+?[0-9\s\-\(\)]+"
+              required
+            />
+          </div>
+          <div class="field full">
+            <label for="ab-username">Nom d'utilisateur souhaité *</label
+            ><input
+              type="text"
+              id="ab-username"
+              name="username"
+              placeholder="Ex: ibrahimjfsi"
+              pattern="[a-zA-Z0-9_]{3,20}"
+              required
+            />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 18px">
+          <label
+            style="
+              font-size: 11px;
+              letter-spacing: 2px;
+              text-transform: uppercase;
+              color: var(--or-clair);
+              display: block;
+              margin-bottom: 12px;
+            "
+            >Mode de Paiement *</label
+          >
+          <div class="paiement-methods">
+            <div
+              class="pay-method active"
+              data-method="wave"
+              onclick="selectPay(this)"
+            >
+              <span class="pay-icon">🌊</span><span class="pay-name">Wave</span>
+            </div>
+            <div
+              class="pay-method"
+              data-method="orange"
+              onclick="selectPay(this)"
+            >
+              <span
+                class="pay-icon"
+                style="
+                  background: #ff6600;
+                  border-radius: 50%;
+                  width: 24px;
+                  height: 24px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 14px;
+                "
+                >🟠</span
+              ><span class="pay-name">Orange Money</span>
+            </div>
+            <div class="pay-method" data-method="mtn" onclick="selectPay(this)">
+              <span
+                class="pay-icon"
+                style="
+                  background: #ffcc00;
+                  border-radius: 50%;
+                  width: 24px;
+                  height: 24px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 14px;
+                "
+                >💛</span
+              ><span class="pay-name">MTN Money</span>
+            </div>
+            <div
+              class="pay-method"
+              data-method="moov"
+              onclick="selectPay(this)"
+            >
+              <span class="pay-icon">🔵</span
+              ><span class="pay-name">Moov Money</span>
+            </div>
+          </div>
+          <div class="field" id="pay-phone-field" style="display: none">
+            <label id="pay-phone-label">Numéro Wave</label>
+            <input
+              type="tel"
+              id="pay-phone-input"
+              name="pay-phone"
+              placeholder="07 00 00 00 00"
+              pattern="[0-9\s]{8,15}"
+              required
+            />
+          </div>
+          <div
+            id="pay-method-info"
+            style="
+              font-size: 12px;
+              color: var(--or-clair);
+              text-align: center;
+              padding: 8px;
+              min-height: 20px;
+              margin-bottom: 4px;
+            "
+          ></div>
+        </div>
+
+        <button class="btn-souscrire" onclick="souscrire()">
+          Valider mon abonnement →
+        </button>
+        <p class="secure-note">
+          🔐 Vos données sont protégées — Code OTP envoyé après validation
+        </p>
+      </div>
+
+      <!-- TABLEAU COMPARATIF -->
+      <div class="section-header reveal" style="margin-top: 80px">
+        <span class="section-tag">Aide au choix</span>
+        <h2 class="section-title">Tableau <span>Comparatif</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div style="overflow-x: auto" class="reveal">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Fonctionnalité</th>
+              <th>Hebdomadaire</th>
+              <th>Mensuel</th>
+              <th>Annuel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Accès à la bibliothèque</td>
+              <td class="yes">✔</td>
+              <td class="yes">✔</td>
+              <td class="yes">✔</td>
+            </tr>
+            <tr>
+              <td>Lecture en ligne illimitée</td>
+              <td class="yes">✔</td>
+              <td class="yes">✔</td>
+              <td class="yes">✔</td>
+            </tr>
+            <tr>
+              <td>Conférences audio</td>
+              <td class="yes">✔</td>
+              <td class="yes">✔</td>
+              <td class="yes">✔</td>
+            </tr>
+            <tr>
+              <td>Téléchargement PDF</td>
+              <td class="no">✘</td>
+              <td class="partial">10/mois</td>
+              <td class="yes">Illimité</td>
+            </tr>
+            <tr>
+              <td>Formations certifiantes</td>
+              <td class="no">✘</td>
+              <td class="partial">Bases</td>
+              <td class="yes">Toutes</td>
+            </tr>
+            <tr>
+              <td>Attestations & Certificats</td>
+              <td class="no">✘</td>
+              <td class="no">✘</td>
+              <td class="yes">✔</td>
+            </tr>
+            <tr>
+              <td>Nouvelles parutions</td>
+              <td class="no">✘</td>
+              <td class="partial">Standard</td>
+              <td class="yes">Avant-première</td>
+            </tr>
+            <tr>
+              <td>Support</td>
+              <td>Email</td>
+              <td>Prioritaire</td>
+              <td>VIP 24h/24</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+          <p>
+            Abonnements flexibles pour accéder à tout le contenu islamique JFSI.
+          </p>
+          <div class="footer-arabic">بِسْمِ اللَّهِ</div>
+        </div>
+        <div class="footer-col">
+          <h4>Formules</h4>
+          <ul>
+            <li><a href="#">Hebdomadaire — 500F</a></li>
+            <li><a href="#">Mensuel — 1 000F</a></li>
+            <li><a href="#">Annuel — 5 000F</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Accueil</a></li>
+            <li><a href="bibliotheque.html">Bibliothèque</a></li>
+            <li><a href="formations.html">Formations</a></li>
+            <li><a href="salle-reunion.html">Espace Bureau</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="#">contact@jfsi-asso.org</a></li>
+            <li><a href="#">+225 00 00 00 00</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 JFSI — Abonnements</p>
+        <p class="arabic-footer">بِسْمِ اللَّهِ</p>
+      </div>
+    </footer>
+
+    <script src="../js/global.js"></script>
+    <script>
+      let planChoisi = "mensuel";
+      let methodePaiement = "wave";
+
+      const PLANS = {
+        hebdo: { label: "Hebdomadaire", prix: 500, periode: "semaine" },
+        mensuel: { label: "Mensuel", prix: 1000, periode: "mois" },
+        annuel: { label: "Annuel", prix: 5000, periode: "an" },
+      };
+
+      const METHODS = {
+        wave: {
+          nom: "Wave",
+          icon: "🌊",
+          couleur: "#1BA8F1",
+          tel: "Numéro Wave",
+        },
+        orange: {
+          nom: "Orange Money",
+          icon: "🟠",
+          couleur: "#FF6600",
+          tel: "Numéro Orange Money",
+        },
+        mtn: {
+          nom: "MTN Money",
+          icon: "💛",
+          couleur: "#FFCC00",
+          tel: "Numéro MTN Money",
+        },
+        moov: {
+          nom: "Moov Money",
+          icon: "🔵",
+          couleur: "#0057A8",
+          tel: "Numéro Moov Money",
+        },
+      };
+
+      // Vérifier les paramètres URL (succès/échec Stripe)
+      function checkStripeResult() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("success") === "true") {
+          notif(
+            "🎉 Paiement réussi ! Votre abonnement premium est maintenant actif.",
+          );
+          setTimeout(() => {
+            window.location.href = "bibliotheque.html";
+          }, 2000);
+        } else if (urlParams.get("canceled") === "true") {
+          notif(
+            "❌ Paiement annulé. Vous pouvez réessayer quand vous voulez.",
+            true,
+          );
+        }
+      }
+
+      function choisirFormule(plan) {
+        planChoisi = plan;
+        document
+          .querySelectorAll(".plan-selector-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("btn-" + plan).classList.add("active");
+        notif("✦ Formule " + PLANS[plan].label + " sélectionnée");
+      }
+
+      function selectionnerPlan(plan) {
+        planChoisi = plan;
+        document
+          .querySelectorAll(".plan-selector-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("btn-" + plan).classList.add("active");
+        document
+          .querySelector(".inscription-form")
+          .scrollIntoView({ behavior: "smooth" });
+        notif("✦ Formule " + PLANS[plan].label + " sélectionnée");
+      }
+
+      function selectPay(el) {
+        document
+          .querySelectorAll(".pay-method")
+          .forEach((p) => p.classList.remove("active"));
+        el.classList.add("active");
+        methodePaiement = el.dataset.method;
+        const m = METHODS[methodePaiement];
+        // Afficher le champ numéro
+        const phoneField = document.getElementById("pay-phone-field");
+        const phoneLabel = document.getElementById("pay-phone-label");
+        const infoEl = document.getElementById("pay-method-info");
+        if (phoneField) {
+          phoneField.style.display = "flex";
+          phoneLabel.textContent = m.tel;
+          document.getElementById("pay-phone-input").placeholder =
+            "07 00 00 00 00";
+        }
+        if (infoEl) infoEl.textContent = m.icon + " " + m.nom + " sélectionné";
+      }
+
+      async function souscrire() {
+        // Vérifier que l'utilisateur est connecté
+        if (!sessionManager.isAuthenticated()) {
+          notif("🔐 Veuillez vous connecter d'abord", true);
+          sessionManager.openLoginModal();
+          return;
+        }
+
+        const form = document.querySelector(".inscription-form");
+        if (!form.checkValidity()) {
+          notif("⚠️ Veuillez corriger les champs invalides", true);
+          return;
+        }
+
+        const btn = document.querySelector(".btn-souscrire");
+        if (btn) {
+          btn.textContent = "⏳ Création de la session de paiement...";
+          btn.disabled = true;
+        }
+
+        try {
+          const response = await fetch("/api/subscription/create-session", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          });
+
+          const data = await response.json();
+
+          if (data.url) {
+            // Rediriger vers Stripe Checkout
+            window.location.href = data.url;
+          } else {
+            notif(
+              "❌ Erreur lors de la création de la session de paiement",
+              true,
+            );
+            if (btn) {
+              btn.textContent = "Valider mon abonnement →";
+              btn.disabled = false;
+            }
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          notif("❌ Erreur de connexion au serveur", true);
+          if (btn) {
+            btn.textContent = "Valider mon abonnement →";
+            btn.disabled = false;
+          }
+        }
+      }
+
+      // Initialize
+      checkStripeResult();
+    </script>
+    <script src="../js/session.js"></script>
+  </body>
+</html>

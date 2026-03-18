@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mes Abonnements — JFSI</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      body {
+        min-height: 100vh;
+        background: var(--noir-doux);
+        color: var(--blanc);
+      }
+      .page-container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 180px 20px 80px;
+      }
+      .page-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: clamp(28px, 4vw, 44px);
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .page-subtitle {
+        text-align: center;
+        color: var(--gris);
+        margin-bottom: 40px;
+      }
+      .card {
+        background: rgba(24, 50, 34, 0.75);
+        border: 1px solid rgba(201, 168, 76, 0.18);
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 24px;
+      }
+      .card h3 {
+        margin-top: 0;
+        color: var(--or);
+      }
+      .card p {
+        margin: 10px 0;
+        color: rgba(249, 245, 236, 0.8);
+      }
+      .card .badge {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(201, 168, 76, 0.15);
+        color: var(--or);
+        font-weight: 700;
+      }
+      .actions {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 14px 18px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: all 0.2s ease;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--blanc);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+      }
+      .btn-danger {
+        background: rgba(231, 76, 60, 0.9);
+        color: white;
+      }
+      .info {
+        background: rgba(201, 168, 76, 0.12);
+        padding: 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        margin-bottom: 20px;
+        color: rgba(249, 245, 236, 0.9);
+      }
+      @media (max-width: 768px) {
+        .page-container {
+          padding: 140px 16px 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-logo">
+        <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="bibliotheque.html">Bibliothèque</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="abonnement.html">Abonnements</a></li>
+        <li><a href="dictionnaire.html">Dictionnaire</a></li>
+        <li><a href="salle-reunion.html">Espace Bureau</a></li>
+      </ul>
+      <div class="nav-right"></div>
+      <div class="nav-burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+
+    <div class="page-container">
+      <h1 class="page-title">Mes abonnements</h1>
+      <p class="page-subtitle">
+        Suivez votre abonnement, renouvelez ou annulez en un clic.
+      </p>
+
+      <div id="status"></div>
+
+      <div class="card" id="subscription-card" style="display: none">
+        <h3>Statut de l'abonnement</h3>
+        <div class="info" id="subscription-info"></div>
+        <div class="actions">
+          <button class="btn btn-primary" id="renew-btn">
+            Renouveler l'abonnement
+          </button>
+          <button class="btn btn-secondary" id="cancel-btn">
+            Annuler à la fin de la période
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="no-subscription" style="display: none">
+        <h3>Aucun abonnement actif</h3>
+        <p>
+          Vous n'avez pas d'abonnement premium actif. Passez à l'abonnement pour
+          accéder à tout le contenu.
+        </p>
+        <div class="actions">
+          <a href="abonnement.html" class="btn btn-primary"
+            >Voir les formules</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/global.js"></script>
+    <script src="../js/session.js"></script>
+    <script>
+      async function fetchSubscription() {
+        const statusEl = document.getElementById("status");
+        const card = document.getElementById("subscription-card");
+        const none = document.getElementById("no-subscription");
+        const info = document.getElementById("subscription-info");
+        const renew = document.getElementById("renew-btn");
+        const cancel = document.getElementById("cancel-btn");
+
+        statusEl.textContent = "Chargement des informations...";
+
+        try {
+          const res = await fetch("/api/subscription/status", {
+            credentials: "include",
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Erreur");
+          }
+
+          if (!data.subscription) {
+            statusEl.textContent = "";
+            card.style.display = "none";
+            none.style.display = "block";
+            return;
+          }
+
+          statusEl.textContent = "";
+          none.style.display = "none";
+          card.style.display = "block";
+
+          const sub = data.subscription;
+          const status = sub.status || "inconnu";
+          const periodEnd = sub.current_period_end
+            ? new Date(sub.current_period_end).toLocaleString("fr-FR")
+            : "—";
+
+          info.innerHTML = `
+            <p><strong>Statut :</strong> ${status}</p>
+            <p><strong>Début période :</strong> ${sub.current_period_start ? new Date(sub.current_period_start).toLocaleString("fr-FR") : "—"}</p>
+            <p><strong>Fin période :</strong> ${periodEnd}</p>
+          `;
+
+          renew.onclick = () => {
+            window.location.href = "/api/subscription/create-session";
+          };
+
+          cancel.onclick = async () => {
+            const ok = confirm(
+              "Souhaitez-vous annuler votre abonnement à la fin de la période en cours ?",
+            );
+            if (!ok) return;
+
+            const res = await fetch("/api/subscription/cancel", {
+              method: "POST",
+              credentials: "include",
+            });
+            const data = await res.json();
+            if (res.ok) {
+              notif("✅ Abonnement annulé à la fin de la période.");
+              fetchSubscription();
+            } else {
+              notif(data.error || "Erreur lors de l'annulation", true);
+            }
+          };
+        } catch (err) {
+          statusEl.textContent = "";
+          none.style.display = "block";
+          console.error(err);
+          notif("Impossible de récupérer les informations d'abonnement", true);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!sessionManager.isAuthenticated()) {
+          notif("🔐 Connectez-vous pour voir votre abonnement", true);
+          sessionManager.openLoginModal();
+          return;
+        }
+        fetchSubscription();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Formations Islamiques</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      .page-hero {
+        padding: 140px 60px 60px;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          rgba(26, 58, 42, 0.3),
+          var(--noir-doux)
+        );
+      }
+      .page-hero .hero-arabic {
+        font-family: "Amiri", serif;
+        font-size: clamp(20px, 3vw, 36px);
+        color: var(--or);
+        direction: rtl;
+        margin-bottom: 16px;
+      }
+
+      .formations-section {
+        padding: 40px 60px 100px;
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+
+      /* Cards formations */
+      .formations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 28px;
+        margin-bottom: 70px;
+      }
+      .formation-card {
+        background: rgba(13, 31, 21, 0.8);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.4s;
+      }
+      .formation-card:hover {
+        transform: translateY(-7px);
+        border-color: rgba(201, 168, 76, 0.4);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      }
+      .formation-banner {
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 58px;
+        position: relative;
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.5),
+          rgba(13, 31, 21, 0.9)
+        );
+      }
+      .formation-level {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .level-debutant {
+        background: rgba(39, 174, 96, 0.2);
+        border: 1px solid rgba(39, 174, 96, 0.4);
+        color: #27ae60;
+      }
+      .level-intermediaire {
+        background: rgba(201, 168, 76, 0.2);
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        color: var(--or);
+      }
+      .level-avance {
+        background: rgba(231, 76, 60, 0.15);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+        color: #e74c3c;
+      }
+      .formation-body {
+        padding: 24px;
+      }
+      .formation-categorie {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--or);
+        margin-bottom: 8px;
+      }
+      .formation-titre {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 15px;
+        color: var(--blanc);
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+      .formation-desc {
+        font-size: 13px;
+        color: rgba(249, 245, 236, 0.6);
+        line-height: 1.8;
+        margin-bottom: 18px;
+      }
+      .formation-meta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .meta-item {
+        font-size: 11px;
+        color: var(--gris);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .meta-item span {
+        color: var(--or-clair);
+      }
+      .formation-prof {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: rgba(201, 168, 76, 0.05);
+        border: 1px solid rgba(201, 168, 76, 0.1);
+        border-radius: 6px;
+        margin-bottom: 18px;
+      }
+      .prof-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--vert-moyen), var(--vert));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: var(--or);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        font-weight: 700;
+      }
+      .prof-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--blanc);
+      }
+      .prof-titre {
+        font-size: 11px;
+        color: var(--gris);
+      }
+      .formation-footer {
+        display: flex;
+        gap: 10px;
+      }
+      .btn-formation {
+        flex: 1;
+        padding: 11px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: "Lato", sans-serif;
+        transition: all 0.3s;
+        text-align: center;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-formation.details {
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        color: var(--or);
+      }
+      .btn-formation.inscrire {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .btn-formation:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Parcours certifiant */
+      .parcours-section {
+        margin-bottom: 70px;
+      }
+      .parcours-card {
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.25),
+          rgba(13, 31, 21, 0.9)
+        );
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        border-radius: 10px;
+        padding: 40px;
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+      }
+      .parcours-card:hover {
+        border-color: rgba(201, 168, 76, 0.5);
+      }
+      .parcours-icon {
+        font-size: 60px;
+        flex-shrink: 0;
+      }
+      .parcours-info h3 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 18px;
+        color: var(--or);
+        margin-bottom: 10px;
+      }
+      .parcours-info p {
+        font-size: 14px;
+        color: rgba(249, 245, 236, 0.65);
+        line-height: 1.8;
+        margin-bottom: 16px;
+      }
+      .parcours-steps {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .step-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        color: var(--or-clair);
+      }
+      .step-badge.completed {
+        background: rgba(39, 174, 96, 0.15);
+        border-color: rgba(39, 174, 96, 0.3);
+        color: #27ae60;
+      }
+
+      /* FAQ -->*/
+      .faq-item {
+        border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+        padding: 20px 0;
+      }
+      .faq-q {
+        font-size: 15px;
+        color: var(--blanc);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: color 0.3s;
+      }
+      .faq-q:hover {
+        color: var(--or);
+      }
+      .faq-a {
+        font-size: 13px;
+        color: var(--gris);
+        line-height: 1.9;
+        margin-top: 14px;
+        display: none;
+        padding-left: 14px;
+        border-left: 2px solid var(--or);
+      }
+      .faq-a.open {
+        display: block;
+      }
+
+      @media (max-width: 1024px) {
+        .formations-section {
+          padding: 40px 30px 80px;
+        }
+      }
+      @media (max-width: 768px) {
+        .formations-grid {
+          grid-template-columns: 1fr;
+        }
+        .parcours-card {
+          flex-direction: column;
+          gap: 20px;
+        }
+        .page-hero {
+          padding: 120px 30px 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <nav>
+      <div class="nav-logo">
+        <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="bibliotheque.html">Bibliothèque</a></li>
+        <li><a href="formations.html" class="active">Formations</a></li>
+        <li><a href="abonnement.html">Abonnements</a></li>
+        <li><a href="dictionnaire.html">Dictionnaire</a></li>
+        <li>
+          <a href="salle-reunion.html" class="nav-bureau">🤝 Espace Bureau</a>
+        </li>
+      </ul>
+      <div class="nav-right">
+        <button onclick="sessionManager.openLoginModal()" class="nav-cta">
+          Connexion
+        </button>
+      </div>
+      <div class="nav-burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+
+    <div class="page-hero">
+      <div class="hero-arabic">طَلَبُ الْعِلْمِ فَرِيضَةٌ</div>
+      <span class="section-tag">Apprendre & Progresser</span>
+      <h1
+        class="section-title"
+        style="font-family: &quot;Cinzel Decorative&quot;, serif"
+      >
+        Nos <span>Formations</span>
+      </h1>
+      <p
+        style="
+          color: var(--gris);
+          font-size: 15px;
+          max-width: 550px;
+          margin: 14px auto;
+          line-height: 1.8;
+        "
+      >
+        Des programmes structurés et certifiants animés par des enseignants
+        qualifiés, accessibles à tous les niveaux.
+      </p>
+    </div>
+
+    <div class="formations-section">
+      <div class="section-header reveal">
+        <span class="section-tag">Tous niveaux</span>
+        <h2 class="section-title">Catalogue des <span>Formations</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="formations-grid">
+        <div class="formation-card reveal">
+          <div class="formation-banner">
+            📖<span class="formation-level level-debutant">Débutant</span>
+          </div>
+          <div class="formation-body">
+            <div class="formation-categorie">Coran</div>
+            <div class="formation-titre">Initiation à la Lecture Coranique</div>
+            <div class="formation-desc">
+              Apprenez à lire le Coran avec les règles de tajwîd de base.
+              Programme sur 8 semaines.
+            </div>
+            <div class="formation-meta">
+              <div class="meta-item">🕐 <span>8 semaines</span></div>
+              <div class="meta-item">📅 <span>2 séances/sem</span></div>
+              <div class="meta-item">🏅 <span>Attestation</span></div>
+            </div>
+            <div class="formation-prof">
+              <div class="prof-avatar">SA</div>
+              <div>
+                <div class="prof-name">Ustâdh Sâlih Ahmad</div>
+                <div class="prof-titre">Hafidh du Coran — Diplômé Al-Azhar</div>
+              </div>
+            </div>
+            <div class="formation-footer">
+              <button
+                class="btn-formation details"
+                onclick="
+                  notif('📋 Détails de la formation en cours de chargement...')
+                "
+              >
+                Détails
+              </button>
+              <button
+                class="btn-formation inscrire"
+                onclick="
+                  notif('✅ Inscription enregistrée ! Vous serez contacté.')
+                "
+              >
+                S\'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="formation-card reveal">
+          <div class="formation-banner">
+            📜<span class="formation-level level-intermediaire"
+              >Intermédiaire</span
+            >
+          </div>
+          <div class="formation-body">
+            <div class="formation-categorie">Aqîda</div>
+            <div class="formation-titre">
+              Fondements de la Croyance Islamique
+            </div>
+            <div class="formation-desc">
+              Étude approfondie des piliers de l'Aqîda Ahlus-Sunna wal-Jamâ'a
+              selon les grands savants.
+            </div>
+            <div class="formation-meta">
+              <div class="meta-item">🕐 <span>12 semaines</span></div>
+              <div class="meta-item">📅 <span>3 séances/sem</span></div>
+              <div class="meta-item">🏅 <span>Certificat</span></div>
+            </div>
+            <div class="formation-prof">
+              <div class="prof-avatar">IK</div>
+              <div>
+                <div class="prof-name">Dr. Ibrahim Koné</div>
+                <div class="prof-titre">Docteur en Sciences Islamiques</div>
+              </div>
+            </div>
+            <div class="formation-footer">
+              <button
+                class="btn-formation details"
+                onclick="notif('📋 Détails disponibles pour les abonnés.')"
+              >
+                Détails
+              </button>
+              <button
+                class="btn-formation inscrire"
+                onclick="notif('✅ Inscription enregistrée !')"
+              >
+                S\'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="formation-card reveal">
+          <div class="formation-banner">
+            🔤<span class="formation-level level-debutant">Débutant</span>
+          </div>
+          <div class="formation-body">
+            <div class="formation-categorie">Langue Arabe</div>
+            <div class="formation-titre">Arabe Débutant — Méthode Madinah</div>
+            <div class="formation-desc">
+              Apprenez les bases de la langue arabe coranique avec la méthode
+              éprouvée de Madinah.
+            </div>
+            <div class="formation-meta">
+              <div class="meta-item">🕐 <span>16 semaines</span></div>
+              <div class="meta-item">📅 <span>4 séances/sem</span></div>
+              <div class="meta-item">🏅 <span>Diplôme JFSI</span></div>
+            </div>
+            <div class="formation-prof">
+              <div class="prof-avatar">FD</div>
+              <div>
+                <div class="prof-name">Ustâdha Fatima Diallo</div>
+                <div class="prof-titre">Professeure de langue arabe</div>
+              </div>
+            </div>
+            <div class="formation-footer">
+              <button
+                class="btn-formation details"
+                onclick="notif('📋 Détails en cours...')"
+              >
+                Détails
+              </button>
+              <button
+                class="btn-formation inscrire"
+                onclick="notif('✅ Inscription enregistrée !')"
+              >
+                S\'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="formation-card reveal">
+          <div class="formation-banner">
+            ⚖️<span class="formation-level level-intermediaire"
+              >Intermédiaire</span
+            >
+          </div>
+          <div class="formation-body">
+            <div class="formation-categorie">Fiqh</div>
+            <div class="formation-titre">
+              Fiqh Malékite — Les Actes d'Adoration
+            </div>
+            <div class="formation-desc">
+              Maîtrisez les règles de la purification, la prière, le jeûne et le
+              pèlerinage selon le madhhab malékite.
+            </div>
+            <div class="formation-meta">
+              <div class="meta-item">🕐 <span>10 semaines</span></div>
+              <div class="meta-item">📅 <span>2 séances/sem</span></div>
+              <div class="meta-item">🏅 <span>Attestation</span></div>
+            </div>
+            <div class="formation-prof">
+              <div class="prof-avatar">MT</div>
+              <div>
+                <div class="prof-name">Cheikh Musa Touré</div>
+                <div class="prof-titre">Spécialiste Fiqh Malékite</div>
+              </div>
+            </div>
+            <div class="formation-footer">
+              <button
+                class="btn-formation details"
+                onclick="notif('📋 Détails en cours...')"
+              >
+                Détails
+              </button>
+              <button
+                class="btn-formation inscrire"
+                onclick="notif('✅ Inscription enregistrée !')"
+              >
+                S\'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="formation-card reveal">
+          <div class="formation-banner">
+            🌟<span class="formation-level level-avance">Avancé</span>
+          </div>
+          <div class="formation-body">
+            <div class="formation-categorie">Hadith</div>
+            <div class="formation-titre">
+              Introduction aux Sciences du Hadith
+            </div>
+            <div class="formation-desc">
+              Mustalah Al-Hadith, classification des hadiths, étude des chaînes
+              de transmission.
+            </div>
+            <div class="formation-meta">
+              <div class="meta-item">🕐 <span>20 semaines</span></div>
+              <div class="meta-item">📅 <span>2 séances/sem</span></div>
+              <div class="meta-item">🏅 <span>Ijâza</span></div>
+            </div>
+            <div class="formation-prof">
+              <div class="prof-avatar">AB</div>
+              <div>
+                <div class="prof-name">Dr. Abdullah Bamba</div>
+                <div class="prof-titre">Muhaddith — Spécialiste Hadith</div>
+              </div>
+            </div>
+            <div class="formation-footer">
+              <button
+                class="btn-formation details"
+                onclick="notif('📋 Niveau avancé — Prérequis requis.')"
+              >
+                Détails
+              </button>
+              <button
+                class="btn-formation inscrire"
+                onclick="notif('✅ Demande envoyée !')"
+              >
+                S\'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="formation-card reveal">
+          <div class="formation-banner">
+            💎<span class="formation-level level-debutant">Débutant</span>
+          </div>
+          <div class="formation-body">
+            <div class="formation-categorie">Spiritualité</div>
+            <div class="formation-titre">Tazkiyya — Purification de l'Âme</div>
+            <div class="formation-desc">
+              Un voyage spirituel vers l'amélioration du caractère et le
+              renforcement de la foi (Imân).
+            </div>
+            <div class="formation-meta">
+              <div class="meta-item">🕐 <span>6 semaines</span></div>
+              <div class="meta-item">📅 <span>1 séance/sem</span></div>
+              <div class="meta-item">🏅 <span>Attestation</span></div>
+            </div>
+            <div class="formation-prof">
+              <div class="prof-avatar">AC</div>
+              <div>
+                <div class="prof-name">Ustâdha Aïcha Coulibaly</div>
+                <div class="prof-titre">Spécialiste Spiritualité islamique</div>
+              </div>
+            </div>
+            <div class="formation-footer">
+              <button
+                class="btn-formation details"
+                onclick="notif('📋 Détails en cours...')"
+              >
+                Détails
+              </button>
+              <button
+                class="btn-formation inscrire"
+                onclick="notif('✅ Inscription enregistrée !')"
+              >
+                S\'inscrire
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARCOURS CERTIFIANTS -->
+      <div class="section-header reveal">
+        <span class="section-tag">Pour aller plus loin</span>
+        <h2 class="section-title">Parcours <span>Certifiants</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="parcours-section">
+        <div class="parcours-card reveal">
+          <div class="parcours-icon">🎓</div>
+          <div class="parcours-info">
+            <h3>Diplôme en Sciences Islamiques — Niveau 1</h3>
+            <p>
+              Un parcours complet de 12 mois couvrant les disciplines
+              fondamentales : Coran, Hadith, Fiqh, Aqîda et Langue Arabe.
+              Sanctionné par un diplôme reconnu par l'association.
+            </p>
+            <div class="parcours-steps">
+              <span class="step-badge completed">✅ Module Coran</span>
+              <span class="step-badge completed">✅ Module Aqîda</span>
+              <span class="step-badge">Module Hadith</span>
+              <span class="step-badge">Module Fiqh</span>
+              <span class="step-badge">Module Arabe</span>
+              <span class="step-badge">Examen Final</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="parcours-card reveal">
+          <div class="parcours-icon">📿</div>
+          <div class="parcours-info">
+            <h3>Certificat de Mémorisation Coranique — Hifz</h3>
+            <p>
+              Programme intensif d'accompagnement pour la mémorisation du Saint
+              Coran, avec suivi personnalisé par des Huffâdh expérimentés. Ijâza
+              délivrée à la completion.
+            </p>
+            <div class="parcours-steps">
+              <span class="step-badge">Juz' Amma</span>
+              <span class="step-badge">Juz' Tabârak</span>
+              <span class="step-badge">Révision & Consolidation</span>
+              <span class="step-badge">Examen & Ijâza</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="section-header reveal">
+        <span class="section-tag">Vous avez des questions ?</span>
+        <h2 class="section-title">Questions <span>Fréquentes</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div style="max-width: 800px; margin: 0 auto 60px" class="reveal">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Comment se déroulent les formations ? <span>＋</span>
+          </div>
+          <div class="faq-a">
+            Les formations se déroulent en ligne via visioconférence. Vous
+            recevez un lien de connexion par email avant chaque séance. Les
+            replays sont disponibles 48h après chaque cours pour les abonnés.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Faut-il un abonnement pour s'inscrire ? <span>＋</span>
+          </div>
+          <div class="faq-a">
+            Certaines formations d'introduction sont gratuites. Les formations
+            complètes et certifiantes sont réservées aux abonnés. Un abonnement
+            mensuel à 1 000 FCFA suffit pour accéder à toutes les formations.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Les attestations sont-elles reconnues ? <span>＋</span>
+          </div>
+          <div class="faq-a">
+            Les attestations JFSI sont délivrées par l'association et signées
+            par les enseignants qualifiés. Les Ijâzât sont des transmissions
+            traditionnelles à chaîne de transmission authentifiée.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Puis-je suivre plusieurs formations en même temps ? <span>＋</span>
+          </div>
+          <div class="faq-a">
+            Oui, avec un abonnement actif vous pouvez vous inscrire à autant de
+            formations que vous souhaitez, sous réserve de disponibilité dans
+            les créneaux horaires.
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center" class="reveal">
+        <a href="abonnement.html" class="btn-primary"
+          >S'abonner pour accéder aux formations</a
+        >
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+          <p>Formations islamiques certifiantes en ligne.</p>
+          <div class="footer-arabic">طَلَبُ الْعِلْمِ فَرِيضَةٌ</div>
+        </div>
+        <div class="footer-col">
+          <h4>Formations</h4>
+          <ul>
+            <li><a href="#">Lecture Coranique</a></li>
+            <li><a href="#">Aqîda</a></li>
+            <li><a href="#">Langue Arabe</a></li>
+            <li><a href="#">Fiqh</a></li>
+            <li><a href="#">Hadith</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Accueil</a></li>
+            <li><a href="bibliotheque.html">Bibliothèque</a></li>
+            <li><a href="abonnement.html">Abonnements</a></li>
+            <li><a href="salle-reunion.html">Espace Bureau</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="#">contact@jfsi-asso.org</a></li>
+            <li><a href="#">+225 00 00 00 00</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 JFSI — Formations Islamiques</p>
+        <p class="arabic-footer">بِسْمِ اللَّهِ</p>
+      </div>
+    </footer>
+
+    <script src="../js/global.js"></script>
+    <script>
+      function toggleFaq(el) {
+        const answer = el.nextElementSibling;
+        const isOpen = answer.classList.contains("open");
+        document
+          .querySelectorAll(".faq-a")
+          .forEach((a) => a.classList.remove("open"));
+        document
+          .querySelectorAll(".faq-q span")
+          .forEach((s) => (s.textContent = "＋"));
+        if (!isOpen) {
+          answer.classList.add("open");
+          el.querySelector("span").textContent = "－";
+        }
+      }
+    </script>
+    <script src="../js/filters.js"></script>
+    <script src="../js/session.js"></script>
+  </body>
+</html>

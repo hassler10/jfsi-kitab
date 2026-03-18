@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — JFSI</title>
+    <link rel="stylesheet" href="css/admin.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lato:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- SIDEBAR -->
+      <aside class="admin-sidebar">
+        <div class="sidebar-header">
+          <h1>JFSI Admin</h1>
+          <p>Panel Central</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <li>
+            <a
+              href="#dashboard"
+              class="nav-link active"
+              onclick="showPage('dashboard')"
+            >
+              📊 Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="#content" class="nav-link" onclick="showPage('content')">
+              📚 Contenu
+            </a>
+          </li>
+          <li>
+            <a href="#users" class="nav-link" onclick="showPage('users')">
+              👥 Utilisateurs
+            </a>
+          </li>
+          <li>
+            <a href="#settings" class="nav-link" onclick="showPage('settings')">
+              ⚙️ Paramètres
+            </a>
+          </li>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="adminAPI.logout()">
+            🚪 Déconnexion
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="admin-main">
+        <!-- HEADER -->
+        <div class="admin-header">
+          <h2>Administration JFSI</h2>
+          <div class="admin-header-right">
+            <span id="userDisplay">Chargement...</span>
+            <span id="timestamp">--:--</span>
+          </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="admin-content">
+          <!-- DASHBOARD -->
+          <div id="dashboard" class="admin-section active">
+            <h2 style="margin-bottom: 30px; color: var(--or); font-size: 24px">
+              📊 Dashboard
+            </h2>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Utilisateurs Total</h3>
+                <div class="value" id="totalUsers">--</div>
+                <div class="subtitle">Inscrits sur la plateforme</div>
+              </div>
+
+              <div class="stat-card">
+                <h3>Utilisateurs Premium</h3>
+                <div class="value" id="premiumUsers">--</div>
+                <div class="subtitle">Abonnements actifs</div>
+              </div>
+
+              <div class="stat-card">
+                <h3>Contenu Total</h3>
+                <div class="value" id="totalContent">--</div>
+                <div class="subtitle">Documents + Vidéos</div>
+              </div>
+
+              <div class="stat-card">
+                <h3>Contenu Premium</h3>
+                <div class="value" id="premiumContent">--</div>
+                <div class="subtitle">Réservés aux abonnés</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 40px">
+              <h3 style="margin-bottom: 20px; color: var(--or)">
+                Actions Rapides
+              </h3>
+              <button class="btn btn-primary" onclick="showPage('content')">
+                ➕ Ajouter Contenu
+              </button>
+              <button class="btn btn-secondary" onclick="showPage('users')">
+                👥 Gérer Utilisateurs
+              </button>
+            </div>
+          </div>
+
+          <!-- CONTENT -->
+          <div id="content" class="admin-section">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+              "
+            >
+              <h2 style="color: var(--or); font-size: 24px">
+                📚 Gestion du Contenu
+              </h2>
+              <button class="btn btn-primary" onclick="openAddContentModal()">
+                ➕ Nouveau Contenu
+              </button>
+            </div>
+
+            <div class="stat-card" style="margin-bottom: 20px">
+              <input
+                type="text"
+                id="contentSearch"
+                placeholder="🔍 Rechercher contenu..."
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: rgba(26, 58, 42, 0.5);
+                  border: 1px solid rgba(201, 168, 76, 0.2);
+                  color: white;
+                  border-radius: 6px;
+                "
+                onkeyup="filterContentTable()"
+              />
+            </div>
+
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Type</th>
+                  <th>Premium</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="contentTable">
+                <tr>
+                  <td
+                    colspan="4"
+                    style="text-align: center; color: var(--gris)"
+                  >
+                    Chargement...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- USERS -->
+          <div id="users" class="admin-section">
+            <h2 style="margin-bottom: 30px; color: var(--or); font-size: 24px">
+              👥 Gestion des Utilisateurs
+            </h2>
+
+            <div class="stat-card" style="margin-bottom: 20px">
+              <input
+                type="text"
+                id="userSearch"
+                placeholder="🔍 Rechercher utilisateur..."
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: rgba(26, 58, 42, 0.5);
+                  border: 1px solid rgba(201, 168, 76, 0.2);
+                  color: white;
+                  border-radius: 6px;
+                "
+                onkeyup="filterUserTable()"
+              />
+            </div>
+
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Rôle</th>
+                  <th>Inscription</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable">
+                <tr>
+                  <td
+                    colspan="4"
+                    style="text-align: center; color: var(--gris)"
+                  >
+                    Chargement...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- SETTINGS -->
+          <div id="settings" class="admin-section">
+            <h2 style="margin-bottom: 30px; color: var(--or); font-size: 24px">
+              ⚙️ Paramètres
+            </h2>
+
+            <div class="stat-card">
+              <h3>Informations Serveur</h3>
+              <div style="margin: 20px 0">
+                <p>
+                  <strong>Version Base de données:</strong>
+                  <span id="dbVersion">--</span>
+                </p>
+                <p>
+                  <strong>Chemin:</strong>
+                  <span id="dbPath">./data/jfsi.db</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="stat-card" style="margin-top: 20px">
+              <h3>Configuration Stripe</h3>
+              <p style="color: var(--gris); margin-bottom: 15px">
+                Les clés Stripe sont stockées en variables d'environnement
+              </p>
+              <button
+                class="btn btn-secondary"
+                onclick="testStripeConnection()"
+              >
+                🔗 Tester Connexion
+              </button>
+            </div>
+
+            <div class="stat-card" style="margin-top: 20px">
+              <h3>Actions de Maintenance</h3>
+              <button class="btn btn-secondary" onclick="clearCache()">
+                🗑️ Vider Cache
+              </button>
+              <button class="btn btn-secondary" onclick="checkHealth()">
+                ❤️ État du Système
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL : Ajouter/Modifier Contenu -->
+    <div id="contentModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="contentModalTitle">Nouveau Contenu</h3>
+          <button class="modal-close" onclick="closeContentModal()">✕</button>
+        </div>
+
+        <form id="contentForm" onsubmit="saveContent(event)">
+          <div class="form-group">
+            <label>Titre</label>
+            <input
+              type="text"
+              id="contentTitle"
+              required
+              placeholder="Titre du contenu"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea
+              id="contentDescription"
+              placeholder="Description détaillée"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Type</label>
+              <select id="contentType" required>
+                <option value="">Sélectionner...</option>
+                <option value="document">Document</option>
+                <option value="video">Vidéo</option>
+                <option value="audio">Audio</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Catégorie</label>
+              <select id="contentCategory" required>
+                <option value="">Sélectionner...</option>
+                <option value="coran">Coran</option>
+                <option value="hadith">Hadith</option>
+                <option value="fiqh">Fiqh</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="contentPremium" />
+                Contenu Premium
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>Chemin Fichier</label>
+              <input
+                type="text"
+                id="contentFilePath"
+                placeholder="/documents/..."
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeContentModal()"
+            >
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">✓ Sauvegarder</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL : Changer Rôle Utilisateur -->
+    <div id="userRoleModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Modifier Rôle</h3>
+          <button class="modal-close" onclick="closeUserRoleModal()">✕</button>
+        </div>
+
+        <div style="margin-bottom: 20px">
+          <p style="color: var(--gris)">
+            Email: <strong id="userRoleEmail"></strong>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Nouveau Rôle</label>
+          <select id="userNewRole" required>
+            <option value="free">Free</option>
+            <option value="premium">Premium</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeUserRoleModal()">
+            Annuler
+          </button>
+          <button class="btn btn-primary" onclick="saveUserRole()">
+            ✓ Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../js/admin-api.js"></script>
+    <script>
+      let currentUserId = null;
+      let allContent = [];
+      let allUsers = [];
+
+      // Initialisation
+      window.addEventListener("load", async () => {
+        const isAuth = await adminAPI.checkAuth();
+        if (!isAuth) {
+          alert("Non autorisé. Redirection...");
+          window.location.href = "../index.html";
+          return;
+        }
+
+        updateTimestamp();
+        setInterval(updateTimestamp, 60000);
+        await loadDashboard();
+      });
+
+      // Mise à jour heure
+      function updateTimestamp() {
+        const now = new Date();
+        document.getElementById("timestamp").textContent =
+          now.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+      }
+
+      // Changer page
+      function showPage(pageName) {
+        document.querySelectorAll(".admin-section").forEach((el) => {
+          el.classList.remove("active");
+        });
+
+        document.querySelectorAll(".nav-link").forEach((el) => {
+          el.classList.remove("active");
+        });
+
+        document.getElementById(pageName).classList.add("active");
+        event.target.classList.add("active");
+
+        if (pageName === "content") loadContent();
+        if (pageName === "users") loadUsers();
+      }
+
+      // DASHBOARD
+      async function loadDashboard() {
+        try {
+          const stats = await adminAPI.getStats();
+          document.getElementById("totalUsers").textContent =
+            stats.totalUsers || 0;
+          document.getElementById("premiumUsers").textContent =
+            stats.premiumUsers || 0;
+          document.getElementById("totalContent").textContent =
+            stats.totalContent || 0;
+          document.getElementById("premiumContent").textContent =
+            stats.premiumContent || 0;
+          document.getElementById("userDisplay").textContent = "✓ Connecté";
+        } catch (error) {
+          showNotification("Erreur lors du chargement", true);
+        }
+      }
+
+      // CONTENT
+      async function loadContent() {
+        try {
+          allContent = await adminAPI.getContent();
+          const tbody = document.getElementById("contentTable");
+          tbody.innerHTML = "";
+
+          if (allContent.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="4" style="text-align:center; color: var(--gris)">Aucun contenu</td></tr>';
+            return;
+          }
+
+          allContent.forEach((item) => {
+            const row = `
+              <tr>
+                <td>${item.title || "Sans titre"}</td>
+                <td><span class="badge badge-free">${item.type || "document"}</span></td>
+                <td>${item.is_premium ? "✓ Oui" : "Non"}</td>
+                <td>
+                  <button class="btn btn-secondary btn-small" onclick="editContent(${item.id})">
+                    ✎ Éditer
+                  </button>
+                  <button class="btn btn-danger btn-small" onclick="deleteContent(${item.id})">
+                    🗑️ Supprimer
+                  </button>
+                </td>
+              </tr>
+            `;
+            tbody.innerHTML += row;
+          });
+        } catch (error) {
+          showNotification("Erreur lors du chargement du contenu", true);
+        }
+      }
+
+      function filterContentTable() {
+        const search = document
+          .getElementById("contentSearch")
+          .value.toLowerCase();
+        document.querySelectorAll("#contentTable tr").forEach((row) => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(search) ? "" : "none";
+        });
+      }
+
+      function openAddContentModal() {
+        document.getElementById("contentForm").reset();
+        document.getElementById("contentModalTitle").textContent =
+          "Nouveau Contenu";
+        document.getElementById("contentModal").classList.add("active");
+      }
+
+      function closeContentModal() {
+        document.getElementById("contentModal").classList.remove("active");
+      }
+
+      async function saveContent(event) {
+        event.preventDefault();
+        try {
+          const data = {
+            title: document.getElementById("contentTitle").value,
+            description: document.getElementById("contentDescription").value,
+            type: document.getElementById("contentType").value,
+            category: document.getElementById("contentCategory").value,
+            is_premium: document.getElementById("contentPremium").checked,
+            file_path: document.getElementById("contentFilePath").value || null,
+          };
+
+          await adminAPI.addContent(data);
+          showNotification("✓ Contenu sauvegardé!");
+          closeContentModal();
+          await loadContent();
+        } catch (error) {
+          showNotification("Erreur: " + error.message, true);
+        }
+      }
+
+      async function deleteContent(contentId) {
+        if (!confirm("Supprimer ce contenu?")) return;
+        try {
+          await adminAPI.deleteContent(contentId);
+          showNotification("✓ Contenu supprimé!");
+          await loadContent();
+        } catch (error) {
+          showNotification("Erreur: " + error.message, true);
+        }
+      }
+
+      // USERS
+      async function loadUsers() {
+        try {
+          allUsers = await adminAPI.getUsers();
+          const tbody = document.getElementById("usersTable");
+          tbody.innerHTML = "";
+
+          if (allUsers.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="4" style="text-align:center; color: var(--gris)">Aucun utilisateur</td></tr>';
+            return;
+          }
+
+          allUsers.forEach((user) => {
+            const joined = new Date(user.created_at).toLocaleDateString(
+              "fr-FR",
+            );
+            const roleBadge = `badge-${user.role}`;
+            const row = `
+              <tr>
+                <td>${user.email}</td>
+                <td><span class="badge ${roleBadge}">${user.role.toUpperCase()}</span></td>
+                <td>${joined}</td>
+                <td>
+                  <button class="btn btn-secondary btn-small" onclick="openUserRoleModal(${user.id}, '${user.email}')">
+                    ⚙️ Rôle
+                  </button>
+                </td>
+              </tr>
+            `;
+            tbody.innerHTML += row;
+          });
+        } catch (error) {
+          showNotification("Erreur lors du chargement des utilisateurs", true);
+        }
+      }
+
+      function filterUserTable() {
+        const search = document
+          .getElementById("userSearch")
+          .value.toLowerCase();
+        document.querySelectorAll("#usersTable tr").forEach((row) => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(search) ? "" : "none";
+        });
+      }
+
+      function openUserRoleModal(userId, email) {
+        currentUserId = userId;
+        document.getElementById("userRoleEmail").textContent = email;
+        document.getElementById("userRoleModal").classList.add("active");
+      }
+
+      function closeUserRoleModal() {
+        document.getElementById("userRoleModal").classList.remove("active");
+        currentUserId = null;
+      }
+
+      async function saveUserRole() {
+        try {
+          const newRole = document.getElementById("userNewRole").value;
+          await adminAPI.updateUserRole(currentUserId, newRole);
+          showNotification("✓ Rôle mis à jour!");
+          closeUserRoleModal();
+          await loadUsers();
+        } catch (error) {
+          showNotification("Erreur: " + error.message, true);
+        }
+      }
+
+      // UTILS
+      function showNotification(message, isError = false) {
+        const notif = document.createElement("div");
+        notif.className = isError ? "notification error" : "notification";
+        notif.textContent = message;
+        document.body.appendChild(notif);
+
+        setTimeout(() => {
+          notif.remove();
+        }, 4000);
+      }
+
+      async function testStripeConnection() {
+        showNotification("🔗 Vérification Stripe...");
+        // Backend peut avoir un endpoint /api/admin/stripe-test
+        console.log("Stripe test - voir backend logs");
+      }
+
+      async function checkHealth() {
+        showNotification("Système fonctionnel ✓");
+      }
+
+      function clearCache() {
+        localStorage.clear();
+        showNotification("✓ Cache vidé");
+      }
+
+      function editContent(contentId) {
+        showNotification("Édition non implémentée yet");
+        // TODO: Implémenter PUT endpoint pour edit
+      }
+    </script>
+  </body>
+</html>

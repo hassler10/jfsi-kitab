@@ -1,0 +1,1940 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Dictionnaire Islamique</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      .page-hero {
+        padding: 140px 60px 60px;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          rgba(26, 58, 42, 0.3),
+          var(--noir-doux)
+        );
+      }
+      .page-hero .hero-arabic {
+        font-family: "Amiri", serif;
+        font-size: clamp(20px, 3vw, 36px);
+        color: var(--or);
+        direction: rtl;
+        margin-bottom: 16px;
+      }
+      .page-hero h1 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: clamp(28px, 4vw, 48px);
+        color: var(--blanc);
+        margin-bottom: 10px;
+      }
+      .page-hero p {
+        font-size: 15px;
+        color: rgba(249, 245, 236, 0.7);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .dict-section {
+        padding: 0 60px 80px;
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+
+      /* Barre de recherche */
+      .search-section {
+        margin-bottom: 50px;
+        text-align: center;
+      }
+      .search-container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .search-input {
+        width: 100%;
+        padding: 16px 50px 16px 20px;
+        border: 2px solid rgba(201, 168, 76, 0.2);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--blanc);
+        font-size: 16px;
+        font-family: "Lato", sans-serif;
+        outline: none;
+        transition: all 0.3s;
+      }
+      .search-input:focus {
+        border-color: var(--or);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--or);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.3s;
+      }
+      .search-btn:hover {
+        background: var(--vert);
+        transform: translateY(-50%) scale(1.05);
+      }
+
+      /* Filtres par thème */
+      .theme-filters {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+      }
+      .theme-btn {
+        padding: 10px 20px;
+        border-radius: 25px;
+        border: 2px solid rgba(201, 168, 76, 0.2);
+        background: transparent;
+        color: var(--gris);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: "Lato", sans-serif;
+      }
+      .theme-btn:hover,
+      .theme-btn.active {
+        border-color: var(--or);
+        color: var(--or);
+        background: rgba(201, 168, 76, 0.1);
+      }
+
+      /* Grille des termes */
+      .terms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+      }
+      .term-card {
+        background: rgba(13, 31, 21, 0.7);
+        border: 1px solid rgba(201, 168, 76, 0.13);
+        border-radius: 12px;
+        padding: 24px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .term-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(201, 168, 76, 0.4);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      }
+      .term-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .term-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--vert-moyen), var(--vert));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .term-title {
+        font-family: "Amiri", serif;
+        font-size: 18px;
+        color: var(--blanc);
+        font-weight: 600;
+      }
+      .term-category {
+        font-size: 10px;
+        color: var(--or);
+        background: rgba(201, 168, 76, 0.1);
+        padding: 3px 8px;
+        border-radius: 10px;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+      }
+      .term-definition {
+        font-size: 14px;
+        color: rgba(249, 245, 236, 0.8);
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+      .term-arabic {
+        font-family: "Amiri", serif;
+        font-size: 16px;
+        color: var(--or);
+        direction: rtl;
+        margin-bottom: 8px;
+        text-align: right;
+      }
+      .term-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .term-tag {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 15px;
+        background: rgba(201, 168, 76, 0.08);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        color: var(--or);
+      }
+
+      /* Message d'absence de résultats */
+      .no-results {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #666;
+        grid-column: 1 / -1;
+      }
+
+      .no-results-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+      }
+
+      .no-results h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 1.3rem;
+      }
+
+      .no-results p {
+        max-width: 400px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      /* Modal de détail */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+      }
+      .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--noir-doux);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        border-radius: 15px;
+        max-width: 700px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      .modal-header {
+        padding: 30px 30px 20px;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+      }
+      .modal-title {
+        font-family: "Amiri", serif;
+        font-size: 24px;
+        color: var(--blanc);
+        margin-bottom: 8px;
+      }
+      .modal-subtitle {
+        font-size: 14px;
+        color: var(--or);
+        margin-bottom: 10px;
+      }
+      .modal-arabic {
+        font-family: "Amiri", serif;
+        font-size: 20px;
+        color: var(--or);
+        direction: rtl;
+        text-align: right;
+        margin-bottom: 15px;
+      }
+      .modal-body {
+        padding: 20px 30px;
+      }
+      .modal-definition {
+        font-size: 16px;
+        color: rgba(249, 245, 236, 0.9);
+        line-height: 1.7;
+        margin-bottom: 20px;
+      }
+      .modal-examples {
+        margin-bottom: 20px;
+      }
+      .modal-examples h4 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 14px;
+        color: var(--or);
+        margin-bottom: 10px;
+      }
+      .modal-examples ul {
+        list-style: none;
+        padding: 0;
+      }
+      .modal-examples li {
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+        font-size: 14px;
+        color: rgba(249, 245, 236, 0.8);
+      }
+      .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.1);
+        border: none;
+        color: var(--or);
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @media (max-width: 768px) {
+        .dict-section {
+          padding: 0 30px 60px;
+        }
+        .page-hero {
+          padding: 120px 30px 40px;
+        }
+        .terms-grid {
+          grid-template-columns: 1fr;
+        }
+        .theme-filters {
+          gap: 8px;
+        }
+        .theme-btn {
+          padding: 8px 16px;
+          font-size: 12px;
+        }
+        .modal-content {
+          width: 95%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <!-- HEADER -->
+    <header>
+      <nav>
+        <div class="nav-logo">
+          <a href="../index.html"
+            ><img src="../images/logo.png" alt="Logo JFSI" class="logo-img"
+          /></a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="../index.html">Accueil</a></li>
+          <li><a href="bibliotheque.html">Bibliothèque</a></li>
+          <li><a href="formations.html">Formations</a></li>
+          <li><a href="abonnement.html">Abonnements</a></li>
+          <li><a href="dictionnaire.html" class="active">Dictionnaire</a></li>
+          <li>
+            <a href="salle-reunion.html" class="nav-bureau">🤝 Espace Bureau</a>
+          </li>
+        </ul>
+        <div class="nav-right">
+          <button onclick="sessionManager.openLoginModal()" class="nav-cta">
+            Connexion
+          </button>
+        </div>
+        <div class="nav-burger" onclick="toggleMenu()">
+          <span></span><span></span><span></span>
+        </div>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="hero-arabic">قَامُوسُ الْمُصْطَلَحَاتِ الْإِسْلَامِيَّة</div>
+      <h1>Dictionnaire Islamique</h1>
+      <p>
+        Explorez les termes et expressions clés de la tradition islamique. Un
+        outil essentiel pour approfondir votre compréhension.
+      </p>
+    </section>
+
+    <!-- CONTENU -->
+    <section class="dict-section">
+      <!-- RECHERCHE -->
+      <div class="search-section">
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            id="search-input"
+            placeholder="Rechercher un terme islamique..."
+          />
+          <button class="search-btn">🔍</button>
+        </div>
+      </div>
+
+      <!-- FILTRES PAR THÈME -->
+      <div class="theme-filters">
+        <button class="theme-btn active" data-theme="all">
+          Tous les thèmes
+        </button>
+        <button class="theme-btn" data-theme="aqida">Aqîda</button>
+        <button class="theme-btn" data-theme="fiqh">Fiqh</button>
+        <button class="theme-btn" data-theme="hadith">Hadith</button>
+        <button class="theme-btn" data-theme="coran">Coran</button>
+        <button class="theme-btn" data-theme="spiritualite">
+          Spiritualité
+        </button>
+        <button class="theme-btn" data-theme="histoire">Histoire</button>
+      </div>
+
+      <!-- GRILLE DES TERMES -->
+      <div class="terms-grid" id="terms-grid">
+        <!-- Les termes seront générés par JavaScript -->
+      </div>
+    </section>
+
+    <!-- MODAL DE DÉTAIL -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title"></h2>
+          <div class="modal-subtitle" id="modal-subtitle"></div>
+          <div class="modal-arabic" id="modal-arabic"></div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-definition" id="modal-definition"></div>
+          <div class="modal-examples" id="modal-examples"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/global.js"></script>
+    <script defer>
+      console.log("Script loaded");
+
+      // Base de données des termes islamiques
+      window.DICTIONARY_TERMS = [
+        {
+          id: 1,
+          title: "Aqîda",
+          arabic: "عقيدة",
+          category: "aqida",
+          definition:
+            "L'ensemble des croyances fondamentales de l'islam concernant Dieu, Ses attributs, les prophètes, les livres révélés, les anges, le destin et l'au-delà.",
+          examples: [
+            "L'Aqîda Ahl al-Sunna wal-Jama'a est la doctrine orthodoxe sunnite",
+            "Étudier l'Aqîda permet de renforcer la foi",
+          ],
+          tags: ["croyance", "fondements", "foi"],
+        },
+        {
+          id: 2,
+          title: "Fiqh",
+          arabic: "فقه",
+          category: "fiqh",
+          definition:
+            "Science qui étudie les règles pratiques de l'islam dérivées du Coran et de la Sunna. Elle concerne les actes d'adoration et les transactions sociales.",
+          examples: [
+            "Le Fiqh regroupe les quatre écoles juridiques sunnites",
+            "Apprendre le Fiqh aide à pratiquer l'islam correctement",
+          ],
+          tags: ["jurisprudence", "pratique", "loi islamique"],
+        },
+        {
+          id: 3,
+          title: "Hadith",
+          arabic: "حديث",
+          category: "hadith",
+          definition:
+            "Récit rapportant les paroles, actions ou approbations tacites du Prophète Muhammad ﷺ. Les hadiths constituent la deuxième source de la législation islamique après le Coran.",
+          examples: [
+            "Un hadith sahih est un récit authentique",
+            "Les hadiths expliquent et complètent le Coran",
+          ],
+          tags: ["sunna", "prophète", "tradition"],
+        },
+        {
+          id: 4,
+          title: "Ijtihad",
+          arabic: "اجتهاد",
+          category: "fiqh",
+          definition:
+            "Effort intellectuel déployé par un savant qualifié pour déduire une règle juridique islamique à partir des sources primaires quand celles-ci ne donnent pas de réponse directe.",
+          examples: [
+            "L'Ijtihad est nécessaire pour adapter l'islam aux réalités modernes",
+            "Seuls les mujtahids qualifiés peuvent pratiquer l'Ijtihad",
+          ],
+          tags: ["raisonnement", "jurisprudence", "adaptation"],
+        },
+        {
+          id: 5,
+          title: "Salah",
+          arabic: "صلاة",
+          category: "fiqh",
+          definition:
+            "La prière rituelle obligatoire, deuxième pilier de l'islam. Elle consiste en gestes et récitations spécifiques effectués cinq fois par jour.",
+          examples: [
+            "La Salah doit être accomplie à ses heures prescrites",
+            "La prière en congregation a une récompense supérieure",
+          ],
+          tags: ["prière", "pilier", "adoration"],
+        },
+        {
+          id: 6,
+          title: "Zakat",
+          arabic: "زكاة",
+          category: "fiqh",
+          definition:
+            "Aumône obligatoire représentant 2,5% des biens accumulés pendant un an lunaire. Troisième pilier de l'islam, elle purifie les biens et aide les nécessiteux.",
+          examples: [
+            "La Zakat est due sur l'or, l'argent et les biens commerciaux",
+            "Donner la Zakat au pauvre est un acte de solidarité",
+          ],
+          tags: ["aumône", "pilier", "purification"],
+        },
+        {
+          id: 7,
+          title: "Hajj",
+          arabic: "حج",
+          category: "fiqh",
+          definition:
+            "Pèlerinage à La Mecque, cinquième pilier de l'islam. Obligatoire une fois dans la vie pour ceux qui en ont les moyens physiques et financiers.",
+          examples: [
+            "Le Hajj doit être accompli pendant le mois de Dhul-Hijja",
+            "Le Hajj réunit les musulmans du monde entier",
+          ],
+          tags: ["pèlerinage", "pilier", "La Mecque"],
+        },
+        {
+          id: 8,
+          title: "Jihad",
+          arabic: "جهاد",
+          category: "fiqh",
+          definition:
+            "Effort déployé dans le chemin d'Allah. Le sens premier est l'effort spirituel contre les passions néfastes, mais peut aussi désigner la défense armée légitime.",
+          examples: [
+            "Le plus grand Jihad est contre soi-même",
+            "Le Jihad défensif est permis pour protéger l'islam",
+          ],
+          tags: ["effort", "combat", "spirituel"],
+        },
+        {
+          id: 9,
+          title: "Tawhid",
+          arabic: "توحيد",
+          category: "aqida",
+          definition:
+            "L'unicité absolue de Dieu. Principe fondamental de l'islam affirmant qu'Allah est Unique dans Son essence, Ses attributs et Ses actes.",
+          examples: [
+            "Le Tawhid est le cœur de la foi musulmane",
+            "Associer quoi que ce soit à Allah est le plus grand péché",
+          ],
+          tags: ["unicité", "monothéisme", "Dieu"],
+        },
+        {
+          id: 10,
+          title: "Sunna",
+          arabic: "سنة",
+          category: "hadith",
+          definition:
+            "La tradition prophétique, ensemble des paroles, actions et approbations du Prophète Muhammad ﷺ. Elle complète et explique le Coran.",
+          examples: [
+            "Suivre la Sunna est obligatoire pour les musulmans",
+            "La Sunna clarifie les versets coraniques généraux",
+          ],
+          tags: ["tradition", "prophète", "modèle"],
+        },
+        {
+          id: 11,
+          title: "Ihsan",
+          arabic: "إحسان",
+          category: "spiritualite",
+          definition:
+            "Excellence dans l'adoration et la moralité. Consiste à adorer Allah comme si on Le voyait, et même si on ne Le voit pas, savoir qu'Il nous voit.",
+          examples: [
+            "L'Ihsan élève la qualité des actes d'adoration",
+            "La conscience divine conduit à l'Ihsan",
+          ],
+          tags: ["excellence", "moralité", "conscience"],
+        },
+        {
+          id: 12,
+          title: "Taqwa",
+          arabic: "تقوى",
+          category: "spiritualite",
+          definition:
+            "Piété et crainte révérencielle d'Allah. Consiste à se préserver des interdits et accomplir les obligations par amour et crainte d'Allah.",
+          examples: [
+            "La Taqwa est le fruit de la connaissance d'Allah",
+            "Allah aime les pieux (muttaqin)",
+          ],
+          tags: ["piété", "crainte", "obéissance"],
+        },
+        {
+          id: 13,
+          title: "Ijma'",
+          arabic: "إجماع",
+          category: "fiqh",
+          definition:
+            "Consensus des savants musulmans sur une question juridique. Troisième source de la législation islamique après le Coran et la Sunna.",
+          examples: [
+            "L'Ijma' des Compagnons est particulièrement autorité",
+            "L'Ijma' empêche l'erreur collective de la communauté",
+          ],
+          tags: ["consensus", "savants", "source juridique"],
+        },
+        {
+          id: 14,
+          title: "Qiyas",
+          arabic: "قياس",
+          category: "fiqh",
+          definition:
+            "Raisonnement analogique en jurisprudence islamique. Consiste à étendre une règle établie à un cas nouveau présentant une similarité.",
+          examples: [
+            "Le Qiyas nécessite une cause légale ('illa)",
+            "Le Qiyas complète les sources primaires",
+          ],
+          tags: ["analogie", "raisonnement", "jurisprudence"],
+        },
+        {
+          id: 15,
+          title: "Sirah",
+          arabic: "سيرة",
+          category: "histoire",
+          definition:
+            "Biographie du Prophète Muhammad ﷺ. Étude de sa vie, de ses qualités morales et de son modèle à suivre.",
+          examples: [
+            "Étudier la Sirah inspire les musulmans",
+            "La Sirah montre comment appliquer l'islam",
+          ],
+          tags: ["biographie", "prophète", "modèle"],
+        },
+        // TERMES SUPPLÉMENTAIRES - AQIDA
+        {
+          id: 16,
+          title: "Tawhid al-Rububiyya",
+          arabic: "توحيد الربوبية",
+          category: "aqida",
+          definition:
+            "L'unicité de la Seigneurie divine. Croyance que seul Allah est le Créateur, le Sustenteur et le Maître absolu de l'univers.",
+          examples: [
+            "Le Tawhid al-Rububiyya est reconnu même par les athées",
+            "Nier ce tawhid conduit au kufr",
+          ],
+          tags: ["unicité", "seigneurie", "création"],
+        },
+        {
+          id: 17,
+          title: "Tawhid al-Uluhiyya",
+          arabic: "توحيد الألوهية",
+          category: "aqida",
+          definition:
+            "L'unicité de la Divinité. Croyance exclusive qu'Allah seul mérite l'adoration et qu'Il n'a pas d'associé.",
+          examples: [
+            "Le Tawhid al-Uluhiyya est le pilier de l'islam",
+            "L'adoration des idoles contredit ce tawhid",
+          ],
+          tags: ["unicité", "adoration", "divinité"],
+        },
+        {
+          id: 18,
+          title: "Tawhid al-Asma wal-Sifat",
+          arabic: "توحيد الأسماء والصفات",
+          category: "aqida",
+          definition:
+            "L'unicité des Noms et Attributs divins. Croyance qu'Allah possède des attributs parfaits sans comparaison avec Ses créatures.",
+          examples: [
+            "Allah est Al-Rahman (Le Tout Miséricordieux)",
+            "Ses attributs sont éternels et parfaits",
+          ],
+          tags: ["noms divins", "attributs", "perfection"],
+        },
+        {
+          id: 19,
+          title: "Shirk",
+          arabic: "شرك",
+          category: "aqida",
+          definition:
+            "Association à Allah. Le plus grand péché consistant à attribuer à d'autres qu'Allah des qualités divines ou à Lui associer dans l'adoration.",
+          examples: [
+            "Le shirk mine la base même de la foi",
+            "Demander l'aide d'un saint est un shirk mineur",
+          ],
+          tags: ["association", "péché", "idolâtrie"],
+        },
+        {
+          id: 20,
+          title: "Kufr",
+          arabic: "كفر",
+          category: "aqida",
+          definition:
+            "Mécréance. Refus de croire en Allah, Ses messagers ou Ses attributs essentiels. État opposé à l'iman (foi).",
+          examples: [
+            "Le kufr peut être par le cœur ou par les actes",
+            "L'apostat tombe dans le kufr",
+          ],
+          tags: ["mécréance", "incrédulité", "apostasie"],
+        },
+        {
+          id: 21,
+          title: "Iman",
+          arabic: "إيمان",
+          category: "aqida",
+          definition:
+            "Foi. Croyance sincère en Allah, Ses anges, Ses livres, Ses messagers, le Jour dernier et le destin (qadar).",
+          examples: [
+            "L'iman augmente par les bonnes œuvres",
+            "L'iman peut diminuer par les péchés",
+          ],
+          tags: ["foi", "croyance", "certitude"],
+        },
+        {
+          id: 22,
+          title: "Nifaq",
+          arabic: "نفاق",
+          category: "aqida",
+          definition:
+            "Hypocrisie. Faire semblant de croire en l'islam extérieurement tout en niant intérieurement. Plus grave que le kufr apparent.",
+          examples: [
+            "Les hypocrites prient pour être vus des gens",
+            "Le nifaq est une maladie du cœur",
+          ],
+          tags: ["hypocrisie", "dissimulation", "maladie du cœur"],
+        },
+        {
+          id: 23,
+          title: "Bid'a",
+          arabic: "بدعة",
+          category: "aqida",
+          definition:
+            "Innovation blâmable en matière de religion. Introduire de nouvelles pratiques dans le culte sans base scripturaire.",
+          examples: [
+            "Célébrer l'anniversaire du Prophète est une bid'a",
+            "Toute bid'a conduit au feu de l'enfer",
+          ],
+          tags: ["innovation", "religion", "culte"],
+        },
+        {
+          id: 24,
+          title: "Qadar",
+          arabic: "قدر",
+          category: "aqida",
+          definition:
+            "Destin divin. Croyance qu'Allah a prédestiné toutes choses depuis l'éternité, tout en donnant à l'homme le libre arbitre.",
+          examples: [
+            "Le qadar ne contredit pas la responsabilité humaine",
+            "Allah connaît tout ce qui va arriver",
+          ],
+          tags: ["destin", "prédestination", "libre arbitre"],
+        },
+        {
+          id: 25,
+          title: "Fitra",
+          arabic: "فطرة",
+          category: "aqida",
+          definition:
+            "Nature originelle. Disposition innée de l'être humain à reconnaître Allah et à accepter la vérité de l'islam.",
+          examples: [
+            "Chaque enfant naît sur la fitra",
+            "L'éducation peut altérer la fitra",
+          ],
+          tags: ["nature", "inné", "disposition"],
+        },
+        // TERMES SUPPLÉMENTAIRES - FIQH
+        {
+          id: 26,
+          title: "Taharat",
+          arabic: "طهارة",
+          category: "fiqh",
+          definition:
+            "Purification rituelle. État de pureté requis pour accomplir certains actes d'adoration comme la prière.",
+          examples: [
+            "Le wudu est une forme de taharat mineure",
+            "Le ghusl est une taharat majeure",
+          ],
+          tags: ["purification", "rituel", "prière"],
+        },
+        {
+          id: 27,
+          title: "Wudu",
+          arabic: "وضوء",
+          category: "fiqh",
+          definition:
+            "Ablution mineure. Lavage rituel des parties du corps pour se purifier avant la prière ou la lecture du Coran.",
+          examples: [
+            "Le wudu se compose de quatre obligations",
+            "Le wudu est invalidé par certains actes",
+          ],
+          tags: ["ablution", "purification", "prière"],
+        },
+        {
+          id: 28,
+          title: "Ghusl",
+          arabic: "غسل",
+          category: "fiqh",
+          definition:
+            "Bain rituel majeur. Purification complète du corps requise après les rapports sexuels, les menstrues ou l'accouchement.",
+          examples: [
+            "Le ghusl est obligatoire pour la prière du vendredi",
+            "Le ghusl comprend l'intention et le lavage complet",
+          ],
+          tags: ["bain", "purification", "majeure"],
+        },
+        {
+          id: 29,
+          title: "Tayammum",
+          arabic: "تيمم",
+          category: "fiqh",
+          definition:
+            "Purification avec de la terre pure. Substitut au wudu ou ghusl quand l'eau n'est pas disponible ou utilisable.",
+          examples: [
+            "Le tayammum se fait avec de la terre ou de la poussière",
+            "Il remplace le wudu mais pas le ghusl",
+          ],
+          tags: ["terre", "substitut", "eau"],
+        },
+        {
+          id: 30,
+          title: "Halal",
+          arabic: "حلال",
+          category: "fiqh",
+          definition:
+            "Permis. Tout ce qui est autorisé par la loi islamique, que ce soit en matière d'alimentation, de commerce ou de comportement.",
+          examples: [
+            "La viande halal doit être abattue rituellement",
+            "Le commerce halal respecte l'éthique islamique",
+          ],
+          tags: ["permis", "autorisé", "licite"],
+        },
+        {
+          id: 31,
+          title: "Haram",
+          arabic: "حرام",
+          category: "fiqh",
+          definition:
+            "Interdit. Tout ce qui est formellement prohibé par la loi islamique et dont l'accomplissement constitue un péché.",
+          examples: [
+            "Consommer de l'alcool est haram",
+            "L'usure (riba) est haram en islam",
+          ],
+          tags: ["interdit", "prohibé", "péché"],
+        },
+        {
+          id: 32,
+          title: "Makruh",
+          arabic: "مكروه",
+          category: "fiqh",
+          definition:
+            "Détesté. Acte dont l'accomplissement est blâmable mais pas punissable. Il est préférable de s'en abstenir.",
+          examples: [
+            "Fumer est makruh selon la majorité des savants",
+            "Le makruh n'invalide pas la prière",
+          ],
+          tags: ["détesté", "blâmable", "recommandable d'éviter"],
+        },
+        {
+          id: 33,
+          title: "Mubah",
+          arabic: "مباح",
+          category: "fiqh",
+          definition:
+            "Neutre. Acte indifférent qui n'est ni récompensé ni puni. L'individu a le choix de le faire ou non.",
+          examples: [
+            "Porter des vêtements colorés est mubah",
+            "Manger avec la main droite ou gauche est mubah",
+          ],
+          tags: ["neutre", "indifférent", "optionnel"],
+        },
+        {
+          id: 34,
+          title: "Fard",
+          arabic: "فرض",
+          category: "fiqh",
+          definition:
+            "Obligatoire. Devoir religieux dont l'accomplissement est récompensé et l'omission punie.",
+          examples: [
+            "Les cinq prières quotidiennes sont fard",
+            "Le jeûne du Ramadan est fard",
+          ],
+          tags: ["obligatoire", "devoir", "impératif"],
+        },
+        {
+          id: 35,
+          title: "Wajib",
+          arabic: "واجب",
+          category: "fiqh",
+          definition:
+            "Obligatoire. Synonyme de fard dans la plupart des contextes, désignant un devoir religieux impératif.",
+          examples: [
+            "La prière funéraire est wajib",
+            "L'aumône de rupture du jeûne est wajib",
+          ],
+          tags: ["obligatoire", "devoir", "nécessaire"],
+        },
+        {
+          id: 36,
+          title: "Sunnah",
+          arabic: "سنة",
+          category: "fiqh",
+          definition:
+            "Recommandé. Acte dont l'accomplissement est récompensé mais dont l'omission n'est pas punie.",
+          examples: [
+            "La prière de l'aube (fajr) en congregation est sunnah",
+            "Lire le Coran après la prière est sunnah",
+          ],
+          tags: ["recommandé", "mérité", "prophétique"],
+        },
+        {
+          id: 37,
+          title: "Mustahabb",
+          arabic: "مستحب",
+          category: "fiqh",
+          definition:
+            "Recommandable. Acte pieux dont la réalisation apporte une récompense spirituelle sans être obligatoire.",
+          examples: [
+            "Donner la charité est mustahabb",
+            "Apprendre le Coran par cœur est mustahabb",
+          ],
+          tags: ["recommandable", "pieux", "méritant"],
+        },
+        {
+          id: 38,
+          title: "Nikah",
+          arabic: "نكاح",
+          category: "fiqh",
+          definition:
+            "Mariage islamique. Contrat légal unissant un homme et une femme pour former une famille et permettre des relations intimes licites.",
+          examples: [
+            "Le nikah nécessite le consentement des deux parties",
+            "La dot (mahr) est obligatoire dans le nikah",
+          ],
+          tags: ["mariage", "contrat", "famille"],
+        },
+        {
+          id: 39,
+          title: "Talak",
+          arabic: "طلاق",
+          category: "fiqh",
+          definition:
+            "Divorce islamique. Dissolution du mariage par répudiation de la part du mari, soumise à des conditions strictes.",
+          examples: [
+            "Le talak doit être prononcé en état de pureté",
+            "Il existe trois talaks, le troisième étant irrévocable",
+          ],
+          tags: ["divorce", "répudiation", "dissolution"],
+        },
+        {
+          id: 40,
+          title: "Khula'",
+          arabic: "خلع",
+          category: "fiqh",
+          definition:
+            "Divorce par consentement mutuel. La femme peut demander le divorce en rendant sa dot ou une compensation équivalente.",
+          examples: [
+            "Le khula' nécessite l'accord du mari",
+            "Il permet à la femme d'obtenir le divorce",
+          ],
+          tags: ["divorce", "consentement", "femme"],
+        },
+        {
+          id: 41,
+          title: "Idda",
+          arabic: "عدة",
+          category: "fiqh",
+          definition:
+            "Période d'attente après divorce ou veuvage. Délai durant lequel la femme ne peut se remarier.",
+          examples: [
+            "L'idda après divorce est de trois cycles menstruels",
+            "L'idda après veuvage est de quatre mois et dix jours",
+          ],
+          tags: ["attente", "divorce", "veuvage"],
+        },
+        {
+          id: 42,
+          title: "Riba",
+          arabic: "ربا",
+          category: "fiqh",
+          definition:
+            "Usure. Intérêt illicite sur les prêts d'argent. Strictement interdit en islam car il exploite la détresse des autres.",
+          examples: [
+            "Les banques islamiques évitent le riba",
+            "Le riba double et redouble comme dans la parabole coranique",
+          ],
+          tags: ["usure", "intérêt", "interdit"],
+        },
+        {
+          id: 43,
+          title: "Mudaraba",
+          arabic: "مضاربة",
+          category: "fiqh",
+          definition:
+            "Partenariat islamique. Contrat où une partie fournit le capital et l'autre le travail, partageant les profits selon un ratio convenu.",
+          examples: [
+            "La mudaraba est utilisée dans la finance islamique",
+            "Les pertes sont supportées par le capital seul",
+          ],
+          tags: ["partenariat", "finance", "islamique"],
+        },
+        {
+          id: 44,
+          title: "Musharaka",
+          arabic: "مشاركة",
+          category: "fiqh",
+          definition:
+            "Association. Partenariat où toutes les parties contribuent au capital et au management, partageant profits et pertes.",
+          examples: [
+            "La musharaka est la forme la plus équitable de partenariat",
+            "Elle est recommandée pour les grandes entreprises",
+          ],
+          tags: ["association", "partenariat", "équitable"],
+        },
+        {
+          id: 45,
+          title: "Murabaha",
+          arabic: "مرابحة",
+          category: "fiqh",
+          definition:
+            "Vente à marge bénéficiaire. Vente d'un bien avec révélation du coût d'achat et de la marge de profit convenue.",
+          examples: [
+            "La murabaha est utilisée pour le financement immobilier",
+            "Le prix doit être fixé dès le départ",
+          ],
+          tags: ["vente", "marge", "financement"],
+        },
+        // TERMES SUPPLÉMENTAIRES - HADITH
+        {
+          id: 46,
+          title: "Sahih",
+          arabic: "صحيح",
+          category: "hadith",
+          definition:
+            "Authentique. Hadith dont la chaîne de transmission (isnad) et le contenu (matn) sont tous deux irréprochables.",
+          examples: [
+            "Les hadiths sahih sont la preuve la plus fiable après le Coran",
+            "Sahih al-Bukhari et Sahih Muslim sont les recueils les plus authentiques",
+          ],
+          tags: ["authentique", "fiable", "preuve"],
+        },
+        {
+          id: 47,
+          title: "Hasan",
+          arabic: "حسن",
+          category: "hadith",
+          definition:
+            "Bon. Hadith dont la chaîne est bonne mais dont certains transmetteurs sont de moindre fiabilité que ceux des sahih.",
+          examples: [
+            "Un hadith hasan peut être utilisé comme preuve juridique",
+            "Il est inférieur au sahih mais supérieur au da'if",
+          ],
+          tags: ["bon", "acceptable", "preuve"],
+        },
+        {
+          id: 48,
+          title: "Da'if",
+          arabic: "ضعيف",
+          category: "hadith",
+          definition:
+            "Faible. Hadith dont la chaîne de transmission comporte une rupture ou un transmetteur peu fiable.",
+          examples: [
+            "Un hadith da'if ne peut servir de preuve juridique",
+            "Il peut être utilisé pour l'encouragement aux bonnes œuvres",
+          ],
+          tags: ["faible", "rupture", "non probant"],
+        },
+        {
+          id: 49,
+          title: "Mawdu'",
+          arabic: "موضوع",
+          category: "hadith",
+          definition:
+            "Forgé. Hadith inventé de toutes pièces et attribué faussement au Prophète Muhammad ﷺ.",
+          examples: [
+            "Les hadiths mawdu' sont très dangereux",
+            "Ils sont souvent créés pour justifier des innovations",
+          ],
+          tags: ["forgé", "inventé", "dangereux"],
+        },
+        {
+          id: 50,
+          title: "Isnad",
+          arabic: "إسناد",
+          category: "hadith",
+          definition:
+            "Chaîne de transmission. Liste des personnes qui ont transmis le hadith depuis le Prophète jusqu'au compilateur.",
+          examples: [
+            "Un isnad solide est essentiel pour l'authenticité",
+            "Les savants vérifient chaque maillon de l'isnad",
+          ],
+          tags: ["chaîne", "transmission", "garantie"],
+        },
+        {
+          id: 51,
+          title: "Matn",
+          arabic: "متن",
+          category: "hadith",
+          definition:
+            "Texte du hadith. Le contenu même du propos rapporté du Prophète Muhammad ﷺ.",
+          examples: [
+            "Le matn doit être préservé de toute altération",
+            "Il doit être conforme au Coran et à la raison",
+          ],
+          tags: ["texte", "contenu", "propos"],
+        },
+        {
+          id: 52,
+          title: "Sahabi",
+          arabic: "صحابي",
+          category: "hadith",
+          definition:
+            "Compagnon du Prophète. Personne qui a vu le Prophète Muhammad ﷺ, cru en lui et est mort musulman.",
+          examples: [
+            "Tous les sahaba sont justes et dignes de confiance",
+            "Abu Bakr et Umar sont parmi les plus grands sahaba",
+          ],
+          tags: ["compagnon", "témoin", "digne de confiance"],
+        },
+        {
+          id: 53,
+          title: "Tabi'i",
+          arabic: "تابعي",
+          category: "hadith",
+          definition:
+            "Successeur. Génération qui a suivi les Compagnons, ayant appris l'islam directement d'eux.",
+          examples: [
+            "Les tabi'in sont la deuxième génération islamique",
+            "Ils ont préservé et transmis la science islamique",
+          ],
+          tags: ["successeur", "deuxième génération", "érudit"],
+        },
+        {
+          id: 54,
+          title: "Atba' at-Tabi'in",
+          arabic: "أتباع التابعين",
+          category: "hadith",
+          definition:
+            "Suiveurs des Successeurs. Troisième génération islamique qui a appris de la génération des tabi'in.",
+          examples: [
+            "Les atba' at-tabi'in ont compilé les premières sciences islamiques",
+            "L'imam Malik et l'imam Abu Hanifa sont de cette génération",
+          ],
+          tags: ["troisième génération", "érudits", "compilateurs"],
+        },
+        {
+          id: 55,
+          title: "Muhaddith",
+          arabic: "محدث",
+          category: "hadith",
+          definition:
+            "Spécialiste des hadiths. Savant qui maîtrise la science de la transmission et de l'authentification des hadiths.",
+          examples: [
+            "Al-Bukhari et Muslim sont les plus grands muhaddithin",
+            "Un muhaddith doit connaître des milliers de hadiths par cœur",
+          ],
+          tags: ["spécialiste", "érudit", "hadith"],
+        },
+        // TERMES SUPPLÉMENTAIRES - CORAN
+        {
+          id: 56,
+          title: "Ayah",
+          arabic: "آية",
+          category: "coran",
+          definition:
+            "Verset coranique. Chaque unité constitutive du Coran, séparée par des signes de ponctuation spécifiques.",
+          examples: [
+            "Le Coran contient plus de 6000 ayat",
+            "Chaque ayah est une révélation divine",
+          ],
+          tags: ["verset", "révélation", "unité"],
+        },
+        {
+          id: 57,
+          title: "Surah",
+          arabic: "سورة",
+          category: "coran",
+          definition:
+            "Chapitre coranique. Division du Coran en 114 chapitres de longueur variable, chacun ayant un nom spécifique.",
+          examples: [
+            "Al-Fatiha est la première surah",
+            "Al-Baqarah est la plus longue surah",
+          ],
+          tags: ["chapitre", "division", "nom"],
+        },
+        {
+          id: 58,
+          title: "Makki",
+          arabic: "مكي",
+          category: "coran",
+          definition:
+            "Verset ou chapitre révélé à La Mecque. Caractérisé par un style plus poétique et des thèmes de base de l'islam.",
+          examples: [
+            "Les surah makki sont généralement plus courtes",
+            "Elles insistent sur l'unicité divine et le Jour dernier",
+          ],
+          tags: ["mécquois", "poétique", "fondements"],
+        },
+        {
+          id: 59,
+          title: "Madani",
+          arabic: "مدني",
+          category: "coran",
+          definition:
+            "Verset ou chapitre révélé à Médine. Plus législatif et pratique, traitant des lois sociales et juridiques.",
+          examples: [
+            "Les surah madani sont plus longues",
+            "Elles contiennent de nombreuses prescriptions légales",
+          ],
+          tags: ["médinois", "législatif", "pratique"],
+        },
+        {
+          id: 60,
+          title: "Tafsir",
+          arabic: "تفسير",
+          category: "coran",
+          definition:
+            "Exégèse coranique. Science qui explique le sens du Coran, ses causes de révélation et ses interprétations.",
+          examples: [
+            "At-Tabari est un grand exégète",
+            "Le tafsir doit être basé sur des sources fiables",
+          ],
+          tags: ["exégèse", "explication", "science"],
+        },
+        {
+          id: 61,
+          title: "Hafiz",
+          arabic: "حافظ",
+          category: "coran",
+          definition:
+            "Mémorisateur du Coran. Personne qui a appris l'ensemble du Coran par cœur et peut le réciter parfaitement.",
+          examples: [
+            "Devenir hafiz est une grande bénédiction",
+            "Les hafiz préservent le Coran depuis 14 siècles",
+          ],
+          tags: ["mémorisateur", "récitateur", "préservation"],
+        },
+        {
+          id: 62,
+          title: "Qira'at",
+          arabic: "قراءات",
+          category: "coran",
+          definition:
+            "Lectures coraniques. Différentes manières authentiques de réciter le Coran, toutes révélées par Allah.",
+          examples: [
+            "Il existe dix qira'at principales",
+            "Chaque qira'a est attribuée à un grand récitateur",
+          ],
+          tags: ["lecture", "récitation", "variantes"],
+        },
+        {
+          id: 63,
+          title: "Nasikh",
+          arabic: "ناسخ",
+          category: "coran",
+          definition:
+            "Verset abrogateur. Verset coranique qui annule ou modifie la prescription d'un verset antérieur.",
+          examples: [
+            "Le nasikh doit être postérieur au mansukh",
+            "L'abrogation est une sagesse divine",
+          ],
+          tags: ["abrogateur", "annulation", "modification"],
+        },
+        {
+          id: 64,
+          title: "Mansukh",
+          arabic: "منسوخ",
+          category: "coran",
+          definition:
+            "Verset abrogé. Verset dont la prescription a été annulée par un verset postérieur (nasikh).",
+          examples: [
+            "Le mansukh reste toujours parole divine",
+            "Il garde sa valeur spirituelle et légale historique",
+          ],
+          tags: ["abrogé", "annulé", "historique"],
+        },
+        {
+          id: 65,
+          title: "Muhkam",
+          arabic: "محكم",
+          category: "coran",
+          definition:
+            "Verset clair et explicite. Verset dont le sens est évident et ne prête pas à interprétation.",
+          examples: [
+            "Les versets muhkam sont la base de la compréhension coranique",
+            "Ils ne souffrent d'aucune ambiguïté",
+          ],
+          tags: ["clair", "explicite", "évident"],
+        },
+        {
+          id: 66,
+          title: "Mutashabih",
+          arabic: "متشابه",
+          category: "coran",
+          definition:
+            "Verset ambigu. Verset dont le sens exact nécessite une interprétation spécialisée ou une connaissance approfondie.",
+          examples: [
+            "Les versets mutashabih doivent être interprétés par les spécialistes",
+            "Ils ne contredisent jamais les versets muhkam",
+          ],
+          tags: ["ambigu", "interprétation", "spécialisé"],
+        },
+        // TERMES SUPPLÉMENTAIRES - SPIRITUALITÉ
+        {
+          id: 67,
+          title: "Dhikr",
+          arabic: "ذكر",
+          category: "spiritualite",
+          definition:
+            "Invocation d'Allah. Rappel constant du nom d'Allah par la langue et le cœur pour se rapprocher de Lui.",
+          examples: [
+            "Le dhikr est le meilleur moyen de se rapprocher d'Allah",
+            "Subhanallah, Alhamdulillah, Allahu Akbar sont des dhikr",
+          ],
+          tags: ["invocation", "rappel", "proximité"],
+        },
+        {
+          id: 68,
+          title: "Muraqaba",
+          arabic: "مراقبة",
+          category: "spiritualite",
+          definition:
+            "Vigilance spirituelle. Conscience constante de la présence d'Allah et de Son observation de nos actes.",
+          examples: [
+            "La muraqaba empêche de commettre des péchés",
+            "Elle élève l'âme vers la perfection",
+          ],
+          tags: ["vigilance", "conscience", "observation"],
+        },
+        {
+          id: 69,
+          title: "Mujahada",
+          arabic: "مجاهدة",
+          category: "spiritualite",
+          definition:
+            "Lutte spirituelle. Effort intense déployé contre les passions néfastes et les inclinations mauvaises.",
+          examples: [
+            "La mujahada est le plus grand jihad",
+            "Elle nécessite patience et persévérance",
+          ],
+          tags: ["lutte", "effort", "passions"],
+        },
+        {
+          id: 70,
+          title: "Tafakkur",
+          arabic: "تفكر",
+          category: "spiritualite",
+          definition:
+            "Réflexion profonde. Méditation sur les signes d'Allah dans l'univers et dans le Coran pour renforcer la foi.",
+          examples: [
+            "Le tafakkur augmente l'iman",
+            "Allah ordonne de réfléchir à Sa création",
+          ],
+          tags: ["réflexion", "méditation", "signes"],
+        },
+        {
+          id: 71,
+          title: "Khushu'",
+          arabic: "خشوع",
+          category: "spiritualite",
+          definition:
+            "Recueillement. État de concentration et d'humilité parfaite durant la prière et l'adoration.",
+          examples: [
+            "Le khushu' est le fruit de la compréhension du Coran",
+            "Il transforme la prière en expérience spirituelle",
+          ],
+          tags: ["recueillement", "concentration", "humilité"],
+        },
+        {
+          id: 72,
+          title: "Ikhlas",
+          arabic: "إخلاص",
+          category: "spiritualite",
+          definition:
+            "Sincérité. Accomplir les actes d'adoration uniquement pour Allah, sans ostentation ni recherche de louange.",
+          examples: [
+            "L'ikhlas est la condition de l'acceptation des œuvres",
+            "Allah n'accepte que ce qui est fait pour Lui",
+          ],
+          tags: ["sincérité", "pureté", "acceptation"],
+        },
+        {
+          id: 73,
+          title: "Sabir",
+          arabic: "صبر",
+          category: "spiritualite",
+          definition:
+            "Patience. Endurance face aux épreuves, aux difficultés et aux tentations, en se soumettant à la volonté d'Allah.",
+          examples: [
+            "Le sabir est la moitié de la foi",
+            "Il est récompensé au-delà de l'imagination",
+          ],
+          tags: ["patience", "endurance", "soumission"],
+        },
+        {
+          id: 74,
+          title: "Shukr",
+          arabic: "شكر",
+          category: "spiritualite",
+          definition:
+            "Gratitude. Reconnaissance des bienfaits d'Allah exprimée par la langue, le cœur et les actes.",
+          examples: [
+            "Le shukr transforme les bienfaits en davantage de bienfaits",
+            "Il est le contraire de l'ingratitude (kufran)",
+          ],
+          tags: ["gratitude", "reconnaissance", "bienfaits"],
+        },
+        {
+          id: 75,
+          title: "Taqwa",
+          arabic: "تقوى",
+          category: "spiritualite",
+          definition:
+            "Piété. Protection de l'âme contre les interdits par amour et crainte révérencielle d'Allah.",
+          examples: [
+            "La taqwa est le summum de la spiritualité",
+            "Elle conduit au Paradis et à la satisfaction d'Allah",
+          ],
+          tags: ["piété", "protection", "perfection"],
+        },
+        {
+          id: 76,
+          title: "Zuhd",
+          arabic: "زهد",
+          category: "spiritualite",
+          definition:
+            "Ascétisme. Détachement des plaisirs matériels et concentration sur les biens éternels de l'au-delà.",
+          examples: [
+            "Le zuhd ne signifie pas rejeter les biens licites",
+            "Il consiste à ne pas s'attacher aux biens périssables",
+          ],
+          tags: ["ascétisme", "détachement", "éternel"],
+        },
+        // TERMES SUPPLÉMENTAIRES - HISTOIRE
+        {
+          id: 77,
+          title: "Hijra",
+          arabic: "هجرة",
+          category: "histoire",
+          definition:
+            "Émigration du Prophète de La Mecque à Médine en 622. Marque le début du calendrier islamique et la fondation de la communauté musulmane.",
+          examples: [
+            "La hijra est un tournant majeur de l'histoire islamique",
+            "Elle sépara les croyants des incroyants",
+          ],
+          tags: ["émigration", "calendrier", "communauté"],
+        },
+        {
+          id: 78,
+          title: "Badr",
+          arabic: "بدر",
+          category: "histoire",
+          definition:
+            "Première grande bataille entre musulmans et Quraysh en 624. Victoire miraculeuse des musulmans malgré leur infériorité numérique.",
+          examples: [
+            "La bataille de Badr montra la puissance divine",
+            "Elle établit la suprématie musulmane à Médine",
+          ],
+          tags: ["bataille", "victoire", "miracle"],
+        },
+        {
+          id: 79,
+          title: "Uhud",
+          arabic: "أحد",
+          category: "histoire",
+          definition:
+            "Deuxième bataille majeure en 625. Les musulmans subirent une défaite partielle due à la désobéissance de certains archers.",
+          examples: [
+            "La bataille d'Uhud enseigna l'importance de l'obéissance",
+            "Le Prophète ﷺ fut blessé durant cette bataille",
+          ],
+          tags: ["bataille", "défaite", "leçon"],
+        },
+        {
+          id: 80,
+          title: "Khandaq",
+          arabic: "خندق",
+          category: "histoire",
+          definition:
+            "Bataille du Fossé en 627. Stratégie défensive des musulmans qui creusèrent un fossé autour de Médine pour se protéger d'une coalition ennemie.",
+          examples: [
+            "Salman al-Farisi suggéra l'idée du fossé",
+            "Cette bataille montra l'ingéniosité des musulmans",
+          ],
+          tags: ["fossé", "stratégie", "défense"],
+        },
+        {
+          id: 81,
+          title: "Khaybar",
+          arabic: "خيبر",
+          category: "histoire",
+          definition:
+            "Conquête de l'oasis de Khaybar en 628. Victoire importante qui assura la sécurité économique des musulmans.",
+          examples: [
+            "Khaybar était une forteresse juive importante",
+            "Sa conquête apporta prospérité aux musulmans",
+          ],
+          tags: ["conquête", "oasis", "sécurité"],
+        },
+        {
+          id: 82,
+          title: "Fath Mecca",
+          arabic: "فتح مكة",
+          category: "histoire",
+          definition:
+            "Conquête de La Mecque en 630. Entrée triomphale du Prophète ﷺ dans sa ville natale sans effusion de sang.",
+          examples: [
+            "Le Fath Mecca montra la miséricorde du Prophète ﷺ",
+            "Il marqua la victoire définitive de l'islam",
+          ],
+          tags: ["conquête", "miséricorde", "victoire"],
+        },
+        {
+          id: 83,
+          title: "Ghazwa",
+          arabic: "غزوة",
+          category: "histoire",
+          definition:
+            "Expédition militaire menée par le Prophète Muhammad ﷺ. Ensemble des 27 batailles et escarmouches qu'il dirigea personnellement.",
+          examples: [
+            "Chaque ghazwa a une leçon à tirer",
+            "Elles montrent le courage et la stratégie du Prophète",
+          ],
+          tags: ["expédition", "militaire", "prophète"],
+        },
+        {
+          id: 84,
+          title: "Saraya",
+          arabic: "سرايا",
+          category: "histoire",
+          definition:
+            "Expéditions militaires mineures. Missions de reconnaissance ou d'attaque rapide menées par des lieutenants du Prophète.",
+          examples: [
+            "Les saraya étaient souvent menées par des sahaba",
+            "Elles servaient à affaiblir les ennemis de l'islam",
+          ],
+          tags: ["expédition", "mineure", "reconnaissance"],
+        },
+        {
+          id: 85,
+          title: "Ridda",
+          arabic: "ردة",
+          category: "histoire",
+          definition:
+            "Apostasie. Révolte de certaines tribus arabes après la mort du Prophète ﷺ, refusant de payer la zakat.",
+          examples: [
+            "Abu Bakr mena les guerres de Ridda",
+            "Elles consolidèrent l'unité de la communauté",
+          ],
+          tags: ["apostasie", "révolte", "unité"],
+        },
+        {
+          id: 86,
+          title: "Rashidun",
+          arabic: "راشدون",
+          category: "histoire",
+          definition:
+            "Califes bien guidés. Les quatre premiers califes : Abu Bakr, Umar, Uthman et Ali. Période considérée comme l'âge d'or de l'islam.",
+          examples: [
+            "Les rashidun appliquèrent parfaitement la sunna",
+            "Leur justice et piété sont légendaires",
+          ],
+          tags: ["califes", "guidés", "âge d'or"],
+        },
+        {
+          id: 87,
+          title: "Umayyades",
+          arabic: "أمويون",
+          category: "histoire",
+          definition:
+            "Dynastie califale régnant de 661 à 750. Première dynastie islamique, connue pour ses conquêtes territoriales massives.",
+          examples: [
+            "Les Umayyades étendirent l'islam jusqu'en Espagne",
+            "Damas était leur capitale",
+          ],
+          tags: ["dynastie", "conquêtes", "expansion"],
+        },
+        {
+          id: 88,
+          title: "Abbassides",
+          arabic: "عباسيون",
+          category: "histoire",
+          definition:
+            "Dynastie califale régnant de 750 à 1258. Période de grand développement scientifique et culturel, avec Bagdad comme capitale.",
+          examples: [
+            "Les Abbassides présidèrent la Renaissance islamique",
+            "Al-Kindi et Al-Razi vécurent sous leur règne",
+          ],
+          tags: ["dynastie", "scientifique", "culturel"],
+        },
+        {
+          id: 89,
+          title: "Andalous",
+          arabic: "أندلسيون",
+          category: "histoire",
+          definition:
+            "Musulmans d'Espagne. Civilisation islamique en Al-Andalus (711-1492) connue pour sa tolérance et ses avancées culturelles.",
+          examples: [
+            "Cordoue était la capitale du califat andalou",
+            "Les Andalous préservèrent le savoir grec et romain",
+          ],
+          tags: ["espagne", "tolérance", "civilisation"],
+        },
+        {
+          id: 90,
+          title: "Ottomans",
+          arabic: "عثمانيون",
+          category: "histoire",
+          definition:
+            "Empire ottoman (1299-1922). Dernier grand empire islamique, connu pour son administration et ses conquêtes.",
+          examples: [
+            "Les Ottomans conquirent Constantinople en 1453",
+            "Ils protégèrent les lieux saints de l'islam",
+          ],
+          tags: ["empire", "administration", "conquêtes"],
+        },
+        // TERMES SUPPLÉMENTAIRES - PLUS DE TERMES DIVERS
+        {
+          id: 91,
+          title: "Adhan",
+          arabic: "أذان",
+          category: "fiqh",
+          definition:
+            "Appel à la prière. Chant récité par le muezzin pour annoncer l'heure de chaque prière obligatoire.",
+          examples: [
+            "L'adhan contient la shahada et les takbir",
+            "Il est recommandé de répondre à l'adhan",
+          ],
+          tags: ["appel", "prière", "muezzin"],
+        },
+        {
+          id: 92,
+          title: "Iqama",
+          arabic: "إقامة",
+          category: "fiqh",
+          definition:
+            "Appel au rassemblement. Chant plus court que l'adhan annonçant le début imminent de la prière en congregation.",
+          examples: [
+            "L'iqama se fait juste avant la prière",
+            "Elle indique que la prière va commencer",
+          ],
+          tags: ["rassemblement", "prière", "congrégation"],
+        },
+        {
+          id: 93,
+          title: "Du'a",
+          arabic: "دعاء",
+          category: "spiritualite",
+          definition:
+            "Invocation suppliante. Prière personnelle adressée à Allah pour demander Ses faveurs ou Le remercier.",
+          examples: [
+            "Le du'a est une arme du croyant",
+            "Il doit être fait avec concentration et humilité",
+          ],
+          tags: ["invocation", "supplication", "personnelle"],
+        },
+        {
+          id: 94,
+          title: "Istighfar",
+          arabic: "استغفار",
+          category: "spiritualite",
+          definition:
+            "Demande de pardon. Formule par laquelle on implore le pardon d'Allah pour ses péchés et fautes.",
+          examples: [
+            "Astaghfirullah est la formule d'istighfar",
+            "L'istighfar ouvre les portes de la miséricorde",
+          ],
+          tags: ["pardon", "repentir", "miséricorde"],
+        },
+        {
+          id: 95,
+          title: "Insha'Allah",
+          arabic: "إن شاء الله",
+          category: "spiritualite",
+          definition:
+            "Si Allah le veut. Expression rappelant que tout dépend de la volonté et de la permission divines.",
+          examples: [
+            "Dire Insha'Allah montre la soumission à Allah",
+            "C'est une protection contre l'arrogance",
+          ],
+          tags: ["volonté divine", "soumission", "protection"],
+        },
+        {
+          id: 96,
+          title: "Alhamdulillah",
+          arabic: "الحمد لله",
+          category: "spiritualite",
+          definition:
+            "Louange à Allah. Expression de gratitude et de reconnaissance envers Allah pour Ses bienfaits.",
+          examples: [
+            "Alhamdulillah est le dhikr le plus méritoire",
+            "Il doit être dit dans tous les états",
+          ],
+          tags: ["louange", "gratitude", "bienfaits"],
+        },
+        {
+          id: 97,
+          title: "Subhanallah",
+          arabic: "سبحان الله",
+          category: "spiritualite",
+          definition:
+            "Gloire à Allah. Proclamation de la perfection et de la transcendance d'Allah au-dessus de toute imperfection.",
+          examples: [
+            "Subhanallah exprime l'émerveillement devant la création",
+            "C'est un des meilleurs dhikr",
+          ],
+          tags: ["gloire", "perfection", "émerveillement"],
+        },
+        {
+          id: 98,
+          title: "Allahu Akbar",
+          arabic: "الله أكبر",
+          category: "spiritualite",
+          definition:
+            "Allah est le plus Grand. Affirmation de la suprématie absolue d'Allah sur toute chose.",
+          examples: [
+            "Allahu Akbar est proclamé durant la prière",
+            "Il rappelle la grandeur divine",
+          ],
+          tags: ["suprématie", "grandeur", "prière"],
+        },
+        {
+          id: 99,
+          title: "La ilaha illallah",
+          arabic: "لا إله إلا الله",
+          category: "aqida",
+          definition:
+            "Il n'y a de divinité qu'Allah. La shahada, proclamation de l'unicité absolue d'Allah dans la divinité.",
+          examples: [
+            "La shahada est le pilier de l'islam",
+            "Elle ouvre les portes du Paradis",
+          ],
+          tags: ["shahada", "unicité", "divinité"],
+        },
+        {
+          id: 100,
+          title: "Muhammadur Rasulullah",
+          arabic: "محمد رسول الله",
+          category: "aqida",
+          definition:
+            "Muhammad est le Messager d'Allah. Deuxième partie de la shahada, attestant de la prophétie de Muhammad ﷺ.",
+          examples: [
+            "Croire en Muhammad ﷺ est obligatoire",
+            "Il est le dernier des prophètes",
+          ],
+          tags: ["shahada", "prophète", "messager"],
+        },
+      ];
+
+      let currentFilter = "all";
+      let filteredTerms = [...window.DICTIONARY_TERMS];
+
+      // Fonctions de recherche et filtrage
+      window.filterTerms = function () {
+        console.log("filterTerms called");
+        const searchInput = document.getElementById("search-input");
+        const searchTerm = searchInput.value.toLowerCase().trim();
+
+        console.log(
+          "searchTerm:",
+          `"${searchTerm}"`,
+          "currentFilter:",
+          currentFilter,
+        );
+
+        filteredTerms = window.DICTIONARY_TERMS.filter((term) => {
+          // Si pas de terme de recherche, montrer tous les termes du filtre actuel
+          if (searchTerm === "") {
+            return currentFilter === "all" || term.category === currentFilter;
+          }
+
+          // Sinon, filtrer par recherche et catégorie
+          const matchesSearch =
+            term.title.toLowerCase().includes(searchTerm) ||
+            term.arabic.includes(searchTerm) ||
+            term.definition.toLowerCase().includes(searchTerm) ||
+            term.tags.some((tag) => tag.toLowerCase().includes(searchTerm));
+
+          const matchesFilter =
+            currentFilter === "all" || term.category === currentFilter;
+
+          return matchesSearch && matchesFilter;
+        });
+
+        renderTerms();
+      };
+
+      function renderTerms() {
+        const grid = document.getElementById("terms-grid");
+        const searchTerm = document.getElementById("search-input").value.trim();
+
+        console.log(
+          "renderTerms called with searchTerm:",
+          `"${searchTerm}"`,
+          "currentFilter:",
+          currentFilter,
+          "filteredTerms.length:",
+          filteredTerms.length,
+        );
+
+        // Si pas de terme de recherche, ne rien afficher
+        if (searchTerm === "") {
+          grid.innerHTML = "";
+          return;
+        }
+
+        // Si aucun résultat trouvé
+        if (filteredTerms.length === 0) {
+          grid.innerHTML = `
+            <div class="no-results">
+              <div class="no-results-icon">📭</div>
+              <h3>Aucun résultat trouvé</h3>
+              <p>Essayez de modifier vos termes de recherche ou sélectionnez une autre catégorie.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Afficher les résultats
+        grid.innerHTML = "";
+        filteredTerms.forEach((term) => {
+          const card = document.createElement("div");
+          card.className = "term-card";
+          card.onclick = () => openModal(term);
+
+          card.innerHTML = `
+      <div class="term-header">
+        <div class="term-icon">${getCategoryIcon(term.category)}</div>
+        <div class="term-title">${term.title}</div>
+        <div class="term-category">${getCategoryName(term.category)}</div>
+      </div>
+      <div class="term-definition">${term.definition.substring(0, 120)}...</div>
+      <div class="term-arabic">${term.arabic}</div>
+      <div class="term-tags">
+        ${term.tags.map((tag) => `<span class="term-tag">${tag}</span>`).join("")}
+      </div>
+    `;
+
+          grid.appendChild(card);
+        });
+      }
+
+      function getCategoryIcon(category) {
+        const icons = {
+          aqida: "🕌",
+          fiqh: "⚖️",
+          hadith: "📜",
+          coran: "📖",
+          spiritualite: "💎",
+          histoire: "🏛️",
+        };
+        return icons[category] || "📚";
+      }
+
+      function getCategoryName(category) {
+        const names = {
+          aqida: "Aqîda",
+          fiqh: "Fiqh",
+          hadith: "Hadith",
+          coran: "Coran",
+          spiritualite: "Spiritualité",
+          histoire: "Histoire",
+        };
+        return names[category] || category;
+      }
+
+      function openModal(term) {
+        document.getElementById("modal-title").textContent = term.title;
+        document.getElementById("modal-subtitle").textContent = getCategoryName(
+          term.category,
+        );
+        document.getElementById("modal-arabic").textContent = term.arabic;
+        document.getElementById("modal-definition").textContent =
+          term.definition;
+
+        const examplesHtml =
+          term.examples.length > 0
+            ? `<h4>Exemples d'utilisation :</h4><ul>${term.examples.map((ex) => `<li>${ex}</li>`).join("")}</ul>`
+            : "";
+        document.getElementById("modal-examples").innerHTML = examplesHtml;
+
+        document.getElementById("modal-overlay").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("modal-overlay").style.display = "none";
+      }
+
+      // Événements
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("search-input");
+        const searchBtn = document.querySelector(".search-btn");
+
+        if (searchInput) {
+          searchInput.addEventListener("input", window.filterTerms);
+          console.log("Search input event attached");
+        }
+        if (searchBtn) {
+          searchBtn.addEventListener("click", window.filterTerms);
+          console.log("Search button event attached");
+        }
+
+        // Événements pour les boutons de thème
+        document.querySelectorAll(".theme-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".theme-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentFilter = btn.dataset.theme;
+            window.filterTerms();
+          });
+        });
+      });
+
+      // Initialisation
+      console.log("Initializing dictionary...");
+      console.log(
+        "Terms loaded:",
+        window.DICTIONARY_TERMS ? window.DICTIONARY_TERMS.length : "Not loaded",
+      );
+      // renderTerms(); // Ne pas afficher au chargement initial
+
+      // Attacher les événements au chargement de la fenêtre
+      window.addEventListener("load", function () {
+        const searchInput = document.getElementById("search-input");
+        const searchBtn = document.querySelector(".search-btn");
+
+        if (searchInput) {
+          searchInput.addEventListener("input", window.filterTerms);
+          console.log("Search input event attached");
+        }
+        if (searchBtn) {
+          searchBtn.addEventListener("click", window.filterTerms);
+          console.log("Search button event attached");
+        }
+      });
+    </script>
+    <script src="../js/session.js"></script>
+  </body>
+</html>

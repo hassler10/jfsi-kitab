@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Bibliothèque Islamique</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      .page-hero {
+        padding: 140px 60px 60px;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          rgba(26, 58, 42, 0.3),
+          var(--noir-doux)
+        );
+      }
+      .page-hero .hero-arabic {
+        font-family: "Amiri", serif;
+        font-size: clamp(20px, 3vw, 36px);
+        color: var(--or);
+        direction: rtl;
+        margin-bottom: 16px;
+      }
+      .search-bar {
+        max-width: 600px;
+        margin: 0 auto 40px;
+        display: flex;
+        gap: 12px;
+      }
+      .search-bar input {
+        flex: 1;
+        padding: 14px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        border-radius: 4px;
+        color: var(--blanc);
+        font-family: "Lato", sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+      .search-bar input:focus {
+        border-color: var(--or);
+      }
+      .search-bar button {
+        padding: 14px 28px;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none;
+        border-radius: 4px;
+        color: var(--noir-doux);
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .search-bar button:hover {
+        transform: translateY(-2px);
+      }
+      .filter-tabs {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 50px;
+      }
+      .filter-tab {
+        padding: 8px 20px;
+        border-radius: 20px;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        background: transparent;
+        color: var(--gris);
+        font-size: 12px;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: "Lato", sans-serif;
+      }
+      .filter-tab.active,
+      .filter-tab:hover {
+        background: rgba(201, 168, 76, 0.12);
+        border-color: var(--or);
+        color: var(--or);
+      }
+
+      .biblio-section {
+        padding: 0 60px 80px;
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+      .section-cat-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 18px;
+        color: var(--or);
+        margin-bottom: 28px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      /* Grille livres */
+      .livres-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 22px;
+        margin-bottom: 60px;
+      }
+      .livre-card {
+        background: rgba(13, 31, 21, 0.7);
+        border: 1px solid rgba(201, 168, 76, 0.13);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.35s;
+        cursor: pointer;
+        position: relative;
+      }
+      .livre-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(201, 168, 76, 0.4);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      }
+      .livre-cover {
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 52px;
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.3),
+          rgba(13, 31, 21, 0.8)
+        );
+      }
+      .livre-body {
+        padding: 16px;
+      }
+      .livre-titre {
+        font-family: "Amiri", serif;
+        font-size: 15px;
+        color: var(--blanc);
+        margin-bottom: 6px;
+        line-height: 1.4;
+      }
+      .livre-auteur {
+        font-size: 12px;
+        color: var(--gris);
+        margin-bottom: 10px;
+      }
+      .livre-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .livre-tag {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        color: var(--or);
+      }
+      .livre-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .livre-btn {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        font-family: "Lato", sans-serif;
+        transition: all 0.2s;
+      }
+      .livre-btn.lire {
+        background: rgba(201, 168, 76, 0.12);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        color: var(--or);
+      }
+      .livre-btn.dl {
+        background: rgba(39, 174, 96, 0.1);
+        border: 1px solid rgba(39, 174, 96, 0.3);
+        color: var(--success);
+      }
+      .livre-btn:hover {
+        transform: translateY(-1px);
+        opacity: 0.85;
+      }
+      .abonne-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(201, 168, 76, 0.9);
+        color: var(--noir-doux);
+        font-size: 9px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 10px;
+        letter-spacing: 1px;
+      }
+
+      /* Audio */
+      .audio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 18px;
+        margin-bottom: 60px;
+      }
+      .audio-card {
+        background: rgba(13, 31, 21, 0.7);
+        border: 1px solid rgba(201, 168, 76, 0.13);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        transition: all 0.3s;
+      }
+      .audio-card:hover {
+        border-color: rgba(201, 168, 76, 0.35);
+        background: rgba(45, 90, 61, 0.15);
+      }
+      .audio-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--vert-moyen), var(--vert));
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+      .audio-info {
+        flex: 1;
+      }
+      .audio-titre {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--blanc);
+        margin-bottom: 4px;
+      }
+      .audio-auteur {
+        font-size: 12px;
+        color: var(--gris);
+        margin-bottom: 8px;
+      }
+      .audio-player {
+        width: 100%;
+        height: 28px;
+        accent-color: var(--or);
+      }
+      .audio-meta {
+        font-size: 10px;
+        color: var(--gris);
+        margin-top: 4px;
+      }
+
+      /* Accès abonné */
+      .acces-requis {
+        text-align: center;
+        padding: 60px 30px;
+        background: rgba(201, 168, 76, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        border-radius: 8px;
+        margin-bottom: 40px;
+      }
+      .acces-requis h3 {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 20px;
+        color: var(--or);
+        margin-bottom: 12px;
+      }
+      .acces-requis p {
+        font-size: 14px;
+        color: var(--gris);
+        margin-bottom: 24px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      @media (max-width: 1024px) {
+        .biblio-section {
+          padding: 0 30px 60px;
+        }
+      }
+      @media (max-width: 768px) {
+        .livres-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .page-hero {
+          padding: 120px 30px 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <nav>
+      <div class="nav-logo">
+        <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="bibliotheque.html" class="active">Bibliothèque</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="abonnement.html">Abonnements</a></li>
+        <li><a href="dictionnaire.html">Dictionnaire</a></li>
+        <li>
+          <a href="salle-reunion.html" class="nav-bureau">🤝 Espace Bureau</a>
+        </li>
+      </ul>
+      <div class="nav-right">
+        <button onclick="sessionManager.openLoginModal()" class="nav-cta">
+          Connexion
+        </button>
+      </div>
+      <div class="nav-burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+
+    <div class="page-hero">
+      <div class="hero-arabic">الْمَكْتَبَةُ الْإِسْلَامِيَّة</div>
+      <span class="section-tag">Savoir & Connaissance</span>
+      <h1
+        class="section-title"
+        style="font-family: &quot;Cinzel Decorative&quot;, serif"
+      >
+        La <span>Bibliothèque</span> JFSI
+      </h1>
+      <p
+        style="
+          color: var(--gris);
+          font-size: 15px;
+          max-width: 500px;
+          margin: 14px auto 30px;
+          line-height: 1.8;
+        "
+      >
+        Plus de 500 ouvrages islamiques, audios et conférences accessibles
+        24h/24 aux membres abonnés.
+      </p>
+      <div class="search-bar">
+        <input
+          type="text"
+          id="search"
+          placeholder="Rechercher un ouvrage, un auteur..."
+          oninput="filtrerLivres(this.value)"
+        />
+        <button
+          onclick="filtrerLivres(document.getElementById('search').value)"
+        >
+          🔍 Chercher
+        </button>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filtrer(this, 'all')">
+          Tout
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'coran')">
+          📖 Coran
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'hadith')">
+          📜 Hadith
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'fiqh')">
+          ⚖️ Fiqh
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'aqida')">
+          🕌 Aqîda
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'sira')">
+          🌟 Sîra
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'arabe')">
+          🔤 Arabe
+        </button>
+        <button class="filter-tab" onclick="filtrer(this, 'audio')">
+          🎙️ Audio
+        </button>
+      </div>
+    </div>
+
+    <div class="biblio-section" id="content-livres">
+      <!-- CORAN -->
+      <div class="section-cat-title" data-cat="coran">
+        📖 <span>Coran & Tafsîr</span>
+      </div>
+      <div class="livres-grid" data-cat="coran">
+        <div class="livre-card">
+          <span class="abonne-badge">ABONNÉ</span>
+          <div class="livre-cover">📗</div>
+          <div class="livre-body">
+            <div class="livre-titre">Tafsîr Ibn Kathîr</div>
+            <div class="livre-auteur">Ibn Kathîr Al-Dimashqi</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Tafsîr</span
+              ><span class="livre-tag">Classique</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="livre-card">
+          <span class="abonne-badge">ABONNÉ</span>
+          <div class="livre-cover">📘</div>
+          <div class="livre-body">
+            <div class="livre-titre">Al-Itqân fî 'Ulûm al-Qur'ân</div>
+            <div class="livre-auteur">Jalâluddîn As-Suyûtî</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Sciences</span
+              ><span class="livre-tag">Coran</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="livre-card">
+          <span class="abonne-badge">ABONNÉ</span>
+          <div class="livre-cover">📙</div>
+          <div class="livre-body">
+            <div class="livre-titre">Le Saint Coran — Traduction française</div>
+            <div class="livre-auteur">Hamidullah</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Traduction</span
+              ><span class="livre-tag">Français</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="livre-card">
+          <div class="livre-cover">📕</div>
+          <div class="livre-body">
+            <div class="livre-titre">Tafsîr Al-Jalâlayn</div>
+            <div class="livre-auteur">Suyûtî & Mahallî</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Tafsîr</span
+              ><span class="livre-tag">Gratuit</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HADITH -->
+      <div class="section-cat-title" data-cat="hadith">
+        📜 <span>Hadith & Sunna</span>
+      </div>
+      <div class="livres-grid" data-cat="hadith">
+        <div class="livre-card">
+          <span class="abonne-badge">ABONNÉ</span>
+          <div class="livre-cover">📚</div>
+          <div class="livre-body">
+            <div class="livre-titre">Sahîh Al-Bukhârî</div>
+            <div class="livre-auteur">Imâm Al-Bukhârî</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Hadith</span
+              ><span class="livre-tag">Sahîh</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="livre-card">
+          <span class="abonne-badge">ABONNÉ</span>
+          <div class="livre-cover">📓</div>
+          <div class="livre-body">
+            <div class="livre-titre">Sahîh Muslim</div>
+            <div class="livre-auteur">Imâm Muslim</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Hadith</span
+              ><span class="livre-tag">Sahîh</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="livre-card">
+          <div class="livre-cover">📔</div>
+          <div class="livre-body">
+            <div class="livre-titre">Les 40 Hadiths — An-Nawawî</div>
+            <div class="livre-auteur">Imâm An-Nawawî</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Hadith</span
+              ><span class="livre-tag">Gratuit</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="livre-card">
+          <span class="abonne-badge">ABONNÉ</span>
+          <div class="livre-cover">📒</div>
+          <div class="livre-body">
+            <div class="livre-titre">Riyâd As-Sâlihîn</div>
+            <div class="livre-auteur">Imâm An-Nawawî</div>
+            <div class="livre-tags">
+              <span class="livre-tag">Hadith</span
+              ><span class="livre-tag">Pratique</span>
+            </div>
+            <div class="livre-actions">
+              <button class="livre-btn lire" onclick="lireDoc()">📖 Lire</button
+              ><button class="livre-btn dl" onclick="telecharger()">
+                ⬇ PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIO -->
+      <div class="section-cat-title" data-cat="audio">
+        🎙️ <span>Conférences & Audio</span>
+      </div>
+      <div class="audio-grid" data-cat="audio">
+        <div class="audio-card">
+          <div class="audio-icon">🎙️</div>
+          <div class="audio-info">
+            <div class="audio-titre">Introduction aux Sciences Islamiques</div>
+            <div class="audio-auteur">Cheikh Abou Bakr</div>
+            <audio class="audio-player" controls>
+              <source
+                src="../audio/conferences/intro-sciences.mp3"
+                type="audio/mp3"
+              />
+            </audio>
+            <div class="audio-meta">Durée : 45 min — Série : Fondamentaux</div>
+          </div>
+        </div>
+        <div class="audio-card">
+          <div class="audio-icon">📿</div>
+          <div class="audio-info">
+            <div class="audio-titre">Les Piliers de l'Islam</div>
+            <div class="audio-auteur">Ustâdh Ibrahim Al-Amine</div>
+            <audio class="audio-player" controls>
+              <source
+                src="../audio/formations/piliers-islam.mp3"
+                type="audio/mp3"
+              />
+            </audio>
+            <div class="audio-meta">Durée : 32 min — Niveau : Débutant</div>
+          </div>
+        </div>
+        <div class="audio-card">
+          <div class="audio-icon">🌿</div>
+          <div class="audio-info">
+            <div class="audio-titre">Purification de l'Âme — Tazkiyya</div>
+            <div class="audio-auteur">Cheikh Youssouf Al-Qaradawi</div>
+            <audio class="audio-player" controls>
+              <source
+                src="../audio/spiritualite/tazkiyya.mp3"
+                type="audio/mp3"
+              />
+            </audio>
+            <div class="audio-meta">Durée : 58 min — Série : Spiritualité</div>
+          </div>
+        </div>
+        <div class="audio-card">
+          <div class="audio-icon">📖</div>
+          <div class="audio-info">
+            <div class="audio-titre">
+              Récitation du Coran — Sourate Al-Baqara
+            </div>
+            <div class="audio-auteur">Sheikh Mishary Al-Afasy</div>
+            <audio class="audio-player" controls>
+              <source src="../audio/coran/baqara.mp3" type="audio/mp3" />
+            </audio>
+            <div class="audio-meta">Durée : 1h20 — Récitation</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accès requis -->
+      <div class="acces-requis reveal">
+        <h3>🔐 Accès Complet Réservé aux Abonnés</h3>
+        <p>
+          Pour accéder à l'intégralité de notre bibliothèque (500+ ouvrages),
+          souscrivez à un abonnement dès 500 FCFA/semaine.
+        </p>
+        <div
+          style="
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <a href="abonnement.html" class="btn-primary">S'abonner maintenant</a>
+          <a href="../index.html#connexion" class="btn-secondary"
+            >Déjà abonné ? Se connecter</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+          <p>
+            Bibliothèque islamique numérique — Connaissance et spiritualité.
+          </p>
+          <div class="footer-arabic">اقْرَأْ بِاسْمِ رَبِّكَ</div>
+        </div>
+        <div class="footer-col">
+          <h4>Catégories</h4>
+          <ul>
+            <li><a href="#">Coran & Tafsîr</a></li>
+            <li><a href="#">Hadith</a></li>
+            <li><a href="#">Fiqh</a></li>
+            <li><a href="#">Sîra</a></li>
+            <li><a href="#">Audio</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Accueil</a></li>
+            <li><a href="formations.html">Formations</a></li>
+            <li><a href="abonnement.html">Abonnements</a></li>
+            <li><a href="salle-reunion.html">Espace Bureau</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li>
+              <a href="#"
+                ><span
+                  class="__cf_email__"
+                  data-cfemail="254f43564c654456564a464c44514c4a4b0b4a5742"
+                  >[email&#160;protected]</span
+                ></a
+              >
+            </li>
+            <li><a href="#">+225 00 00 00 00</a></li>
+            <li><a href="#">WhatsApp</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 JFSI — Bibliothèque Islamique</p>
+        <p class="arabic-footer">بِسْمِ اللَّهِ</p>
+      </div>
+    </footer>
+
+    <script src="../js/global.js"></script>
+    <script>
+      function filtrer(el, cat) {
+        document
+          .querySelectorAll(".filter-tab")
+          .forEach((t) => t.classList.remove("active"));
+        el.classList.add("active");
+        const sections = document.querySelectorAll("[data-cat]");
+        sections.forEach((s) => {
+          if (cat === "all" || s.dataset.cat === cat) s.style.display = "";
+          else s.style.display = "none";
+        });
+      }
+      function filtrerLivres(q) {
+        document.querySelectorAll(".livre-card").forEach((c) => {
+          const txt = c.textContent.toLowerCase();
+          c.style.display = txt.includes(q.toLowerCase()) ? "" : "none";
+        });
+      }
+
+      function lireDoc(el) {
+        try {
+          const sess = JSON.parse(
+            localStorage.getItem("jfsi_session") || "null",
+          );
+          const card = el ? el.closest(".livre-card") : null;
+          const isAbonne = card && card.querySelector(".abonne-badge");
+          if (isAbonne && (!sess || sess.expiry < Date.now())) {
+            notif("🔐 Abonnement requis pour lire ce document.", true);
+            setTimeout(() => {
+              window.location.href = "abonnement.html";
+            }, 1800);
+            return;
+          }
+          notif("📖 Ouverture du document en cours...");
+        } catch (e) {
+          notif("📖 Document en cours de chargement...");
+        }
+      }
+
+      function telecharger(el) {
+        try {
+          const sess = JSON.parse(
+            localStorage.getItem("jfsi_session") || "null",
+          );
+          if (!sess || sess.expiry < Date.now()) {
+            notif("🔐 Abonnement requis pour télécharger.", true);
+            return;
+          }
+          if (sess.plan === "Hebdomadaire") {
+            notif(
+              "⚠️ Le téléchargement est disponible à partir du plan Mensuel.",
+              true,
+            );
+            return;
+          }
+          notif("⬇️ Téléchargement démarré !");
+        } catch (e) {
+          notif("🔐 Connectez-vous pour télécharger.", true);
+        }
+      }
+    </script>
+    <script src="../js/filters.js"></script>
+    <script src="../js/session.js"></script>
+  </body>
+</html>
