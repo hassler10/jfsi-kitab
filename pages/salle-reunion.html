@@ -1769,13 +1769,13 @@
             <div class="choix-btns">
               <button
                 class="c-btn login-gold"
-                onclick="ouvrirModalConnexion('admin')"
+                onclick="aller('sc-auth');initAuth('admin','connexion')"
               >
                 Se connecter
               </button>
               <button
                 class="c-btn reg-gold"
-                onclick="ouvrirModalInscription('admin')"
+                onclick="aller('sc-auth');initAuth('admin','inscription')"
               >
                 S'inscrire
               </button>
@@ -1791,13 +1791,13 @@
             <div class="choix-btns">
               <button
                 class="c-btn login-green"
-                onclick="ouvrirModalConnexion('bureau')"
+                onclick="aller('sc-auth');initAuth('bureau','connexion')"
               >
                 Se connecter
               </button>
               <button
                 class="c-btn reg-green"
-                onclick="ouvrirModalInscription('bureau')"
+                onclick="aller('sc-auth');initAuth('bureau','inscription')"
               >
                 S'inscrire
               </button>
@@ -2001,7 +2001,172 @@
       </div>
     </div>
 
-    <!-- ══ INSCRIPTION ══ -->
+    <!-- ══ AUTH UNIFIÉ (Connexion & Inscription) ══ -->
+    <div id="sc-auth" class="screen">
+      <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at 50% 30%,rgba(45,90,61,0.2) 0%,transparent 60%),var(--noir-doux);">
+
+        <!-- Tabs rôle -->
+        <div style="display:flex;gap:8px;margin-bottom:28px;" id="auth-tabs">
+          <button id="tab-admin" onclick="switchAuthRole('admin')" style="padding:9px 24px;border-radius:2px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:'Lato',sans-serif;border:1px solid rgba(201,168,76,0.4);background:linear-gradient(135deg,var(--or),var(--or-fonce));color:var(--noir-doux);transition:all 0.3s;">👑 Administrateur</button>
+          <button id="tab-bureau" onclick="switchAuthRole('bureau')" style="padding:9px 24px;border-radius:2px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:'Lato',sans-serif;border:1px solid rgba(61,122,82,0.3);background:transparent;color:rgba(249,245,236,0.5);transition:all 0.3s;">🤝 Membre du Bureau</button>
+        </div>
+
+        <!-- Écran ADMIN -->
+        <div id="auth-admin" style="width:100%;max-width:480px;">
+
+          <!-- Admin Connexion -->
+          <div id="auth-admin-connexion" class="auth-step" style="display:block;">
+            <div style="background:rgba(13,31,21,0.92);border:1px solid rgba(201,168,76,0.22);border-radius:12px;padding:40px 36px;position:relative;">
+              <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:2px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
+              <div style="font-family:'Amiri',serif;font-size:18px;color:var(--or);text-align:center;margin-bottom:4px;direction:rtl;">تَسْجِيل الدُّخُول</div>
+              <h2 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--blanc);text-align:center;margin-bottom:4px;font-weight:400;">Connexion Admin</h2>
+              <p style="font-size:12px;color:var(--gris);text-align:center;margin-bottom:16px;letter-spacing:1px;">Entrez votre email pour recevoir un code OTP</p>
+              <span style="display:block;width:fit-content;margin:0 auto 20px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(201,168,76,0.14);border:1px solid rgba(201,168,76,0.4);color:var(--or);">👑 Administrateur</span>
+
+              <!-- Step email -->
+              <div id="auth-admin-step-email">
+                <div class="field"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--or);display:block;margin-bottom:7px;">Adresse e-mail</label>
+                  <input type="email" id="auth-admin-email" placeholder="admin@jfsi.org" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;transition:all 0.3s;" onfocus="this.style.borderColor='#c9a84c'" onblur="this.style.borderColor='rgba(201,168,76,0.2)'" />
+                </div>
+                <button onclick="authEnvoyerOTP('admin')" style="width:100%;padding:14px;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,var(--or),var(--or-fonce));color:var(--noir-doux);margin-top:8px;font-family:'Lato',sans-serif;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">Recevoir le code OTP</button>
+                <button onclick="aller('sc-accueil')" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(201,168,76,0.15);border-radius:3px;color:rgba(249,245,236,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;font-family:'Lato',sans-serif;transition:all 0.3s;">← Retour</button>
+              </div>
+
+              <!-- Step OTP -->
+              <div id="auth-admin-step-otp" style="display:none;">
+                <div style="padding:12px;border-radius:5px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);font-size:12px;color:rgba(249,245,236,0.6);text-align:center;margin-bottom:16px;line-height:1.7;">
+                  <strong style="color:var(--or);display:block;margin-bottom:2px;">Code envoyé</strong>
+                  Consultez les logs Render (bûches) pour votre code
+                </div>
+                <div id="auth-admin-timer" style="font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--or);text-align:center;margin:8px 0;">05:00</div>
+                <div style="display:flex;gap:8px;justify-content:center;margin:12px 0;">
+                  <input type="text" maxlength="1" id="aa1" class="otp-digit-gold" oninput="authNextOtp(this,'aa2')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--or);font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;transition:all 0.3s;" />
+                  <input type="text" maxlength="1" id="aa2" oninput="authNextOtp(this,'aa3')" onkeydown="authPrevOtp(event,'aa1')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--or);font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;transition:all 0.3s;" />
+                  <input type="text" maxlength="1" id="aa3" oninput="authNextOtp(this,'aa4')" onkeydown="authPrevOtp(event,'aa2')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--or);font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;transition:all 0.3s;" />
+                  <input type="text" maxlength="1" id="aa4" oninput="authNextOtp(this,'aa5')" onkeydown="authPrevOtp(event,'aa3')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--or);font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;transition:all 0.3s;" />
+                  <input type="text" maxlength="1" id="aa5" oninput="authNextOtp(this,'aa6')" onkeydown="authPrevOtp(event,'aa4')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--or);font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;transition:all 0.3s;" />
+                  <input type="text" maxlength="1" id="aa6" oninput="authCheckAuto('admin')" onkeydown="authPrevOtp(event,'aa5')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--or);font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;transition:all 0.3s;" />
+                </div>
+                <button onclick="authVerifierOTP('admin')" style="width:100%;padding:14px;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,var(--or),var(--or-fonce));color:var(--noir-doux);margin-top:8px;font-family:'Lato',sans-serif;">Valider & Entrer</button>
+                <button onclick="authRetourEmail('admin')" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(201,168,76,0.15);border-radius:3px;color:rgba(249,245,236,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;font-family:'Lato',sans-serif;">← Renvoyer un code</button>
+              </div>
+
+              <!-- Step success -->
+              <div id="auth-admin-step-success" style="display:none;text-align:center;padding:20px 0;">
+                <div style="font-size:48px;margin-bottom:12px;">✅</div>
+                <div style="font-size:18px;color:var(--blanc);margin-bottom:8px;">Connexion réussie !</div>
+                <div style="font-size:13px;color:var(--gris);" id="auth-admin-success-msg">Bienvenue</div>
+              </div>
+            </div>
+
+            <!-- Switch vers inscription -->
+            <p style="text-align:center;margin-top:16px;font-size:12px;color:rgba(249,245,236,0.35);">Pas encore de compte ? <span onclick="initAuth('admin','inscription')" style="color:var(--or);cursor:pointer;text-decoration:underline;">Créer un compte admin</span></p>
+          </div>
+
+          <!-- Admin Inscription -->
+          <div id="auth-admin-inscription" class="auth-step" style="display:none;">
+            <div style="background:rgba(13,31,21,0.92);border:1px solid rgba(201,168,76,0.22);border-radius:12px;padding:40px 36px;position:relative;">
+              <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:2px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
+              <div style="font-family:'Amiri',serif;font-size:18px;color:var(--or);text-align:center;margin-bottom:4px;direction:rtl;">تَسْجِيل الْعُضْوِيَّة</div>
+              <h2 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--blanc);text-align:center;margin-bottom:4px;font-weight:400;">Inscription Admin</h2>
+              <p style="font-size:12px;color:var(--gris);text-align:center;margin-bottom:16px;letter-spacing:1px;">Créez votre compte administrateur</p>
+              <span style="display:block;width:fit-content;margin:0 auto 20px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(201,168,76,0.14);border:1px solid rgba(201,168,76,0.4);color:var(--or);">👑 Administrateur</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="field"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--or);display:block;margin-bottom:7px;">Prénom *</label><input type="text" placeholder="Votre prénom" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--or);display:block;margin-bottom:7px;">Nom *</label><input type="text" placeholder="Votre nom" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--or);display:block;margin-bottom:7px;">Adresse e-mail *</label><input type="email" id="auth-admin-reg-email" placeholder="admin@jfsi.org" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--or);display:block;margin-bottom:7px;">Téléphone *</label><input type="tel" placeholder="+225 00 00 00 00" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--or);display:block;margin-bottom:7px;">Fonction *</label>
+                  <select style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;cursor:pointer;">
+                    <option value="">— Choisir —</option>
+                    <option>Président</option><option>Vice-Président</option><option>Secrétaire Général</option><option>Trésorier</option><option>Administrateur Système</option>
+                  </select>
+                </div>
+              </div>
+              <button onclick="authInscrire('admin')" style="width:100%;padding:14px;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,var(--or),var(--or-fonce));color:var(--noir-doux);margin-top:16px;font-family:'Lato',sans-serif;">Créer le compte & Recevoir OTP</button>
+              <button onclick="aller('sc-accueil')" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(201,168,76,0.15);border-radius:3px;color:rgba(249,245,236,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;font-family:'Lato',sans-serif;">← Retour</button>
+            </div>
+            <p style="text-align:center;margin-top:16px;font-size:12px;color:rgba(249,245,236,0.35);">Déjà un compte ? <span onclick="initAuth('admin','connexion')" style="color:var(--or);cursor:pointer;text-decoration:underline;">Se connecter</span></p>
+          </div>
+        </div>
+
+        <!-- Écran BUREAU -->
+        <div id="auth-bureau" style="width:100%;max-width:480px;display:none;">
+
+          <!-- Bureau Connexion -->
+          <div id="auth-bureau-connexion" class="auth-step" style="display:block;">
+            <div style="background:rgba(13,31,21,0.92);border:1px solid rgba(61,122,82,0.3);border-radius:12px;padding:40px 36px;position:relative;">
+              <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:2px;background:linear-gradient(90deg,transparent,#3d7a52,transparent);"></div>
+              <div style="font-family:'Amiri',serif;font-size:18px;color:#3d7a52;text-align:center;margin-bottom:4px;direction:rtl;">تَسْجِيل الدُّخُول</div>
+              <h2 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--blanc);text-align:center;margin-bottom:4px;font-weight:400;">Connexion Bureau</h2>
+              <p style="font-size:12px;color:var(--gris);text-align:center;margin-bottom:16px;letter-spacing:1px;">Entrez votre email pour recevoir un code OTP</p>
+              <span style="display:block;width:fit-content;margin:0 auto 20px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(61,122,82,0.14);border:1px solid rgba(61,122,82,0.4);color:#3d7a52;">🤝 Membre du Bureau</span>
+
+              <div id="auth-bureau-step-email">
+                <div class="field"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Adresse e-mail</label>
+                  <input type="email" id="auth-bureau-email" placeholder="membre@jfsi.org" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" />
+                </div>
+                <button onclick="authEnvoyerOTP('bureau')" style="width:100%;padding:14px;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,#3d7a52,#2d5a3d);color:var(--blanc);margin-top:8px;font-family:'Lato',sans-serif;">Recevoir le code OTP</button>
+                <button onclick="aller('sc-accueil')" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(61,122,82,0.15);border-radius:3px;color:rgba(249,245,236,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;font-family:'Lato',sans-serif;">← Retour</button>
+              </div>
+
+              <div id="auth-bureau-step-otp" style="display:none;">
+                <div style="padding:12px;border-radius:5px;background:rgba(61,122,82,0.06);border:1px solid rgba(61,122,82,0.2);font-size:12px;color:rgba(249,245,236,0.6);text-align:center;margin-bottom:16px;line-height:1.7;">
+                  <strong style="color:#3d7a52;display:block;margin-bottom:2px;">Code envoyé</strong>Consultez les logs Render (bûches) pour votre code
+                </div>
+                <div id="auth-bureau-timer" style="font-family:'Cinzel Decorative',serif;font-size:28px;color:#3d7a52;text-align:center;margin:8px 0;">05:00</div>
+                <div style="display:flex;gap:8px;justify-content:center;margin:12px 0;">
+                  <input type="text" maxlength="1" id="ab1" oninput="authNextOtp(this,'ab2')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.3);border-radius:6px;color:#3d7a52;font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;" />
+                  <input type="text" maxlength="1" id="ab2" oninput="authNextOtp(this,'ab3')" onkeydown="authPrevOtp(event,'ab1')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.3);border-radius:6px;color:#3d7a52;font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;" />
+                  <input type="text" maxlength="1" id="ab3" oninput="authNextOtp(this,'ab4')" onkeydown="authPrevOtp(event,'ab2')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.3);border-radius:6px;color:#3d7a52;font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;" />
+                  <input type="text" maxlength="1" id="ab4" oninput="authNextOtp(this,'ab5')" onkeydown="authPrevOtp(event,'ab3')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.3);border-radius:6px;color:#3d7a52;font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;" />
+                  <input type="text" maxlength="1" id="ab5" oninput="authNextOtp(this,'ab6')" onkeydown="authPrevOtp(event,'ab4')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.3);border-radius:6px;color:#3d7a52;font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;" />
+                  <input type="text" maxlength="1" id="ab6" oninput="authCheckAuto('bureau')" onkeydown="authPrevOtp(event,'ab5')" style="width:48px;height:56px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.3);border-radius:6px;color:#3d7a52;font-size:22px;outline:none;font-family:'Cinzel Decorative',serif;" />
+                </div>
+                <button onclick="authVerifierOTP('bureau')" style="width:100%;padding:14px;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,#3d7a52,#2d5a3d);color:var(--blanc);margin-top:8px;font-family:'Lato',sans-serif;">Valider & Entrer</button>
+                <button onclick="authRetourEmail('bureau')" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(61,122,82,0.15);border-radius:3px;color:rgba(249,245,236,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;font-family:'Lato',sans-serif;">← Renvoyer un code</button>
+              </div>
+
+              <div id="auth-bureau-step-success" style="display:none;text-align:center;padding:20px 0;">
+                <div style="font-size:48px;margin-bottom:12px;">✅</div>
+                <div style="font-size:18px;color:var(--blanc);margin-bottom:8px;">Connexion réussie !</div>
+                <div style="font-size:13px;color:var(--gris);" id="auth-bureau-success-msg">Bienvenue</div>
+              </div>
+            </div>
+            <p style="text-align:center;margin-top:16px;font-size:12px;color:rgba(249,245,236,0.35);">Pas encore de compte ? <span onclick="initAuth('bureau','inscription')" style="color:#3d7a52;cursor:pointer;text-decoration:underline;">Rejoindre le bureau</span></p>
+          </div>
+
+          <!-- Bureau Inscription -->
+          <div id="auth-bureau-inscription" class="auth-step" style="display:none;">
+            <div style="background:rgba(13,31,21,0.92);border:1px solid rgba(61,122,82,0.3);border-radius:12px;padding:40px 36px;position:relative;">
+              <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:2px;background:linear-gradient(90deg,transparent,#3d7a52,transparent);"></div>
+              <div style="font-family:'Amiri',serif;font-size:18px;color:#3d7a52;text-align:center;margin-bottom:4px;direction:rtl;">تَسْجِيل الْعُضْوِيَّة</div>
+              <h2 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--blanc);text-align:center;margin-bottom:4px;font-weight:400;">Rejoindre le Bureau</h2>
+              <p style="font-size:12px;color:var(--gris);text-align:center;margin-bottom:16px;letter-spacing:1px;">Renseignez vos informations</p>
+              <span style="display:block;width:fit-content;margin:0 auto 20px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(61,122,82,0.14);border:1px solid rgba(61,122,82,0.4);color:#3d7a52;">🤝 Membre du Bureau</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="field"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Prénom *</label><input type="text" placeholder="Votre prénom" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Nom *</label><input type="text" placeholder="Votre nom" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Adresse e-mail *</label><input type="email" id="auth-bureau-reg-email" placeholder="membre@jfsi.org" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Téléphone *</label><input type="tel" placeholder="+225 00 00 00 00" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Fonction *</label>
+                  <select style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;cursor:pointer;">
+                    <option value="">— Choisir —</option>
+                    <option>Président</option><option>Vice-Président</option><option>Secrétaire Général</option><option>Trésorier</option><option>Responsable Formation</option><option>Responsable Bibliothèque</option><option>Chargé Communication</option><option>Membre Actif</option>
+                  </select>
+                </div>
+                <div class="field" style="grid-column:1/-1;"><label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d7a52;display:block;margin-bottom:7px;">Fonction professionnelle *</label><input type="text" placeholder="Ex: Enseignant, Médecin..." style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(61,122,82,0.25);border-radius:4px;color:var(--blanc);font-size:13px;outline:none;font-family:'Lato',sans-serif;" /></div>
+              </div>
+              <button onclick="authInscrire('bureau')" style="width:100%;padding:14px;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,#3d7a52,#2d5a3d);color:var(--blanc);margin-top:16px;font-family:'Lato',sans-serif;">Créer mon compte & Recevoir OTP</button>
+              <button onclick="aller('sc-accueil')" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(61,122,82,0.15);border-radius:3px;color:rgba(249,245,236,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;font-family:'Lato',sans-serif;">← Retour</button>
+            </div>
+            <p style="text-align:center;margin-top:16px;font-size:12px;color:rgba(249,245,236,0.35);">Déjà un compte ? <span onclick="initAuth('bureau','connexion')" style="color:#3d7a52;cursor:pointer;text-decoration:underline;">Se connecter</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INSCRIPTION (ancienne - gardée pour compatibilité) ══ -->
     <div id="sc-inscription" class="screen">
       <div class="form-box">
         <div class="fb-arabic">تَسْجِيل الْعُضْوِيَّة</div>
@@ -3546,7 +3711,178 @@
         notif("👋 Vous avez quitté la salle.");
       }
 
-      // ── ADMIN DASHBOARD ──
+      // ══ NOUVEAU SYSTÈME AUTH ══
+      let authTimers = {};
+
+      function initAuth(role, step) {
+        // Activer le bon onglet
+        const tabAdmin = document.getElementById('tab-admin');
+        const tabBureau = document.getElementById('tab-bureau');
+        if (tabAdmin && tabBureau) {
+          if (role === 'admin') {
+            tabAdmin.style.background = 'linear-gradient(135deg,var(--or),var(--or-fonce))';
+            tabAdmin.style.color = 'var(--noir-doux)';
+            tabAdmin.style.borderColor = 'var(--or)';
+            tabBureau.style.background = 'transparent';
+            tabBureau.style.color = 'rgba(249,245,236,0.5)';
+            tabBureau.style.borderColor = 'rgba(61,122,82,0.3)';
+          } else {
+            tabBureau.style.background = 'linear-gradient(135deg,#3d7a52,#2d5a3d)';
+            tabBureau.style.color = 'var(--blanc)';
+            tabBureau.style.borderColor = '#3d7a52';
+            tabAdmin.style.background = 'transparent';
+            tabAdmin.style.color = 'rgba(249,245,236,0.5)';
+            tabAdmin.style.borderColor = 'rgba(201,168,76,0.3)';
+          }
+        }
+        // Afficher le bon écran de rôle
+        const adminDiv = document.getElementById('auth-admin');
+        const bureauDiv = document.getElementById('auth-bureau');
+        if (adminDiv) adminDiv.style.display = role === 'admin' ? 'block' : 'none';
+        if (bureauDiv) bureauDiv.style.display = role === 'bureau' ? 'block' : 'none';
+        // Afficher le bon step
+        document.querySelectorAll('.auth-step').forEach(s => s.style.display = 'none');
+        const target = document.getElementById('auth-' + role + '-' + step);
+        if (target) target.style.display = 'block';
+      }
+
+      function switchAuthRole(role) {
+        initAuth(role, 'connexion');
+      }
+
+      function authNextOtp(el, nid) { if (el.value && nid) { const next = document.getElementById(nid); if(next) next.focus(); } }
+      function authPrevOtp(e, pid) { if (e.key === 'Backspace' && !e.target.value && pid) { const prev = document.getElementById(pid); if(prev) prev.focus(); } }
+
+      function authGetOtp(prefix) {
+        return ['1','2','3','4','5','6'].map(n => { const el = document.getElementById(prefix+n); return el ? el.value : ''; }).join('');
+      }
+
+      function authCheckAuto(role) {
+        const prefix = role === 'admin' ? 'aa' : 'ab';
+        if (authGetOtp(prefix).length === 6) authVerifierOTP(role);
+      }
+
+      async function authEnvoyerOTP(role) {
+        const emailId = role === 'admin' ? 'auth-admin-email' : 'auth-bureau-email';
+        const email = document.getElementById(emailId)?.value?.trim();
+        if (!email || !email.includes('@')) { notif('⚠️ Email invalide', true); return; }
+
+        try {
+          const res = await fetch('/api/auth/request-otp', {
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contact: email })
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || 'Erreur serveur');
+
+          sessionStorage.setItem('jfsi_auth_' + role, email);
+
+          document.getElementById('auth-' + role + '-step-email').style.display = 'none';
+          document.getElementById('auth-' + role + '-step-otp').style.display = 'block';
+          const prefix = role === 'admin' ? 'aa' : 'ab';
+          ['1','2','3','4','5','6'].forEach(n => { const el = document.getElementById(prefix+n); if(el) el.value = ''; });
+          const first = document.getElementById(prefix + '1');
+          if (first) first.focus();
+          authLancerTimer(role, 300);
+          notif('📧 OTP envoyé — consultez les logs Render (bûches)');
+        } catch(err) {
+          notif('❌ ' + err.message, true);
+        }
+      }
+
+      async function authVerifierOTP(role) {
+        const prefix = role === 'admin' ? 'aa' : 'ab';
+        const code = authGetOtp(prefix);
+        if (code.length < 6) { notif('⚠️ Entrez les 6 chiffres', true); return; }
+
+        const contact = sessionStorage.getItem('jfsi_auth_' + role);
+        if (!contact) { notif('❌ Session expirée, recommencez', true); return; }
+
+        try {
+          const res = await fetch('/api/auth/verify-otp', {
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contact, otp: code })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            clearInterval(authTimers[role]);
+            document.getElementById('auth-' + role + '-step-otp').style.display = 'none';
+            document.getElementById('auth-' + role + '-step-success').style.display = 'block';
+            const msg = document.getElementById('auth-' + role + '-success-msg');
+            if (msg) msg.textContent = 'Connecté en tant que ' + contact;
+            notif('✅ Bienvenue dans la salle !');
+
+            // Récupérer rôle backend et entrer dans la salle
+            setTimeout(async () => {
+              try {
+                const sr = await fetch('/api/auth/session', { credentials: 'include' });
+                const sd = await sr.json();
+                if (sd.authenticated) {
+                  const userRole = sd.user?.role || 'free';
+                  moi = {
+                    prenom: contact.split('@')[0],
+                    nom: '',
+                    email: contact,
+                    role: userRole === 'admin' ? 'admin' : 'bureau',
+                    ini: contact[0].toUpperCase(),
+                    fonc_asso: userRole === 'admin' ? 'Administrateur' : 'Membre du Bureau'
+                  };
+                  entrerSalle();
+                }
+              } catch(e) { entrerSalle(); }
+            }, 1200);
+          } else {
+            notif('❌ ' + (data.error || 'Code incorrect'), true);
+            ['1','2','3','4','5','6'].forEach(n => { const el = document.getElementById(prefix+n); if(el) el.value = ''; });
+            const first = document.getElementById(prefix + '1');
+            if (first) first.focus();
+          }
+        } catch(err) {
+          notif('❌ Erreur serveur : ' + err.message, true);
+        }
+      }
+
+      function authRetourEmail(role) {
+        clearInterval(authTimers[role]);
+        document.getElementById('auth-' + role + '-step-otp').style.display = 'none';
+        document.getElementById('auth-' + role + '-step-email').style.display = 'block';
+      }
+
+      async function authInscrire(role) {
+        const emailId = role === 'admin' ? 'auth-admin-reg-email' : 'auth-bureau-reg-email';
+        const email = document.getElementById(emailId)?.value?.trim();
+        if (!email || !email.includes('@')) { notif('⚠️ Email invalide', true); return; }
+
+        try {
+          const res = await fetch('/api/auth/request-otp', {
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contact: email })
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || 'Erreur');
+
+          sessionStorage.setItem('jfsi_auth_' + role, email);
+          notif('✅ Compte enregistré ! Code OTP envoyé — voir logs Render');
+          setTimeout(() => initAuth(role, 'connexion'), 1000);
+        } catch(err) {
+          notif('❌ ' + err.message, true);
+        }
+      }
+
+      function authLancerTimer(role, s) {
+        clearInterval(authTimers[role]);
+        const el = document.getElementById('auth-' + role + '-timer');
+        authTimers[role] = setInterval(() => {
+          const m = String(Math.floor(s/60)).padStart(2,'0');
+          const sec = String(s%60).padStart(2,'0');
+          if (el) el.textContent = m + ':' + sec;
+          if (--s < 0) { clearInterval(authTimers[role]); if(el) el.textContent = 'Expiré'; }
+        }, 1000);
+      }
+      // ══ FIN NOUVEAU SYSTÈME AUTH ══
       let adminData = {
         documents: [],
         media: [],
