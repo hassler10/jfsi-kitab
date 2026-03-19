@@ -6,867 +6,1192 @@
     <title>JFSI — Tableau de Bord Admin</title>
     <link rel="stylesheet" href="../css/global.css" />
     <style>
-      /* ════ DASHBOARD LAYOUT ════ */
-      body {
-        overflow: hidden;
-      }
+      body { overflow: hidden; }
 
       .dashboard {
         display: grid;
         grid-template-columns: 240px 1fr;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: 64px 1fr;
         height: 100vh;
         background: var(--noir-doux);
       }
 
-      /* ════ SIDEBAR ════ */
+      /* ── SIDEBAR ── */
       .sidebar {
         grid-column: 1;
         grid-row: 1 / -1;
-        background: rgba(13, 31, 21, 0.98);
-        border-right: 1px solid rgba(201, 168, 76, 0.15);
+        background: rgba(10,25,16,0.99);
+        border-right: 1px solid rgba(201,168,76,0.12);
         display: flex;
         flex-direction: column;
         overflow-y: auto;
         z-index: 100;
       }
-
       .sidebar-header {
-        padding: 20px 16px;
-        border-bottom: 1px solid rgba(201, 168, 76, 0.12);
-      }
-
-      .sidebar-logo {
+        padding: 18px 16px;
+        border-bottom: 1px solid rgba(201,168,76,0.1);
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 12px;
       }
-
       .sidebar-logo-circle {
-        width: 36px;
-        height: 36px;
+        width: 36px; height: 36px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--or), var(--or-fonce));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        font-weight: 900;
-        color: var(--noir-doux);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 14px; color: var(--noir-doux);
         flex-shrink: 0;
       }
+      .sidebar-logo-text h3 { font-size: 13px; color: var(--blanc); font-family: 'Cinzel Decorative', serif; }
+      .sidebar-logo-text p { font-size: 10px; color: var(--gris); letter-spacing: 1px; }
 
-      .sidebar-logo-text {
-        flex: 1;
-      }
-
-      .sidebar-logo-text h3 {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--blanc);
-        margin: 0;
-      }
-
-      .sidebar-logo-text p {
-        font-size: 11px;
-        color: var(--gris);
-        margin: 0;
-        letter-spacing: 1px;
-      }
-
-      .sidebar-section {
-        padding: 16px 0 8px;
-        margin-top: 12px;
-      }
-
-      .sidebar-section:first-of-type {
-        margin-top: 0;
-      }
-
+      .sidebar-section { padding: 16px 12px 8px; }
       .sidebar-section-title {
-        padding: 0 16px;
-        font-size: 10px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: rgba(201, 168, 76, 0.6);
-        margin-bottom: 8px;
+        font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+        color: rgba(138,122,106,0.6); padding: 0 6px; margin-bottom: 6px;
       }
-
       .sidebar-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 16px;
-        margin: 2px 8px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        color: rgba(249, 245, 236, 0.65);
-        transition: all 0.25s;
+        display: flex; align-items: center; gap: 10px;
+        padding: 9px 10px; border-radius: 6px; cursor: pointer;
+        font-size: 12px; color: var(--gris);
+        transition: all 0.2s; margin-bottom: 2px;
+        border: 1px solid transparent;
         user-select: none;
       }
-
-      .sidebar-item:hover {
-        background: rgba(201, 168, 76, 0.08);
-        color: var(--blanc);
-      }
-
+      .sidebar-item:hover { background: rgba(201,168,76,0.06); color: var(--blanc); }
       .sidebar-item.active {
-        background: rgba(201, 168, 76, 0.15);
+        background: rgba(201,168,76,0.1);
         color: var(--or);
-        font-weight: 600;
-        border-left: 3px solid var(--or);
-        padding-left: 13px;
+        border-color: rgba(201,168,76,0.2);
       }
-
-      .sidebar-item-icon {
-        font-size: 18px;
-        width: 20px;
-        text-align: center;
-      }
-
+      .sidebar-item-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
       .sidebar-item-badge {
-        margin-left: auto;
-        background: rgba(231, 76, 60, 0.2);
-        color: #e74c3c;
-        font-size: 10px;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-weight: 700;
+        margin-left: auto; background: var(--or); color: var(--noir-doux);
+        font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
       }
+      .sidebar-item-badge.red { background: var(--danger); color: #fff; }
 
       .sidebar-footer {
         margin-top: auto;
-        padding: 16px;
-        border-top: 1px solid rgba(201, 168, 76, 0.12);
+        padding: 14px 16px;
+        border-top: 1px solid rgba(201,168,76,0.1);
       }
-
-      .admin-profile {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px;
-        border-radius: 6px;
-        background: rgba(201, 168, 76, 0.06);
-        cursor: pointer;
-        transition: background 0.3s;
-      }
-
-      .admin-profile:hover {
-        background: rgba(201, 168, 76, 0.12);
-      }
-
+      .admin-profile { display: flex; align-items: center; gap: 10px; }
       .admin-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
+        width: 34px; height: 34px; border-radius: 50%;
         background: linear-gradient(135deg, var(--or), var(--or-fonce));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 900;
-        color: var(--noir-doux);
-        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700; color: var(--noir-doux); flex-shrink: 0;
       }
-
-      .admin-info h4 {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--blanc);
-        margin: 0;
+      .admin-info h4 { font-size: 12px; color: var(--blanc); }
+      .admin-info p { font-size: 10px; color: var(--or); }
+      .btn-logout {
+        width: 100%; padding: 8px; margin-top: 10px;
+        background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.2);
+        border-radius: 4px; color: var(--danger); font-size: 10px;
+        font-weight: 700; letter-spacing: 1px; cursor: pointer;
+        font-family: 'Lato', sans-serif; transition: all 0.2s;
       }
+      .btn-logout:hover { background: rgba(231,76,60,0.15); }
 
-      .admin-info p {
-        font-size: 10px;
-        color: var(--gris);
-        margin: 2px 0 0;
-      }
-
-      /* ════ TOPBAR ════ */
+      /* ── TOPBAR ── */
       .topbar {
-        grid-column: 2;
-        grid-row: 1;
-        background: rgba(13, 31, 21, 0.95);
-        border-bottom: 1px solid rgba(201, 168, 76, 0.15);
-        padding: 14px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 50;
+        grid-column: 2; grid-row: 1;
+        background: rgba(13,31,21,0.95);
+        border-bottom: 1px solid rgba(201,168,76,0.1);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 28px; gap: 16px;
+        backdrop-filter: blur(10px);
       }
-
-      .topbar-left {
-        flex: 1;
-      }
-
-      .topbar-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--blanc);
-        margin: 0;
-      }
-
-      .topbar-subtitle {
-        font-size: 12px;
-        color: var(--gris);
-        margin: 4px 0 0;
-      }
-
-      .topbar-actions {
-        display: flex;
-        gap: 10px;
-      }
-
+      .topbar-left h1 { font-family: 'Cinzel Decorative', serif; font-size: 15px; color: var(--blanc); }
+      .topbar-left p { font-size: 11px; color: var(--gris); }
+      .topbar-actions { display: flex; gap: 10px; align-items: center; }
       .btn-topbar {
-        padding: 8px 16px;
-        border-radius: 4px;
-        border: 1px solid rgba(201, 168, 76, 0.2);
-        background: rgba(13, 31, 21, 0.6);
-        color: var(--blanc);
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        cursor: pointer;
-        transition: all 0.3s;
+        padding: 8px 16px; border-radius: 4px; cursor: pointer;
+        font-size: 11px; font-weight: 700; letter-spacing: 1px;
+        font-family: 'Lato', sans-serif; transition: all 0.2s;
+        background: transparent; border: 1px solid rgba(201,168,76,0.25); color: var(--or);
       }
-
-      .btn-topbar:hover {
-        border-color: var(--or);
-        background: rgba(201, 168, 76, 0.1);
-        color: var(--or);
-      }
-
+      .btn-topbar:hover { background: rgba(201,168,76,0.08); }
       .btn-topbar.primary {
         background: linear-gradient(135deg, var(--or), var(--or-fonce));
-        color: var(--noir-doux);
-        border: none;
+        color: var(--noir-doux); border: none;
       }
-
-      .btn-topbar.primary:hover {
-        box-shadow: 0 4px 15px rgba(201, 168, 76, 0.4);
+      .btn-topbar.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(201,168,76,0.3); }
+      .topbar-admin {
+        display: flex; align-items: center; gap: 8px;
+        padding: 6px 12px; border-radius: 4px;
+        background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.15);
       }
+      .topbar-admin-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+      .topbar-admin span { font-size: 11px; color: var(--or-clair); }
 
-      /* ════ MAIN CONTENT ════ */
+      /* ── MAIN CONTENT ── */
       .main-content {
-        grid-column: 2;
-        grid-row: 2;
+        grid-column: 2; grid-row: 2;
         overflow-y: auto;
-        padding: 24px 30px;
+        padding: 24px 28px;
       }
 
-      /* ════ STATS GRID ════ */
+      /* ── PANELS ── */
+      .panel { display: none; animation: fadeIn 0.3s ease; }
+      .panel.active { display: block; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* ── STATS ── */
       .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-        margin-bottom: 28px;
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 16px; margin-bottom: 22px;
       }
-
       .stat-card {
-        background: rgba(13, 31, 21, 0.7);
-        border: 1px solid rgba(201, 168, 76, 0.12);
-        border-radius: 8px;
-        padding: 18px;
-        transition: all 0.3s;
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.12);
+        border-radius: 10px; padding: 18px;
+        transition: all 0.3s; cursor: default;
       }
+      .stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-3px); }
+      .stat-label { font-size: 10px; color: var(--gris); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+      .stat-value { font-family: 'Cinzel Decorative', serif; font-size: 26px; color: var(--or); margin-bottom: 4px; }
+      .stat-change { font-size: 11px; color: var(--success); }
+      .stat-change.down { color: var(--danger); }
 
-      .stat-card:hover {
-        border-color: rgba(201, 168, 76, 0.3);
-        box-shadow: 0 8px 20px rgba(201, 168, 76, 0.08);
-      }
+      /* ── GRID 2 ── */
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 18px; }
 
-      .stat-label {
-        font-size: 11px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--gris);
-        margin-bottom: 8px;
-      }
-
-      .stat-value {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--or);
-        margin-bottom: 6px;
-      }
-
-      .stat-change {
-        font-size: 12px;
-        color: var(--success);
-      }
-
-      .stat-change.down {
-        color: #e74c3c;
-      }
-
-      /* ════ GRID 2 COLS ════ */
-      .grid-2 {
-        display: grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap: 14px;
-        margin-bottom: 14px;
-      }
-
-      .grid-full {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-
-      /* ════ CARDS ════ */
+      /* ── CARD ── */
       .card {
-        background: rgba(13, 31, 21, 0.7);
-        border: 1px solid rgba(201, 168, 76, 0.12);
-        border-radius: 8px;
-        padding: 18px;
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.12);
+        border-radius: 10px; overflow: hidden;
+      }
+      .card-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(201,168,76,0.08);
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .card-title { font-family: 'Cinzel Decorative', serif; font-size: 12px; color: var(--or); }
+      .card-link { font-size: 11px; color: var(--or); cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+      .card-link:hover { opacity: 1; }
+      .card-body { padding: 16px 18px; }
+
+      /* ── MEMBRES TABLE ── */
+      .members-table { width: 100%; border-collapse: collapse; }
+      .members-table th {
+        padding: 10px 12px; text-align: left; font-size: 10px;
+        letter-spacing: 1px; color: var(--or); text-transform: uppercase;
+        border-bottom: 1px solid rgba(201,168,76,0.1);
+        background: rgba(201,168,76,0.05);
+      }
+      .members-table td {
+        padding: 10px 12px; border-bottom: 1px solid rgba(201,168,76,0.05);
+        font-size: 12px; color: var(--blanc);
+      }
+      .members-table tr:hover td { background: rgba(201,168,76,0.03); }
+      .member-avatar-sm {
+        width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 10px; font-weight: 700;
+      }
+      .av-gold { background: linear-gradient(135deg, var(--or), var(--or-fonce)); color: var(--noir-doux); }
+      .av-green { background: linear-gradient(135deg, var(--vert-clair), var(--vert-moyen)); color: var(--blanc); }
+      .av-gray { background: rgba(138,122,106,0.3); color: var(--gris-clair); }
+
+      .role-pill {
+        padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase; display: inline-block;
+      }
+      .rp-admin { background: rgba(201,168,76,0.12); color: var(--or); border: 1px solid rgba(201,168,76,0.25); }
+      .rp-premium { background: rgba(61,122,82,0.12); color: var(--vert-clair); border: 1px solid rgba(61,122,82,0.25); }
+      .rp-free { background: rgba(138,122,106,0.1); color: var(--gris); border: 1px solid rgba(138,122,106,0.2); }
+
+      .action-btn {
+        padding: 5px 10px; border-radius: 3px; font-size: 10px; font-weight: 700;
+        cursor: pointer; font-family: 'Lato', sans-serif; transition: all 0.2s;
+        border: 1px solid rgba(201,168,76,0.25); background: rgba(201,168,76,0.08); color: var(--or);
+      }
+      .action-btn:hover { background: rgba(201,168,76,0.18); }
+      .action-btn.danger { border-color: rgba(231,76,60,0.25); background: rgba(231,76,60,0.08); color: var(--danger); }
+      .action-btn.danger:hover { background: rgba(231,76,60,0.18); }
+
+      /* ── ALERTS ── */
+      .alert-item {
+        display: flex; gap: 12px; align-items: flex-start;
+        padding: 10px 0; border-bottom: 1px solid rgba(201,168,76,0.05);
+      }
+      .alert-item:last-child { border-bottom: none; }
+      .alert-icon { font-size: 16px; flex-shrink: 0; }
+      .alert-text { font-size: 12px; color: var(--blanc); margin-bottom: 3px; }
+      .alert-time { font-size: 10px; color: var(--gris); }
+
+      /* ── CONTENT ITEMS ── */
+      .content-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 9px 0; border-bottom: 1px solid rgba(201,168,76,0.05);
+      }
+      .content-item:last-child { border-bottom: none; }
+      .content-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+      .content-dot.coran { background: var(--or); }
+      .content-dot.fiqh { background: var(--vert-clair); }
+      .content-dot.formations { background: #3498db; }
+      .content-dot.other { background: var(--gris); }
+      .content-name { flex: 1; font-size: 12px; color: var(--blanc); }
+      .content-count { font-size: 13px; font-weight: 700; color: var(--or); }
+
+      /* ── FORMULAIRES ── */
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+      .form-grid.full { grid-template-columns: 1fr; }
+      .form-group { display: flex; flex-direction: column; gap: 6px; }
+      .form-group label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--or); }
+      .form-group input, .form-group select, .form-group textarea {
+        padding: 10px 13px; background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(201,168,76,0.18); border-radius: 4px;
+        color: var(--blanc); font-family: 'Lato', sans-serif; font-size: 12px;
+        outline: none; transition: all 0.3s;
+      }
+      .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: var(--or); background: rgba(255,255,255,0.07);
+        box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+      }
+      .form-group input::placeholder { color: rgba(249,245,236,0.2); }
+      .form-group select option { background: var(--vert); }
+      .form-group textarea { resize: vertical; min-height: 80px; }
+      .form-group.full { grid-column: 1/-1; }
+
+      .btn-form {
+        padding: 10px 20px; background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none; border-radius: 3px; color: var(--noir-doux);
+        font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        cursor: pointer; font-family: 'Lato', sans-serif; transition: all 0.3s;
+      }
+      .btn-form:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,168,76,0.35); }
+      .btn-form.outline {
+        background: transparent; color: var(--or);
+        border: 1px solid rgba(201,168,76,0.3);
+      }
+      .btn-form.outline:hover { background: rgba(201,168,76,0.08); }
+      .btn-form.danger-btn {
+        background: rgba(231,76,60,0.1); color: var(--danger);
+        border: 1px solid rgba(231,76,60,0.25);
+      }
+
+      /* ── CONTENT LIBRARY ── */
+      .content-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+      .content-card {
+        background: rgba(13,31,21,0.5); border: 1px solid rgba(201,168,76,0.1);
+        border-radius: 8px; padding: 14px; position: relative;
+        transition: all 0.3s; cursor: pointer;
+      }
+      .content-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-3px); }
+      .cc-icon { font-size: 24px; margin-bottom: 8px; text-align: center; }
+      .cc-title { font-size: 12px; color: var(--blanc); font-weight: 600; margin-bottom: 4px; word-break: break-word; }
+      .cc-meta { font-size: 10px; color: var(--gris); }
+      .cc-actions { position: absolute; top: 8px; right: 8px; display: none; gap: 4px; }
+      .content-card:hover .cc-actions { display: flex; }
+      .cc-btn {
+        width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; font-size: 11px;
+        background: rgba(201,168,76,0.2); color: var(--or); transition: all 0.2s;
+      }
+      .cc-btn:hover { background: rgba(201,168,76,0.4); }
+      .cc-btn.del { background: rgba(231,76,60,0.2); color: var(--danger); }
+      .cc-btn.del:hover { background: rgba(231,76,60,0.4); }
+
+      /* ── PARAMÈTRES ── */
+      .settings-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 0; border-bottom: 1px solid rgba(201,168,76,0.06);
+      }
+      .settings-row:last-child { border-bottom: none; }
+      .sr-left { display: flex; align-items: center; gap: 12px; }
+      .sr-icon { font-size: 18px; }
+      .sr-label { font-size: 13px; color: var(--blanc); }
+      .sr-sub { font-size: 11px; color: var(--gris); }
+      .toggle {
+        width: 42px; height: 22px; background: rgba(201,168,76,0.15);
+        border-radius: 11px; position: relative; cursor: pointer;
+        transition: all 0.3s; border: 1px solid rgba(201,168,76,0.2);
+      }
+      .toggle.on { background: rgba(39,174,96,0.25); border-color: rgba(39,174,96,0.4); }
+      .toggle::after {
+        content: ''; position: absolute; top: 2px; left: 2px;
+        width: 16px; height: 16px; border-radius: 50%;
+        background: var(--gris); transition: all 0.3s;
+      }
+      .toggle.on::after { left: 22px; background: var(--success); }
+
+      /* ── LOADING ── */
+      .loading { text-align: center; padding: 40px; color: var(--gris); font-size: 13px; }
+      .empty { text-align: center; padding: 40px; color: var(--gris); font-size: 13px; }
+
+      /* ── PAGINATION ── */
+      .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 16px; }
+      .page-btn {
+        width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center;
+        justify-content: center; font-size: 12px; cursor: pointer; transition: all 0.2s;
+        background: transparent; border: 1px solid rgba(201,168,76,0.15); color: var(--gris);
+        font-family: 'Lato', sans-serif;
+      }
+      .page-btn.active { background: rgba(201,168,76,0.15); color: var(--or); border-color: rgba(201,168,76,0.4); }
+      .page-btn:hover { background: rgba(201,168,76,0.08); }
+
+      /* ── SEARCH BAR ── */
+      .search-bar {
+        display: flex; gap: 10px; margin-bottom: 16px; align-items: center;
+      }
+      .search-input {
+        flex: 1; padding: 9px 14px; background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(201,168,76,0.18); border-radius: 4px;
+        color: var(--blanc); font-family: 'Lato', sans-serif; font-size: 12px; outline: none;
         transition: all 0.3s;
       }
+      .search-input:focus { border-color: var(--or); }
+      .search-input::placeholder { color: rgba(249,245,236,0.2); }
 
-      .card:hover {
-        border-color: rgba(201, 168, 76, 0.25);
-      }
-
-      .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid rgba(201, 168, 76, 0.08);
-      }
-
-      .card-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--blanc);
-      }
-
-      .card-link {
-        font-size: 11px;
-        color: var(--or);
-        cursor: pointer;
-        text-decoration: none;
-        transition: color 0.3s;
-      }
-
-      .card-link:hover {
-        color: var(--or-clair);
-      }
-
-      /* ════ MEMBER ROW ════ */
-      .member-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(201, 168, 76, 0.06);
-      }
-
-      .member-row:last-child {
-        border-bottom: none;
-      }
-
-      .member-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--noir-doux);
-        flex-shrink: 0;
-      }
-
-      .member-avatar.gold {
-        background: linear-gradient(135deg, var(--or), var(--or-fonce));
-      }
-
-      .member-avatar.green {
-        background: linear-gradient(
-          135deg,
-          var(--vert-clair),
-          var(--vert-moyen)
-        );
-      }
-
-      .member-info {
-        flex: 1;
-      }
-
-      .member-name {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--blanc);
-      }
-
-      .member-email {
-        font-size: 11px;
-        color: var(--gris);
-        margin-top: 2px;
-      }
-
-      .member-status {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      .member-status.online {
-        background: var(--success);
-        box-shadow: 0 0 8px rgba(39, 174, 96, 0.5);
-      }
-
-      .member-status.offline {
-        background: var(--gris);
-      }
-
-      /* ════ CONTENT ITEMS ════ */
-      .content-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(201, 168, 76, 0.06);
-      }
-
-      .content-item:last-child {
-        border-bottom: none;
-      }
-
-      .content-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      .content-dot.coran {
-        background: var(--or);
-      }
-
-      .content-dot.fiqh {
-        background: var(--vert-clair);
-      }
-
-      .content-dot.formations {
-        background: var(--success);
-      }
-
-      .content-name {
-        flex: 1;
-        font-size: 12px;
-        color: var(--blanc);
-      }
-
-      .content-count {
-        font-size: 12px;
-        color: var(--or);
-        font-weight: 600;
-        min-width: 50px;
-        text-align: right;
-      }
-
-      /* ════ ALERT ROW ════ */
-      .alert-item {
-        display: flex;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(201, 168, 76, 0.06);
-      }
-
-      .alert-item:last-child {
-        border-bottom: none;
-      }
-
-      .alert-icon {
-        font-size: 16px;
-        flex-shrink: 0;
-      }
-
-      .alert-content {
-        flex: 1;
-      }
-
-      .alert-text {
-        font-size: 12px;
-        color: var(--blanc);
-        line-height: 1.5;
-      }
-
-      .alert-time {
-        font-size: 10px;
-        color: var(--gris);
-        margin-top: 4px;
-      }
-
-      /* ════ RESPONSIVE ════ */
-      @media (max-width: 1300px) {
-        .stats-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .dashboard {
-          grid-template-columns: 1fr;
-        }
-
-        .sidebar {
-          display: none;
-        }
-
-        .topbar {
-          grid-column: 1;
-        }
-
-        .main-content {
-          grid-column: 1;
-        }
-
-        .stats-grid {
-          grid-template-columns: 1fr;
-        }
-      }
+      @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
   </head>
   <body>
     <div class="arabesque-bg"></div>
 
     <div class="dashboard">
-      <!-- SIDEBAR -->
+      <!-- ── SIDEBAR ── -->
       <div class="sidebar">
         <div class="sidebar-header">
-          <div class="sidebar-logo">
-            <div class="sidebar-logo-circle">J</div>
-            <div class="sidebar-logo-text">
-              <h3>JFSI Admin</h3>
-              <p>Tableau de bord</p>
-            </div>
+          <div class="sidebar-logo-circle">J</div>
+          <div class="sidebar-logo-text">
+            <h3>JFSI Admin</h3>
+            <p>Panneau de contrôle</p>
           </div>
         </div>
 
         <div class="sidebar-section">
           <div class="sidebar-section-title">Principal</div>
-          <div class="sidebar-item active">
-            <span class="sidebar-item-icon">▣</span>
-            Vue d'ensemble
+          <div class="sidebar-item active" onclick="switchPanel('dashboard', this)">
+            <span class="sidebar-item-icon">▣</span> Vue d'ensemble
           </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">👥</span>
-            Membres
-            <span class="sidebar-item-badge">5</span>
+          <div class="sidebar-item" onclick="switchPanel('membres', this)">
+            <span class="sidebar-item-icon">👥</span> Membres
+            <span class="sidebar-item-badge" id="badge-membres">—</span>
           </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">💳</span>
-            Paiements
+          <div class="sidebar-item" onclick="switchPanel('contenu', this)">
+            <span class="sidebar-item-icon">📚</span> Bibliothèque
           </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">📚</span>
-            Bibliothèque
-          </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">🎓</span>
-            Formations
+          <div class="sidebar-item" onclick="switchPanel('formations', this)">
+            <span class="sidebar-item-icon">🎓</span> Formations
           </div>
         </div>
 
         <div class="sidebar-section">
           <div class="sidebar-section-title">Gestion</div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">🔐</span>
-            Codes OTP
+          <div class="sidebar-item" onclick="switchPanel('annonces', this)">
+            <span class="sidebar-item-icon">📢</span> Annonces
           </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">📢</span>
-            Annonces
+          <div class="sidebar-item" onclick="switchPanel('abonnements', this)">
+            <span class="sidebar-item-icon">💳</span> Abonnements
           </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">🗽</span>
-            Salle de réunion
+          <div class="sidebar-item" onclick="window.location.href='salle-reunion.html'">
+            <span class="sidebar-item-icon">🤝</span> Salle de réunion
           </div>
         </div>
 
         <div class="sidebar-section">
           <div class="sidebar-section-title">Configuration</div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">⚙️</span>
-            Paramètres
+          <div class="sidebar-item" onclick="switchPanel('parametres', this)">
+            <span class="sidebar-item-icon">⚙️</span> Paramètres
           </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">📊</span>
-            Rapports
-          </div>
-          <div class="sidebar-item">
-            <span class="sidebar-item-icon">📋</span>
-            Logs d'accès
+          <div class="sidebar-item" onclick="switchPanel('rapports', this)">
+            <span class="sidebar-item-icon">📊</span> Rapports
           </div>
         </div>
 
         <div class="sidebar-footer">
           <div class="admin-profile">
-            <div class="admin-avatar">IA</div>
+            <div class="admin-avatar" id="admin-avatar-sb">A</div>
             <div class="admin-info">
-              <h4>Ibrahim Al-Amine</h4>
+              <h4 id="admin-name-sb">Admin</h4>
               <p>Administrateur</p>
             </div>
           </div>
+          <button class="btn-logout" onclick="deconnecter()">⏻ Déconnexion</button>
         </div>
       </div>
 
-      <!-- TOPBAR -->
+      <!-- ── TOPBAR ── -->
       <div class="topbar">
         <div class="topbar-left">
-          <h1 class="topbar-title">Vue d'ensemble</h1>
-          <p class="topbar-subtitle" id="topbar-date">
-            Vendredi 13 mars 2026 — Tout va bien
-          </p>
+          <h1 id="topbar-title">Vue d'ensemble</h1>
+          <p id="topbar-date">Chargement...</p>
         </div>
         <div class="topbar-actions">
-          <button class="btn-topbar">📥 Exporter</button>
-          <button class="btn-topbar primary">+ Nouveau membre</button>
+          <div class="topbar-admin">
+            <div class="topbar-admin-dot"></div>
+            <span id="topbar-admin-email">Admin</span>
+          </div>
+          <button class="btn-topbar" onclick="window.location.href='../index.html'">🏠 Site</button>
+          <button class="btn-topbar primary" onclick="switchPanel('membres', document.querySelector('[onclick*=membres]'))">+ Nouveau membre</button>
         </div>
       </div>
 
-      <!-- MAIN CONTENT -->
+      <!-- ── MAIN CONTENT ── -->
       <div class="main-content">
-        <!-- STATS -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">Membres actifs</div>
-            <div class="stat-value">1 248</div>
-            <div class="stat-change">↑ 12% ce mois</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Revenus (FCFA)</div>
-            <div class="stat-value">342 500</div>
-            <div class="stat-change">↑ 8% vs mars</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Abonnements expirés</div>
-            <div class="stat-value">47</div>
-            <div class="stat-change down">⚠️ À renouveler</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Formations actives</div>
-            <div class="stat-value">6</div>
-            <div class="stat-change">2 en cours</div>
-          </div>
-        </div>
 
-        <!-- MEMBERS + ALERTS -->
-        <div class="grid-2">
-          <!-- MEMBERS -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">👥 Membres récents</div>
-              <a class="card-link">Voir tous →</a>
+        <!-- ════ PANEL : DASHBOARD ════ -->
+        <div class="panel active" id="panel-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Membres totaux</div>
+              <div class="stat-value" id="dash-total-members">—</div>
+              <div class="stat-change">Inscrits sur la plateforme</div>
             </div>
+            <div class="stat-card">
+              <div class="stat-label">Admins</div>
+              <div class="stat-value" id="dash-admins">—</div>
+              <div class="stat-change">Accès complet</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Premium</div>
+              <div class="stat-value" id="dash-premium">—</div>
+              <div class="stat-change">Abonnés actifs</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Contenu</div>
+              <div class="stat-value" id="dash-content">—</div>
+              <div class="stat-change">Documents bibliothèque</div>
+            </div>
+          </div>
 
-            <div class="member-row">
-              <div class="member-avatar gold">FA</div>
-              <div class="member-info">
-                <div class="member-name">Fatima Alimata</div>
-                <div class="member-email">fatima.ali@email.com</div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">👥 Derniers membres inscrits</div>
+                <span class="card-link" onclick="switchPanel('membres', document.querySelector('[onclick*=membres]'))">Voir tous →</span>
               </div>
-              <div class="member-status online"></div>
-            </div>
-
-            <div class="member-row">
-              <div class="member-avatar green">YD</div>
-              <div class="member-info">
-                <div class="member-name">Youssouf Diallo</div>
-                <div class="member-email">y.diallo@email.com</div>
+              <div class="card-body">
+                <table class="members-table" style="width:100%;">
+                  <thead><tr><th>Membre</th><th>Email</th><th>Rôle</th></tr></thead>
+                  <tbody id="recent-members-list"><tr><td colspan="3" class="loading">Chargement...</td></tr></tbody>
+                </table>
               </div>
-              <div class="member-status online"></div>
             </div>
 
-            <div class="member-row">
-              <div class="member-avatar gold">AK</div>
-              <div class="member-info">
-                <div class="member-name">Aïcha Koné</div>
-                <div class="member-email">aicha.kone@email.com</div>
-              </div>
-              <div class="member-status offline"></div>
-            </div>
-
-            <div class="member-row">
-              <div class="member-avatar green">MB</div>
-              <div class="member-info">
-                <div class="member-name">Maryam Bamba</div>
-                <div class="member-email">m.bamba@email.com</div>
-              </div>
-              <div class="member-status online"></div>
-            </div>
-          </div>
-
-          <!-- ALERTS -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">⚡ Alertes importantes</div>
-            </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">⚠️</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  3 paiements en attente de confirmati
+            <div class="card">
+              <div class="card-header"><div class="card-title">⚡ Alertes & Activité</div></div>
+              <div class="card-body">
+                <div class="alert-item">
+                  <div class="alert-icon">✅</div>
+                  <div><div class="alert-text">Backend PostgreSQL connecté</div><div class="alert-time">Système opérationnel</div></div>
                 </div>
-                <div class="alert-time">Il y a 2 heures</div>
+                <div class="alert-item">
+                  <div class="alert-icon">🔐</div>
+                  <div><div class="alert-text">Authentification OTP active</div><div class="alert-time">Sécurité renforcée</div></div>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon">📅</div>
+                  <div><div class="alert-text" id="alert-date">—</div><div class="alert-time">Dernière mise à jour</div></div>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon">🌐</div>
+                  <div><div class="alert-text">Site en ligne sur Render</div><div class="alert-time"><a href="https://jfsi-kitab.onrender.com" target="_blank" style="color:var(--or);">jfsi-kitab.onrender.com</a></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><div class="card-title">📚 Contenu par catégorie</div></div>
+              <div class="card-body" id="content-by-cat">
+                <div class="content-item"><div class="content-dot coran"></div><div class="content-name">Coran & Tafsîr</div><div class="content-count">—</div></div>
+                <div class="content-item"><div class="content-dot fiqh"></div><div class="content-name">Fiqh & Jurisprudence</div><div class="content-count">—</div></div>
+                <div class="content-item"><div class="content-dot formations"></div><div class="content-name">Formations</div><div class="content-count">—</div></div>
+                <div class="content-item"><div class="content-dot other"></div><div class="content-name">Autres ressources</div><div class="content-count">—</div></div>
               </div>
             </div>
 
-            <div class="alert-item">
-              <div class="alert-icon">✅</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  Salle de réunion active — 5 membres en ligne
-                </div>
-                <div class="alert-time">Maintenant</div>
-              </div>
-            </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">📢</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  Nouvelle annonce postée par l'administrateur
-                </div>
-                <div class="alert-time">Il y a 30 minutes</div>
-              </div>
-            </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">📚</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  15 nouveaux documents ajoutés à la bibliothèque
-                </div>
-                <div class="alert-time">Aujourd'hui à 10:45</div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">🎯 Actions rapides</div></div>
+              <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+                <button class="btn-form" onclick="switchPanel('membres', document.querySelector('[onclick*=membres]'))">➕ Ajouter un membre</button>
+                <button class="btn-form outline" onclick="switchPanel('contenu', document.querySelector('[onclick*=contenu]'))">📄 Ajouter un document</button>
+                <button class="btn-form outline" onclick="switchPanel('annonces', document.querySelector('[onclick*=annonces]'))">📢 Créer une annonce</button>
+                <button class="btn-form outline" onclick="switchPanel('rapports', document.querySelector('[onclick*=rapports]'))">📊 Voir les rapports</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- CONTENT STATS + ACTIVITY -->
-        <div class="grid-2">
-          <!-- BIBLIOTHÈQUE STATISTIQUES -->
-          <div class="card">
+        <!-- ════ PANEL : MEMBRES ════ -->
+        <div class="panel" id="panel-membres">
+          <!-- Ajouter membre -->
+          <div class="card" style="margin-bottom:18px;">
             <div class="card-header">
-              <div class="card-title">📚 Contenu Bibliothèque</div>
-              <a class="card-link">Gérer →</a>
+              <div class="card-title">➕ Ajouter / Modifier un Membre</div>
+              <span class="card-link" onclick="viderFormMembre()">Vider le formulaire</span>
             </div>
-
-            <div class="content-item">
-              <div class="content-dot coran"></div>
-              <div class="content-name">Coran et Tafsir</div>
-              <div class="content-count">145</div>
-            </div>
-
-            <div class="content-item">
-              <div class="content-dot fiqh"></div>
-              <div class="content-name">Fiqh & Jurisprudence</div>
-              <div class="content-count">87</div>
-            </div>
-
-            <div class="content-item">
-              <div class="content-dot formations"></div>
-              <div class="content-name">Formations actives</div>
-              <div class="content-count">6</div>
-            </div>
-
-            <div class="content-item">
-              <div class="content-dot coran"></div>
-              <div class="content-name">Autres ressources</div>
-              <div class="content-count">234</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group"><label>Email *</label><input type="email" id="m-email" placeholder="membre@jfsi.org" /></div>
+                <div class="form-group">
+                  <label>Rôle *</label>
+                  <select id="m-role">
+                    <option value="free">🌱 Membre Gratuit</option>
+                    <option value="premium">⭐ Premium</option>
+                    <option value="admin">👑 Administrateur</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <button class="btn-form" onclick="ajouterMembre()">💾 Enregistrer</button>
+                <button class="btn-form outline" onclick="viderFormMembre()">Annuler</button>
+              </div>
             </div>
           </div>
 
-          <!-- ACTIVITÉ RÉCENTE -->
+          <!-- Liste membres -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title">📊 Activité dernières 24h</div>
+              <div class="card-title">👥 Tous les Membres</div>
+              <span class="card-link" onclick="chargerMembres()">🔄 Actualiser</span>
             </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">✍️</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  <strong>12 inscriptions</strong> à la plateforme
-                </div>
-                <div class="alert-time">dans les 24 dernières heures</div>
+            <div class="card-body" style="padding:0;">
+              <div style="padding:12px 18px;">
+                <input class="search-input" id="search-membres" placeholder="🔍 Rechercher un membre..." oninput="filtrerMembres()" style="width:100%;" />
               </div>
-            </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">💬</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  <strong>42 messages</strong> dans la salle de réunion
-                </div>
-                <div class="alert-time">échanges très actifs</div>
-              </div>
-            </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">📖</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  <strong>156 consultations</strong> de documents
-                </div>
-                <div class="alert-time">forte consultation du Coran</div>
-              </div>
-            </div>
-
-            <div class="alert-item">
-              <div class="alert-icon">🎓</div>
-              <div class="alert-content">
-                <div class="alert-text">
-                  <strong>3 formations</strong> démarrées
-                </div>
-                <div class="alert-time">suivi des participants actif</div>
+              <div style="overflow-x:auto;">
+                <table class="members-table">
+                  <thead>
+                    <tr>
+                      <th>Membre</th>
+                      <th>Email</th>
+                      <th>Rôle</th>
+                      <th>Membre depuis</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="membres-list"><tr><td colspan="5" class="loading">Chargement...</td></tr></tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- ════ PANEL : CONTENU ════ -->
+        <div class="panel" id="panel-contenu">
+          <div class="card" style="margin-bottom:18px;">
+            <div class="card-header">
+              <div class="card-title">➕ Ajouter un Document</div>
+              <span class="card-link" onclick="viderFormContenu()">Vider</span>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group"><label>Titre *</label><input type="text" id="c-title" placeholder="Titre du document" /></div>
+                <div class="form-group">
+                  <label>Catégorie</label>
+                  <select id="c-category">
+                    <option value="coran">📖 Coran & Tafsîr</option>
+                    <option value="fiqh">⚖️ Fiqh & Jurisprudence</option>
+                    <option value="hadith">📜 Hadith & Sunna</option>
+                    <option value="formations">🎓 Formations</option>
+                    <option value="aqida">🌙 Aqîda</option>
+                    <option value="autres">📁 Autres</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Type</label>
+                  <select id="c-type">
+                    <option value="pdf">📄 PDF</option>
+                    <option value="epub">📖 EPUB</option>
+                    <option value="video">🎬 Vidéo</option>
+                    <option value="audio">🎧 Audio</option>
+                    <option value="text">📝 Texte</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Accès</label>
+                  <select id="c-premium">
+                    <option value="false">🆓 Gratuit</option>
+                    <option value="true">⭐ Premium uniquement</option>
+                  </select>
+                </div>
+                <div class="form-group full"><label>Description</label><textarea id="c-desc" placeholder="Description du document..."></textarea></div>
+                <div class="form-group full"><label>Lien / Chemin du fichier</label><input type="text" id="c-filepath" placeholder="https://... ou /docs/fichier.pdf" /></div>
+              </div>
+              <button class="btn-form" onclick="ajouterContenu()">💾 Ajouter le document</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📚 Documents existants</div>
+              <span class="card-link" onclick="chargerContenu()">🔄 Actualiser</span>
+            </div>
+            <div class="card-body">
+              <div class="search-bar">
+                <input class="search-input" id="search-contenu" placeholder="🔍 Rechercher un document..." oninput="filtrerContenu()" />
+                <select style="padding:9px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.18);border-radius:4px;color:var(--blanc);font-size:12px;outline:none;" id="filter-cat" onchange="filtrerContenu()">
+                  <option value="">Toutes catégories</option>
+                  <option value="coran">Coran</option>
+                  <option value="fiqh">Fiqh</option>
+                  <option value="hadith">Hadith</option>
+                  <option value="formations">Formations</option>
+                </select>
+              </div>
+              <div class="content-cards" id="contenu-list"><div class="loading">Chargement...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ PANEL : FORMATIONS ════ -->
+        <div class="panel" id="panel-formations">
+          <div class="card" style="margin-bottom:18px;">
+            <div class="card-header"><div class="card-title">➕ Créer une Formation</div></div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group"><label>Titre</label><input type="text" id="f-title" placeholder="Titre de la formation" /></div>
+                <div class="form-group">
+                  <label>Niveau</label>
+                  <select id="f-level">
+                    <option>Débutant</option><option>Intermédiaire</option><option>Avancé</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>Formateur</label><input type="text" id="f-formateur" placeholder="Nom du formateur" /></div>
+                <div class="form-group"><label>Durée</label><input type="text" id="f-duree" placeholder="Ex: 8 semaines" /></div>
+                <div class="form-group full"><label>Description</label><textarea id="f-desc" placeholder="Description de la formation..."></textarea></div>
+              </div>
+              <button class="btn-form" onclick="notif('✅ Formation ajoutée !')">💾 Créer la formation</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🎓 Formations actives</div></div>
+            <div class="card-body">
+              <div class="empty">Aucune formation pour le moment. Créez-en une ci-dessus !</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ PANEL : ANNONCES ════ -->
+        <div class="panel" id="panel-annonces">
+          <div class="card" style="margin-bottom:18px;">
+            <div class="card-header"><div class="card-title">📢 Créer une Annonce</div></div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group"><label>Titre</label><input type="text" id="ann-title" placeholder="Titre de l'annonce" /></div>
+                <div class="form-group">
+                  <label>Destinataires</label>
+                  <select id="ann-dest">
+                    <option>Tous les membres</option>
+                    <option>Membres Premium</option>
+                    <option>Administrateurs</option>
+                    <option>Membres du Bureau</option>
+                  </select>
+                </div>
+                <div class="form-group full"><label>Message</label><textarea id="ann-msg" placeholder="Rédigez votre annonce..." style="min-height:100px;"></textarea></div>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <button class="btn-form" onclick="publierAnnonce()">📢 Publier l'annonce</button>
+                <button class="btn-form outline">👁️ Prévisualiser</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📋 Annonces publiées</div></div>
+            <div class="card-body" id="annonces-list">
+              <div class="empty">Aucune annonce publiée. Créez la première !</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ PANEL : ABONNEMENTS ════ -->
+        <div class="panel" id="panel-abonnements">
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card">
+              <div class="stat-label">Plan Gratuit</div>
+              <div class="stat-value" id="abo-free">—</div>
+              <div class="stat-change">Membres inscrits</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Plan Premium</div>
+              <div class="stat-value" id="abo-premium">—</div>
+              <div class="stat-change">Abonnés actifs</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Administrateurs</div>
+              <div class="stat-value" id="abo-admin">—</div>
+              <div class="stat-change">Accès total</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">💳 Gestion des Abonnements</div></div>
+            <div class="card-body">
+              <p style="font-size:13px;color:var(--gris);margin-bottom:16px;">Modifiez le rôle d'un membre pour gérer son accès :</p>
+              <div class="form-grid">
+                <div class="form-group"><label>Email du membre</label><input type="email" id="abo-email" placeholder="membre@jfsi.org" /></div>
+                <div class="form-group">
+                  <label>Nouveau rôle</label>
+                  <select id="abo-new-role">
+                    <option value="free">🌱 Gratuit</option>
+                    <option value="premium">⭐ Premium</option>
+                    <option value="admin">👑 Admin</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn-form" onclick="changerRoleDepuisAbo()">✅ Mettre à jour le rôle</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ PANEL : PARAMÈTRES ════ -->
+        <div class="panel" id="panel-parametres">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><div class="card-title">⚙️ Paramètres du Site</div></div>
+              <div class="card-body">
+                <div class="settings-row">
+                  <div class="sr-left">
+                    <span class="sr-icon">🔐</span>
+                    <div><div class="sr-label">Authentification OTP</div><div class="sr-sub">Connexion sécurisée par email</div></div>
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="settings-row">
+                  <div class="sr-left">
+                    <span class="sr-icon">📧</span>
+                    <div><div class="sr-label">Envoi d'emails SMTP</div><div class="sr-sub">Configuration requise dans Render</div></div>
+                  </div>
+                  <div class="toggle" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="settings-row">
+                  <div class="sr-left">
+                    <span class="sr-icon">💳</span>
+                    <div><div class="sr-label">Paiements Stripe</div><div class="sr-sub">Abonnements premium</div></div>
+                  </div>
+                  <div class="toggle" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="settings-row">
+                  <div class="sr-left">
+                    <span class="sr-icon">🌐</span>
+                    <div><div class="sr-label">Accès public au site</div><div class="sr-sub">Site visible par tous</div></div>
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><div class="card-title">🔗 Liens importants</div></div>
+              <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+                <a href="https://dashboard.render.com" target="_blank" class="btn-form outline" style="text-align:center;text-decoration:none;">🖥️ Tableau de bord Render</a>
+                <a href="https://github.com/hassler10/jfsi-kitab" target="_blank" class="btn-form outline" style="text-align:center;text-decoration:none;">📁 Dépôt GitHub</a>
+                <a href="https://jfsi-kitab.onrender.com" target="_blank" class="btn-form outline" style="text-align:center;text-decoration:none;">🌐 Voir le site</a>
+                <a href="profil.html" class="btn-form outline" style="text-align:center;text-decoration:none;">👤 Mon profil</a>
+                <button class="btn-form danger-btn" onclick="deconnecter()">⏻ Déconnexion</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">🛡️ Sécurité Admin</div></div>
+            <div class="card-body">
+              <div class="settings-row">
+                <div class="sr-left">
+                  <span class="sr-icon">👑</span>
+                  <div><div class="sr-label">Compte admin</div><div class="sr-sub" id="settings-admin-email">—</div></div>
+                </div>
+                <span style="font-size:11px;padding:4px 12px;border-radius:10px;background:rgba(39,174,96,0.12);color:var(--success);border:1px solid rgba(39,174,96,0.3);">Actif</span>
+              </div>
+              <div class="settings-row">
+                <div class="sr-left">
+                  <span class="sr-icon">🗄️</span>
+                  <div><div class="sr-label">Base de données PostgreSQL</div><div class="sr-sub">Render Frankfurt EU</div></div>
+                </div>
+                <span style="font-size:11px;padding:4px 12px;border-radius:10px;background:rgba(39,174,96,0.12);color:var(--success);border:1px solid rgba(39,174,96,0.3);">Connecté</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ PANEL : RAPPORTS ════ -->
+        <div class="panel" id="panel-rapports">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Membres</div>
+              <div class="stat-value" id="rp-membres">—</div>
+              <div class="stat-change">Inscrits</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Documents</div>
+              <div class="stat-value" id="rp-docs">—</div>
+              <div class="stat-change">En bibliothèque</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Premium</div>
+              <div class="stat-value" id="rp-premium">—</div>
+              <div class="stat-change">Abonnés actifs</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Admins</div>
+              <div class="stat-value" id="rp-admins">—</div>
+              <div class="stat-change">Comptes admin</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📊 Rapport Global</div></div>
+            <div class="card-body" id="rapport-content">
+              <div class="loading">Génération du rapport...</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
     <script src="../js/global.js"></script>
     <script>
-      // Update date
-      function updateDate() {
-        const now = new Date();
-        const options = {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        };
-        const dateStr = now.toLocaleDateString("fr-FR", options);
-        document.getElementById("topbar-date").textContent =
-          dateStr + " — Tout va bien";
+      let allMembres = [];
+      let allContenu = [];
+      let allAnnonces = JSON.parse(localStorage.getItem('jfsi_annonces') || '[]');
+
+      // ── INIT ──
+      document.addEventListener('DOMContentLoaded', async () => {
+        updateDate();
+        await verifierSession();
+        chargerMembres();
+        chargerContenu();
+      });
+
+      async function verifierSession() {
+        try {
+          const res = await fetch('/api/auth/session', { credentials: 'include' });
+          const data = await res.json();
+          if (!data.authenticated || data.user?.role !== 'admin') {
+            notif('⚠️ Accès réservé aux administrateurs', true);
+            setTimeout(() => window.location.href = '../index.html', 1500);
+            return;
+          }
+          const contact = data.user.contact;
+          const initials = contact.substring(0, 2).toUpperCase();
+          document.getElementById('admin-avatar-sb').textContent = initials;
+          document.getElementById('admin-name-sb').textContent = contact.split('@')[0];
+          document.getElementById('topbar-admin-email').textContent = contact;
+          document.getElementById('settings-admin-email').textContent = contact;
+        } catch(e) {
+          console.warn('Session check failed', e);
+        }
       }
 
-      updateDate();
+      function updateDate() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('fr-FR', options);
+        document.getElementById('topbar-date').textContent = dateStr;
+        document.getElementById('alert-date').textContent = 'Mis à jour le ' + dateStr;
+      }
 
-      // Sidebar navigation
-      document.querySelectorAll(".sidebar-item").forEach((item) => {
-        item.addEventListener("click", function () {
-          document
-            .querySelectorAll(".sidebar-item")
-            .forEach((i) => i.classList.remove("active"));
-          this.classList.add("active");
-        });
-      });
+      // ── NAVIGATION ──
+      function switchPanel(name, el) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + name).classList.add('active');
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        const titles = {
+          dashboard: 'Vue d\'ensemble', membres: 'Gestion des Membres',
+          contenu: 'Bibliothèque', formations: 'Formations',
+          annonces: 'Annonces', abonnements: 'Abonnements',
+          parametres: 'Paramètres', rapports: 'Rapports'
+        };
+        document.getElementById('topbar-title').textContent = titles[name] || name;
+
+        if (name === 'rapports') genererRapport();
+        if (name === 'abonnements') mettreAJourStatsAbo();
+      }
+
+      // ── MEMBRES ──
+      async function chargerMembres() {
+        try {
+          const res = await fetch('/api/admin/users', { credentials: 'include' });
+          if (!res.ok) throw new Error('Non autorisé');
+          allMembres = await res.json();
+          renderMembres(allMembres);
+          renderRecentMembres(allMembres.slice(0, 5));
+          updateDashStats(allMembres);
+          document.getElementById('badge-membres').textContent = allMembres.length;
+        } catch(e) {
+          document.getElementById('membres-list').innerHTML = '<tr><td colspan="5" class="empty">Impossible de charger les membres. Vérifiez votre connexion admin.</td></tr>';
+        }
+      }
+
+      function renderMembres(list) {
+        const tbody = document.getElementById('membres-list');
+        if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">Aucun membre trouvé</td></tr>'; return; }
+        tbody.innerHTML = list.map(m => {
+          const ini = m.contact.substring(0,2).toUpperCase();
+          const avClass = m.role === 'admin' ? 'av-gold' : m.role === 'premium' ? 'av-green' : 'av-gray';
+          const rpClass = m.role === 'admin' ? 'rp-admin' : m.role === 'premium' ? 'rp-premium' : 'rp-free';
+          const roleLabel = m.role === 'admin' ? '👑 Admin' : m.role === 'premium' ? '⭐ Premium' : '🌱 Gratuit';
+          const date = m.created_at ? new Date(m.created_at).toLocaleDateString('fr-FR') : '—';
+          return `<tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="member-avatar-sm ${avClass}">${ini}</div><span>${m.contact.split('@')[0]}</span></div></td>
+            <td style="color:var(--gris);">${m.contact}</td>
+            <td><span class="role-pill ${rpClass}">${roleLabel}</span></td>
+            <td style="color:var(--gris);">${date}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <select onchange="changerRole(${m.id}, this.value)" style="padding:4px 8px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.18);border-radius:3px;color:var(--blanc);font-size:10px;outline:none;">
+                  <option value="free" ${m.role==='free'?'selected':''}>Gratuit</option>
+                  <option value="premium" ${m.role==='premium'?'selected':''}>Premium</option>
+                  <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
+                </select>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      function renderRecentMembres(list) {
+        const tbody = document.getElementById('recent-members-list');
+        if (!list.length) { tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucun membre</td></tr>'; return; }
+        tbody.innerHTML = list.map(m => {
+          const ini = m.contact.substring(0,2).toUpperCase();
+          const avClass = m.role === 'admin' ? 'av-gold' : m.role === 'premium' ? 'av-green' : 'av-gray';
+          const rpClass = m.role === 'admin' ? 'rp-admin' : m.role === 'premium' ? 'rp-premium' : 'rp-free';
+          const roleLabel = m.role === 'admin' ? '👑 Admin' : m.role === 'premium' ? '⭐ Premium' : '🌱 Gratuit';
+          return `<tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="member-avatar-sm ${avClass}">${ini}</div>${m.contact.split('@')[0]}</div></td>
+            <td style="color:var(--gris);font-size:11px;">${m.contact}</td>
+            <td><span class="role-pill ${rpClass}">${roleLabel}</span></td>
+          </tr>`;
+        }).join('');
+      }
+
+      function updateDashStats(membres) {
+        document.getElementById('dash-total-members').textContent = membres.length;
+        document.getElementById('dash-admins').textContent = membres.filter(m => m.role === 'admin').length;
+        document.getElementById('dash-premium').textContent = membres.filter(m => m.role === 'premium').length;
+        document.getElementById('rp-membres').textContent = membres.length;
+        document.getElementById('rp-admins').textContent = membres.filter(m => m.role === 'admin').length;
+        document.getElementById('rp-premium').textContent = membres.filter(m => m.role === 'premium').length;
+      }
+
+      function filtrerMembres() {
+        const q = document.getElementById('search-membres').value.toLowerCase();
+        renderMembres(allMembres.filter(m => m.contact.toLowerCase().includes(q)));
+      }
+
+      async function changerRole(id, role) {
+        try {
+          const res = await fetch(`/api/admin/users/${id}/role`, {
+            method: 'PUT', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role })
+          });
+          if (res.ok) {
+            notif('✅ Rôle mis à jour !');
+            chargerMembres();
+          } else { notif('❌ Erreur mise à jour', true); }
+        } catch(e) { notif('❌ Erreur réseau', true); }
+      }
+
+      async function ajouterMembre() {
+        const email = document.getElementById('m-email').value.trim();
+        const role = document.getElementById('m-role').value;
+        if (!email || !email.includes('@')) { notif('⚠️ Email invalide', true); return; }
+
+        try {
+          const res = await fetch('/api/auth/request-otp', {
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contact: email })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            // Mettre à jour le rôle si nécessaire
+            setTimeout(async () => {
+              const users = await fetch('/api/admin/users', { credentials: 'include' }).then(r => r.json());
+              const user = users.find(u => u.contact === email);
+              if (user && role !== 'free') {
+                await fetch(`/api/admin/users/${user.id}/role`, {
+                  method: 'PUT', credentials: 'include',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ role })
+                });
+              }
+              chargerMembres();
+              notif('✅ Membre ajouté avec succès !');
+              viderFormMembre();
+            }, 1000);
+          }
+        } catch(e) { notif('❌ Erreur serveur', true); }
+      }
+
+      function viderFormMembre() {
+        document.getElementById('m-email').value = '';
+        document.getElementById('m-role').value = 'free';
+      }
+
+      // ── CONTENU ──
+      async function chargerContenu() {
+        try {
+          const res = await fetch('/api/admin/content', { credentials: 'include' });
+          if (!res.ok) throw new Error();
+          allContenu = await res.json();
+          renderContenu(allContenu);
+          document.getElementById('dash-content').textContent = allContenu.length;
+          document.getElementById('rp-docs').textContent = allContenu.length;
+        } catch(e) {
+          document.getElementById('contenu-list').innerHTML = '<div class="empty">Aucun document trouvé.</div>';
+        }
+      }
+
+      function renderContenu(list) {
+        const container = document.getElementById('contenu-list');
+        if (!list.length) { container.innerHTML = '<div class="empty">Aucun document. Ajoutez-en un ci-dessus !</div>'; return; }
+        const icons = { pdf: '📄', epub: '📖', video: '🎬', audio: '🎧', text: '📝' };
+        container.innerHTML = list.map(c => `
+          <div class="content-card">
+            <div class="cc-actions">
+              <button class="cc-btn del" onclick="supprimerContenu(${c.id})">🗑️</button>
+            </div>
+            <div class="cc-icon">${icons[c.type] || '📁'}</div>
+            <div class="cc-title">${c.title}</div>
+            <div class="cc-meta">${c.category || '—'} ${c.is_premium ? '· ⭐ Premium' : '· 🆓 Gratuit'}</div>
+          </div>
+        `).join('');
+      }
+
+      function filtrerContenu() {
+        const q = document.getElementById('search-contenu').value.toLowerCase();
+        const cat = document.getElementById('filter-cat').value;
+        renderContenu(allContenu.filter(c =>
+          c.title.toLowerCase().includes(q) && (!cat || c.category === cat)
+        ));
+      }
+
+      async function ajouterContenu() {
+        const title = document.getElementById('c-title').value.trim();
+        if (!title) { notif('⚠️ Le titre est requis', true); return; }
+        const body = {
+          title,
+          description: document.getElementById('c-desc').value,
+          type: document.getElementById('c-type').value,
+          category: document.getElementById('c-category').value,
+          file_path: document.getElementById('c-filepath').value,
+          is_premium: document.getElementById('c-premium').value === 'true'
+        };
+        try {
+          const res = await fetch('/api/admin/content', {
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (res.ok) { notif('✅ Document ajouté !'); chargerContenu(); viderFormContenu(); }
+          else { notif('❌ Erreur ajout', true); }
+        } catch(e) { notif('❌ Erreur réseau', true); }
+      }
+
+      async function supprimerContenu(id) {
+        if (!confirm('Supprimer ce document ?')) return;
+        try {
+          const res = await fetch(`/api/admin/content/${id}`, { method: 'DELETE', credentials: 'include' });
+          if (res.ok) { notif('✅ Document supprimé !'); chargerContenu(); }
+        } catch(e) { notif('❌ Erreur', true); }
+      }
+
+      function viderFormContenu() {
+        ['c-title','c-desc','c-filepath'].forEach(id => document.getElementById(id).value = '');
+      }
+
+      // ── ANNONCES ──
+      function publierAnnonce() {
+        const title = document.getElementById('ann-title').value.trim();
+        const msg = document.getElementById('ann-msg').value.trim();
+        if (!title || !msg) { notif('⚠️ Remplissez tous les champs', true); return; }
+        const annonce = {
+          id: Date.now(), title, msg,
+          dest: document.getElementById('ann-dest').value,
+          date: new Date().toLocaleString('fr-FR')
+        };
+        allAnnonces.unshift(annonce);
+        localStorage.setItem('jfsi_annonces', JSON.stringify(allAnnonces));
+        renderAnnonces();
+        document.getElementById('ann-title').value = '';
+        document.getElementById('ann-msg').value = '';
+        notif('✅ Annonce publiée !');
+      }
+
+      function renderAnnonces() {
+        const container = document.getElementById('annonces-list');
+        if (!allAnnonces.length) { container.innerHTML = '<div class="empty">Aucune annonce publiée.</div>'; return; }
+        container.innerHTML = allAnnonces.map(a => `
+          <div style="padding:14px;border:1px solid rgba(201,168,76,0.1);border-radius:8px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <strong style="color:var(--or);font-size:13px;">📢 ${a.title}</strong>
+              <button class="action-btn danger" onclick="supprimerAnnonce(${a.id})">🗑️</button>
+            </div>
+            <p style="font-size:12px;color:rgba(249,245,236,0.7);margin-bottom:6px;">${a.msg}</p>
+            <div style="font-size:10px;color:var(--gris);">Destinataires: ${a.dest} · ${a.date}</div>
+          </div>
+        `).join('');
+      }
+
+      function supprimerAnnonce(id) {
+        allAnnonces = allAnnonces.filter(a => a.id !== id);
+        localStorage.setItem('jfsi_annonces', JSON.stringify(allAnnonces));
+        renderAnnonces();
+        notif('✅ Annonce supprimée !');
+      }
+
+      // ── ABONNEMENTS ──
+      function mettreAJourStatsAbo() {
+        if (!allMembres.length) return;
+        document.getElementById('abo-free').textContent = allMembres.filter(m => m.role === 'free').length;
+        document.getElementById('abo-premium').textContent = allMembres.filter(m => m.role === 'premium').length;
+        document.getElementById('abo-admin').textContent = allMembres.filter(m => m.role === 'admin').length;
+      }
+
+      async function changerRoleDepuisAbo() {
+        const email = document.getElementById('abo-email').value.trim();
+        const role = document.getElementById('abo-new-role').value;
+        if (!email) { notif('⚠️ Entrez un email', true); return; }
+        const user = allMembres.find(m => m.contact === email);
+        if (!user) { notif('❌ Membre introuvable', true); return; }
+        await changerRole(user.id, role);
+        mettreAJourStatsAbo();
+      }
+
+      // ── RAPPORT ──
+      function genererRapport() {
+        if (!allMembres.length) return;
+        const total = allMembres.length;
+        const admins = allMembres.filter(m => m.role === 'admin').length;
+        const premium = allMembres.filter(m => m.role === 'premium').length;
+        const free = allMembres.filter(m => m.role === 'free').length;
+        document.getElementById('rapport-content').innerHTML = `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="padding:16px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:8px;">
+              <div style="font-size:11px;color:var(--or);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Répartition des membres</div>
+              <div style="font-size:13px;color:var(--blanc);margin-bottom:8px;">👑 Administrateurs : <strong style="color:var(--or);">${admins}</strong> (${Math.round(admins/total*100)}%)</div>
+              <div style="font-size:13px;color:var(--blanc);margin-bottom:8px;">⭐ Premium : <strong style="color:var(--vert-clair);">${premium}</strong> (${Math.round(premium/total*100)}%)</div>
+              <div style="font-size:13px;color:var(--blanc);">🌱 Gratuit : <strong style="color:var(--gris);">${free}</strong> (${Math.round(free/total*100)}%)</div>
+            </div>
+            <div style="padding:16px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:8px;">
+              <div style="font-size:11px;color:var(--or);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Bibliothèque</div>
+              <div style="font-size:13px;color:var(--blanc);margin-bottom:8px;">📄 Total documents : <strong style="color:var(--or);">${allContenu.length}</strong></div>
+              <div style="font-size:13px;color:var(--blanc);margin-bottom:8px;">⭐ Premium : <strong style="color:var(--or);">${allContenu.filter(c=>c.is_premium).length}</strong></div>
+              <div style="font-size:13px;color:var(--blanc);">🆓 Gratuits : <strong style="color:var(--gris);">${allContenu.filter(c=>!c.is_premium).length}</strong></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:14px;background:rgba(39,174,96,0.06);border:1px solid rgba(39,174,96,0.15);border-radius:8px;font-size:12px;color:rgba(249,245,236,0.7);">
+            📅 Rapport généré le ${new Date().toLocaleString('fr-FR')} · Backend PostgreSQL actif · ${total} membre(s) enregistré(s)
+          </div>
+        `;
+      }
+
+      async function deconnecter() {
+        try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch(e) {}
+        window.location.href = '../index.html';
+      }
     </script>
-    <script src="../js/session.js"></script>
   </body>
 </html>
