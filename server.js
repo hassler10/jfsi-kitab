@@ -1,9 +1,5 @@
 /*
-  JFSI — Backend minimal (Express)
-  - Sert les fichiers statiques (site complet)
-  - Fournit une API d'authentification OTP
-  - Gère les sessions (cookie sécurisé)
-  - Base de données PostgreSQL
+  JFSI — Backend (Express + PostgreSQL)
 */
 
 const fs = require("fs");
@@ -25,67 +21,57 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
-// Configuration PostgreSQL
+// PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
-// Initialiser la base de données
 async function initDb() {
   try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        contact VARCHAR(255) UNIQUE NOT NULL,
-        role VARCHAR(50) DEFAULT 'free',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS subscriptions (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id),
-        stripe_customer_id VARCHAR(255),
-        stripe_subscription_id VARCHAR(255),
-        status VARCHAR(50),
-        plan VARCHAR(50),
-        current_period_start TIMESTAMP,
-        current_period_end TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS content (
-        id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        type VARCHAR(50),
-        category VARCHAR(100),
-        file_path VARCHAR(500),
-        is_premium BOOLEAN DEFAULT false,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS user_content_access (
-        user_id INTEGER REFERENCES users(id),
-        content_id INTEGER REFERENCES content(id),
-        PRIMARY KEY (user_id, content_id)
-      )
-    `);
+    await pool.query(`CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      contact VARCHAR(255) UNIQUE NOT NULL,
+      role VARCHAR(50) DEFAULT 'free',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS subscriptions (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      stripe_customer_id VARCHAR(255),
+      stripe_subscription_id VARCHAR(255),
+      status VARCHAR(50),
+      plan VARCHAR(50),
+      current_period_start TIMESTAMP,
+      current_period_end TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS content (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      type VARCHAR(50),
+      category VARCHAR(100),
+      file_path VARCHAR(500),
+      is_premium BOOLEAN DEFAULT false,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS user_content_access (
+      user_id INTEGER REFERENCES users(id),
+      content_id INTEGER REFERENCES content(id),
+      PRIMARY KEY (user_id, content_id)
+    )`);
     console.log("✅ Base de données initialisée");
   } catch (err) {
-    console.error("❌ Erreur initialisation DB:", err.message);
+    console.error("❌ Erreur DB:", err.message);
   }
 }
-
 initDb();
 
-// Configuration SMTP
+// SMTP
 const transporter =
   process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
     ? nodemailer.createTransport({
@@ -96,57 +82,52 @@ const transporter =
       })
     : null;
 
-// Configuration Stripe
+// Stripe
 const stripeClient = process.env.STRIPE_SECRET_KEY
   ? stripe(process.env.STRIPE_SECRET_KEY)
   : null;
 
 // Session
 const SESSION_SECRET = process.env.SESSION_SECRET || "jfsi-secret-demo";
+app.use(session({
+  genid: () => uid.sync(18),
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1000 * 60 * 60 * 24,
+    sameSite: "strict",
+  },
+}));
 
-app.use(
-  session({
-    genid: () => uid.sync(18),
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24,
-      sameSite: "strict",
-    },
-  })
-);
-
-// Fonctions base de données
+// Helpers DB
 async function findUser(contact) {
-  const result = await pool.query("SELECT * FROM users WHERE contact = $1", [contact]);
-  return result.rows[0] || null;
+  const r = await pool.query("SELECT * FROM users WHERE contact = $1", [contact]);
+  return r.rows[0] || null;
 }
-
 async function upsertUser(contact) {
   const user = await findUser(contact);
   if (user) return user;
-  const result = await pool.query(
+  const r = await pool.query(
     "INSERT INTO users (contact, role) VALUES ($1, $2) RETURNING *",
     [contact, "free"]
   );
-  return result.rows[0];
+  return r.rows[0];
 }
 
-// OTP en mémoire
+// OTP
 const otpStore = new Map();
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// ── API AUTH ──
+// ── AUTH ──
 app.post("/api/auth/request-otp", async (req, res) => {
   const { contact } = req.body;
-  if (!contact || typeof contact !== "string") {
+  if (!contact || typeof contact !== "string")
     return res.status(400).json({ error: "Contact requis" });
-  }
 
   const otp = generateOTP();
   otpStore.set(contact, { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
@@ -161,7 +142,7 @@ app.post("/api/auth/request-otp", async (req, res) => {
         text: `Votre code OTP est : ${otp} (valable 10 minutes)`,
       });
     } catch (err) {
-      console.warn("Impossible d'envoyer l'email OTP", err);
+      console.warn("Email OTP non envoyé", err);
     }
   }
 
@@ -203,7 +184,20 @@ app.post("/api/auth/logout", (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
 
-// ── API ABONNEMENTS ──
+// ── SETUP ADMIN (route temporaire) ──
+app.get("/api/setup-admin", async (req, res) => {
+  try {
+    await pool.query(
+      "INSERT INTO users (contact, role) VALUES ($1, 'admin') ON CONFLICT (contact) DO UPDATE SET role = 'admin'",
+      ["hasslerbenie10@gmail.com"]
+    );
+    res.json({ ok: true, message: "✅ Admin créé ! Tu peux supprimer cette route." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── ABONNEMENTS ──
 app.get("/api/subscription/status", async (req, res) => {
   if (!req.session.user) return res.status(401).json({ error: "Non authentifié" });
   try {
@@ -223,7 +217,8 @@ app.post("/api/subscription/cancel", async (req, res) => {
     const user = await findUser(req.session.user.contact);
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
     const sub = await pool.query("SELECT * FROM subscriptions WHERE user_id = $1", [user.id]);
-    if (!sub.rows[0]?.stripe_subscription_id) return res.status(400).json({ error: "Aucun abonnement actif" });
+    if (!sub.rows[0]?.stripe_subscription_id)
+      return res.status(400).json({ error: "Aucun abonnement actif" });
     await stripeClient.subscriptions.update(sub.rows[0].stripe_subscription_id, { cancel_at_period_end: true });
     await pool.query("UPDATE subscriptions SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE user_id=$2", ["canceled", user.id]);
     await pool.query("UPDATE users SET role=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2", ["free", user.id]);
@@ -233,17 +228,17 @@ app.post("/api/subscription/cancel", async (req, res) => {
   }
 });
 
-// ── API CONTENU ──
+// ── CONTENU ──
 app.get("/api/content", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM content ORDER BY created_at DESC");
     const user = req.session.user ? await findUser(req.session.user.contact) : null;
     const isPremium = user && (user.role === "premium" || user.role === "admin");
-    const filteredContent = result.rows.map((item) => ({
+    const filtered = result.rows.map((item) => ({
       ...item,
       file_path: isPremium || !item.is_premium ? item.file_path : null,
     }));
-    res.json(filteredContent);
+    res.json(filtered);
   } catch (error) {
     res.status(500).json({ error: "Erreur serveur" });
   }
@@ -263,7 +258,7 @@ app.get("/api/content/:id", async (req, res) => {
   }
 });
 
-// ── API ADMIN ──
+// ── ADMIN ──
 const requireAdmin = async (req, res, next) => {
   if (!req.session.user) return res.status(401).json({ error: "Non authentifié" });
   const user = await findUser(req.session.user.contact);
@@ -284,7 +279,8 @@ app.get("/api/admin/users", requireAdmin, async (req, res) => {
 app.put("/api/admin/users/:id/role", requireAdmin, async (req, res) => {
   try {
     const { role } = req.body;
-    if (!["free", "premium", "admin"].includes(role)) return res.status(400).json({ error: "Rôle invalide" });
+    if (!["free", "premium", "admin"].includes(role))
+      return res.status(400).json({ error: "Rôle invalide" });
     await pool.query("UPDATE users SET role=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2", [role, req.params.id]);
     res.json({ ok: true });
   } catch (error) {
