@@ -3025,15 +3025,7 @@
               required
             />
           </div>
-          <div class="modal-form-group">
-            <label for="login-password">Mot de Passe</label>
-            <input
-              type="password"
-              id="login-password"
-              placeholder="••••••••"
-              required
-            />
-          </div>
+          <p style="font-size:12px;color:var(--gris);text-align:center;margin-top:-8px;">Un code OTP sera envoyé sur les logs du serveur</p>
           <div class="modal-error" id="login-error"></div>
           <div class="modal-btn-group">
             <button type="submit" class="modal-btn modal-btn-submit">
@@ -3310,33 +3302,44 @@
       }
 
       // ── OTP ──
-      function envoyerCode() {
+      async function envoyerCode() {
         const e = document.getElementById("l-email").value.trim();
         if (!e || !e.includes("@")) {
           notif("⚠️ Email invalide", true);
           return;
         }
-        const users = getUsers();
-        const user = users.find((u) => u.email === e);
-        moi = user || {
-          prenom: "Utilisateur",
-          nom: "Démo",
-          email: e,
-          role,
-          ini: "UD",
-          fonc_asso: role === "admin" ? "Administrateur" : "Membre du Bureau",
-        };
-        otpCode = "123456"; // Code de test pour développement
-        console.log(`🔐 CODE OTP (test) : ${otpCode}`);
-        document.getElementById("otp-email-label").textContent = e;
-        document.getElementById("step-email").classList.remove("active");
-        document.getElementById("step-otp").classList.add("active");
-        ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
-          (id) => (document.getElementById(id).value = ""),
-        );
-        document.getElementById("d1").focus();
-        lancerTimer(300);
-        notif(`📧 Code OTP envoyé à ${e} — voir console F12 pour tester`);
+        try {
+          const res = await fetch("/api/auth/request-otp", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contact: e }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || "Erreur serveur");
+
+          sessionStorage.setItem("jfsi_pending_email", e);
+          moi = {
+            prenom: e.split("@")[0],
+            nom: "",
+            email: e,
+            role,
+            ini: e[0].toUpperCase(),
+            fonc_asso: role === "admin" ? "Administrateur" : "Membre du Bureau",
+          };
+
+          document.getElementById("otp-email-label").textContent = e;
+          document.getElementById("step-email").classList.remove("active");
+          document.getElementById("step-otp").classList.add("active");
+          ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
+            (id) => (document.getElementById(id).value = ""),
+          );
+          document.getElementById("d1").focus();
+          lancerTimer(300);
+          notif("📧 OTP généré — voir les logs Render (bûches) pour le code");
+        } catch (err) {
+          notif("❌ Erreur : " + err.message, true);
+        }
       }
 
       function lancerTimer(s) {
@@ -3369,22 +3372,53 @@
           .join("");
       }
 
-      function validerOTP() {
+      async function validerOTP() {
         const c = getCode();
         if (c.length < 6) {
           notif("⚠️ Entrez les 6 chiffres", true);
           return;
         }
-        if (c === otpCode) {
-          clearInterval(timerInterval);
-          notif("✅ Accès validé ! Bienvenue dans la salle.");
-          setTimeout(entrerSalle, 700);
-        } else {
-          notif("❌ Code incorrect. Réessayez.", true);
-          ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
-            (id) => (document.getElementById(id).value = ""),
-          );
-          document.getElementById("d1").focus();
+        const contact = sessionStorage.getItem("jfsi_pending_email");
+        if (!contact) {
+          notif("❌ Session expirée, recommencez", true);
+          retourEmail();
+          return;
+        }
+        try {
+          const res = await fetch("/api/auth/verify-otp", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contact, otp: c }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            clearInterval(timerInterval);
+            // Récupérer le rôle depuis le backend
+            const sessionRes = await fetch("/api/auth/session", { credentials: "include" });
+            const sessionData = await sessionRes.json();
+            if (sessionData.authenticated) {
+              const userRole = sessionData.user?.role || "free";
+              moi = {
+                prenom: contact.split("@")[0],
+                nom: "",
+                email: contact,
+                role: userRole === "admin" ? "admin" : "bureau",
+                ini: contact[0].toUpperCase(),
+                fonc_asso: userRole === "admin" ? "Administrateur" : "Membre du Bureau",
+              };
+            }
+            notif("✅ Accès validé ! Bienvenue dans la salle.");
+            setTimeout(entrerSalle, 700);
+          } else {
+            notif("❌ " + (data.error || "Code incorrect"), true);
+            ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
+              (id) => (document.getElementById(id).value = ""),
+            );
+            document.getElementById("d1").focus();
+          }
+        } catch (err) {
+          notif("❌ Erreur serveur : " + err.message, true);
         }
       }
 
@@ -3834,70 +3868,63 @@
 
       function fermerModal(modalId = null) {
         if (modalId) {
-          // Fermeture spécifique d'une modal
           const modal = document.getElementById(modalId);
-          if (modal) {
-            modal.classList.remove("active");
-          }
+          if (modal) modal.classList.remove("active");
         } else {
-          // Fermeture de toutes les modals
-          const modals = document.querySelectorAll(".modal-overlay");
-          modals.forEach((modal) => {
+          document.querySelectorAll(".modal-overlay").forEach((modal) => {
             modal.classList.remove("active");
           });
         }
-        // Clear form fields
-        document.getElementById("login-email").value = "";
-        document.getElementById("login-password").value = "";
-        document.getElementById("register-fullname").value = "";
-        document.getElementById("register-email").value = "";
-        document.getElementById("register-password").value = "";
-        document.getElementById("register-confirm").value = "";
+        const fields = ["login-email", "register-fullname", "register-email", "register-password", "register-password-confirm"];
+        fields.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
       }
 
-      function soumettrConnexion(event) {
+      async function soumettrConnexion(event) {
         event.preventDefault();
         const email = document.getElementById("login-email").value.trim();
-        const password = document.getElementById("login-password").value.trim();
 
-        if (!email || !password) {
-          notif("⚠️ Veuillez remplir tous les champs", true);
-          return;
-        }
-
-        if (!email.includes("@")) {
+        if (!email || !email.includes("@")) {
           notif("⚠️ Email invalide", true);
           return;
         }
 
-        // Pour la démo, accepter n'importe quel email/mot de passe
-        // En production, vérifier avec une API
-        const users = getUsers();
-        const user = users.find((u) => u.email === email && u.role === role);
+        try {
+          const res = await fetch("/api/auth/request-otp", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contact: email }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || "Erreur serveur");
 
-        if (user || (role === "admin" && email === "admin@jfsi.org")) {
-          // Simulation de connexion réussie
-          moi = user || {
-            prenom: "Admin",
-            nom: "JFSI",
-            email: email,
-            role: "admin",
-            ini: "AJ",
-            fonc_asso: "Administrateur",
-          };
-
-          notif("✅ Connexion réussie ! Redirection...");
+          sessionStorage.setItem("jfsi_pending_email", email);
           fermerModal();
 
-          setTimeout(() => {
-            if (role === "admin") {
-              window.location.href = "./admin-dashboard.html";
-            } else {
-              entrerSalle();
-            }
-          }, 1000);
-        } else {
-          notif("❌ Email ou mot de passe incorrect", true);
+          // Rediriger vers l'écran OTP
+          document.getElementById("l-email").value = email;
+          document.getElementById("otp-email-label").textContent = email;
+          moi = {
+            prenom: email.split("@")[0],
+            nom: "",
+            email,
+            role,
+            ini: email[0].toUpperCase(),
+            fonc_asso: role === "admin" ? "Administrateur" : "Membre du Bureau",
+          };
+          document.getElementById("step-email").classList.remove("active");
+          document.getElementById("step-otp").classList.add("active");
+          ["d1", "d2", "d3", "d4", "d5", "d6"].forEach(
+            (id) => (document.getElementById(id).value = ""),
+          );
+          aller("sc-connexion");
+          lancerTimer(300);
+          notif("📧 OTP envoyé — voir les logs Render pour le code");
+        } catch (err) {
+          notif("❌ Erreur : " + err.message, true);
         }
       }
 
