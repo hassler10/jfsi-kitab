@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Mon Profil</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      body { overflow-x: hidden; }
+
+      .profil-hero {
+        padding: 120px 60px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-bg {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 320px;
+        background: linear-gradient(180deg, rgba(45,90,61,0.25) 0%, transparent 100%);
+        z-index: 0;
+      }
+
+      .profil-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── CARD PROFIL PRINCIPALE ── */
+      .profil-card {
+        background: rgba(13,31,21,0.85);
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 16px;
+        padding: 40px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        animation: fadeUp 0.6s ease both;
+        backdrop-filter: blur(10px);
+      }
+
+      .avatar-ring {
+        position: relative;
+        flex-shrink: 0;
+      }
+      .avatar-circle {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cinzel Decorative', serif;
+        font-size: 36px;
+        color: var(--noir-doux);
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+      .avatar-ring::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--or), transparent, var(--or-fonce));
+        animation: rotateBorder 4s linear infinite;
+      }
+      @keyframes rotateBorder {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .online-dot {
+        position: absolute;
+        bottom: 6px; right: 6px;
+        width: 18px; height: 18px;
+        background: var(--success);
+        border: 3px solid var(--noir-doux);
+        border-radius: 50%;
+        z-index: 2;
+      }
+
+      .profil-info { flex: 1; }
+      .profil-name {
+        font-family: 'Cinzel Decorative', serif;
+        font-size: clamp(22px, 3vw, 32px);
+        color: var(--blanc);
+        margin-bottom: 6px;
+      }
+      .profil-email {
+        font-size: 14px;
+        color: var(--or-clair);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .profil-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .badge {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .badge-role-admin { background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4); color: var(--or); }
+      .badge-role-premium { background: rgba(61,122,82,0.15); border: 1px solid rgba(61,122,82,0.4); color: var(--vert-clair); }
+      .badge-role-free { background: rgba(138,122,106,0.15); border: 1px solid rgba(138,122,106,0.3); color: var(--gris-clair); }
+      .badge-member { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.15); color: rgba(201,168,76,0.7); }
+
+      .profil-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      /* ── GRILLE STATS ── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+        animation: fadeUp 0.6s 0.1s ease both;
+      }
+      .stat-card {
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.12);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: default;
+      }
+      .stat-card:hover {
+        border-color: rgba(201,168,76,0.35);
+        transform: translateY(-4px);
+      }
+      .stat-icon { font-size: 24px; margin-bottom: 8px; }
+      .stat-value {
+        font-family: 'Cinzel Decorative', serif;
+        font-size: 26px;
+        color: var(--or);
+        margin-bottom: 4px;
+      }
+      .stat-label { font-size: 11px; color: var(--gris); letter-spacing: 2px; text-transform: uppercase; }
+
+      /* ── LAYOUT PRINCIPAL ── */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 24px;
+        margin-bottom: 60px;
+        animation: fadeUp 0.6s 0.2s ease both;
+      }
+
+      /* ── SECTIONS ── */
+      .section-card {
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.12);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+      .section-head {
+        padding: 18px 24px;
+        border-bottom: 1px solid rgba(201,168,76,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .section-head h3 {
+        font-family: 'Cinzel Decorative', serif;
+        font-size: 13px;
+        color: var(--or);
+        letter-spacing: 2px;
+      }
+      .section-body { padding: 24px; }
+
+      /* ── FORMULAIRE PROFIL ── */
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+      .form-row.full { grid-template-columns: 1fr; }
+      .form-group { display: flex; flex-direction: column; gap: 7px; }
+      .form-group label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--or); }
+      .form-group input, .form-group select, .form-group textarea {
+        padding: 11px 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(201,168,76,0.18);
+        border-radius: 5px;
+        color: var(--blanc);
+        font-family: 'Lato', sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: all 0.3s;
+      }
+      .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: var(--or);
+        background: rgba(255,255,255,0.07);
+        box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+      }
+      .form-group input::placeholder { color: rgba(249,245,236,0.2); }
+      .form-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+      .form-group select option { background: var(--vert); }
+      .form-group textarea { resize: vertical; min-height: 80px; }
+
+      /* ── ACTIVITÉS ── */
+      .activity-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(201,168,76,0.06);
+      }
+      .activity-row:last-child { border-bottom: none; }
+      .act-icon {
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .act-gold { background: rgba(201,168,76,0.12); }
+      .act-green { background: rgba(61,122,82,0.12); }
+      .act-blue { background: rgba(52,152,219,0.12); }
+      .act-text { flex: 1; }
+      .act-title { font-size: 13px; color: var(--blanc); margin-bottom: 2px; }
+      .act-time { font-size: 11px; color: var(--gris); }
+      .act-badge { font-size: 10px; padding: 3px 10px; border-radius: 10px; }
+
+      /* ── SIDEBAR ── */
+      .abonnement-card {
+        background: linear-gradient(135deg, rgba(45,90,61,0.3), rgba(13,31,21,0.8));
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .abo-icon { font-size: 32px; margin-bottom: 12px; }
+      .abo-plan { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: var(--or); margin-bottom: 6px; }
+      .abo-status { font-size: 12px; color: var(--gris); margin-bottom: 16px; }
+      .abo-date { font-size: 11px; color: var(--or-clair); background: rgba(201,168,76,0.1); padding: 6px 12px; border-radius: 20px; display: inline-block; margin-bottom: 16px; }
+
+      .quick-links { display: flex; flex-direction: column; gap: 8px; }
+      .quick-link {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(201,168,76,0.08);
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--blanc);
+        font-size: 13px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .quick-link:hover { background: rgba(201,168,76,0.07); border-color: rgba(201,168,76,0.25); transform: translateX(4px); }
+      .ql-icon { font-size: 16px; width: 28px; text-align: center; }
+      .ql-text { flex: 1; }
+      .ql-arrow { color: var(--or); font-size: 12px; opacity: 0.5; }
+
+      /* ── SÉCURITÉ ── */
+      .security-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(201,168,76,0.06);
+      }
+      .security-row:last-child { border-bottom: none; }
+      .sec-left { display: flex; align-items: center; gap: 12px; }
+      .sec-icon { font-size: 18px; }
+      .sec-label { font-size: 13px; color: var(--blanc); }
+      .sec-sub { font-size: 11px; color: var(--gris); }
+      .sec-status { font-size: 11px; padding: 3px 10px; border-radius: 10px; }
+      .sec-ok { background: rgba(39,174,96,0.15); color: var(--success); border: 1px solid rgba(39,174,96,0.3); }
+      .sec-warn { background: rgba(231,76,60,0.1); color: var(--danger); border: 1px solid rgba(231,76,60,0.2); }
+
+      /* ── BOUTONS ── */
+      .btn-save {
+        padding: 12px 28px;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none; border-radius: 4px; cursor: pointer;
+        font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--noir-doux); font-family: 'Lato', sans-serif;
+        transition: all 0.3s;
+      }
+      .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(201,168,76,0.35); }
+      .btn-outline {
+        padding: 11px 24px;
+        background: transparent;
+        border: 1px solid rgba(201,168,76,0.3);
+        border-radius: 4px; cursor: pointer;
+        font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--or); font-family: 'Lato', sans-serif;
+        transition: all 0.3s;
+      }
+      .btn-outline:hover { background: rgba(201,168,76,0.08); border-color: var(--or); }
+      .btn-danger {
+        padding: 11px 24px;
+        background: rgba(231,76,60,0.08);
+        border: 1px solid rgba(231,76,60,0.25);
+        border-radius: 4px; cursor: pointer;
+        font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--danger); font-family: 'Lato', sans-serif;
+        transition: all 0.3s;
+      }
+      .btn-danger:hover { background: rgba(231,76,60,0.15); }
+
+      /* ── LOADING ── */
+      .loading-pulse {
+        width: 100%; height: 40px; border-radius: 4px;
+        background: linear-gradient(90deg, rgba(201,168,76,0.05) 25%, rgba(201,168,76,0.12) 50%, rgba(201,168,76,0.05) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
+      @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @media (max-width: 1024px) {
+        .main-grid { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 768px) {
+        .profil-hero { padding: 100px 20px 0; }
+        .profil-card { flex-direction: column; text-align: center; }
+        .profil-actions { flex-direction: row; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .form-row { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <!-- NAVBAR -->
+    <header>
+      <nav>
+        <div class="nav-logo">
+          <a href="../index.html"><img src="../images/logo.png" alt="JFSI" class="logo-img" /></a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="../index.html">Accueil</a></li>
+          <li><a href="bibliotheque.html">Bibliothèque</a></li>
+          <li><a href="formations.html">Formations</a></li>
+          <li><a href="abonnement.html">Abonnements</a></li>
+          <li><a href="dictionnaire.html">Dictionnaire</a></li>
+          <li><a href="salle-reunion.html" class="nav-bureau">🤝 Espace Bureau</a></li>
+        </ul>
+        <div class="nav-right" id="nav-right">
+          <button onclick="sessionManager.openLoginModal()" class="nav-cta">Connexion</button>
+        </div>
+        <div class="nav-burger" onclick="toggleMenu()">
+          <span></span><span></span><span></span>
+        </div>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <div class="profil-hero">
+      <div class="hero-bg"></div>
+      <div class="profil-container">
+
+        <!-- CARTE PROFIL PRINCIPALE -->
+        <div class="profil-card">
+          <div class="avatar-ring">
+            <div class="avatar-circle" id="avatar-initials">?</div>
+            <div class="online-dot"></div>
+          </div>
+
+          <div class="profil-info">
+            <div class="profil-name" id="profil-name">Chargement...</div>
+            <div class="profil-email">
+              <span>✉️</span>
+              <span id="profil-email">—</span>
+            </div>
+            <div class="profil-badges">
+              <span class="badge badge-role-free" id="profil-role-badge">Membre</span>
+              <span class="badge badge-member" id="profil-member-since">Membre depuis —</span>
+            </div>
+          </div>
+
+          <div class="profil-actions">
+            <button class="btn-save" onclick="sauvegarderProfil()">💾 Sauvegarder</button>
+            <button class="btn-outline" onclick="sessionManager.logout()">⏻ Déconnexion</button>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value" id="stat-livres">0</div>
+            <div class="stat-label">Livres consultés</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎓</div>
+            <div class="stat-value" id="stat-formations">0</div>
+            <div class="stat-label">Formations suivies</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" id="stat-jours">0</div>
+            <div class="stat-label">Jours de membre</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value" id="stat-niveau">—</div>
+            <div class="stat-label">Niveau</div>
+          </div>
+        </div>
+
+        <!-- GRILLE PRINCIPALE -->
+        <div class="main-grid">
+          <!-- COLONNE GAUCHE -->
+          <div>
+            <!-- Informations personnelles -->
+            <div class="section-card">
+              <div class="section-head">
+                <h3>✏️ Informations Personnelles</h3>
+                <span style="font-size:11px;color:var(--gris);">Modifiez vos informations</span>
+              </div>
+              <div class="section-body">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Prénom</label>
+                    <input type="text" id="field-prenom" placeholder="Votre prénom" />
+                  </div>
+                  <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" id="field-nom" placeholder="Votre nom" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="field-email" disabled />
+                  </div>
+                  <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="field-tel" placeholder="+225 00 00 00 00" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Ville</label>
+                    <input type="text" id="field-ville" placeholder="Votre ville" />
+                  </div>
+                  <div class="form-group">
+                    <label>Pays</label>
+                    <select id="field-pays">
+                      <option value="">— Sélectionner —</option>
+                      <option value="CI">Côte d'Ivoire</option>
+                      <option value="SN">Sénégal</option>
+                      <option value="ML">Mali</option>
+                      <option value="GN">Guinée</option>
+                      <option value="BF">Burkina Faso</option>
+                      <option value="FR">France</option>
+                      <option value="BE">Belgique</option>
+                      <option value="MA">Maroc</option>
+                      <option value="DZ">Algérie</option>
+                      <option value="TN">Tunisie</option>
+                      <option value="OTHER">Autre</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row full">
+                  <div class="form-group">
+                    <label>Bio / Présentation</label>
+                    <textarea id="field-bio" placeholder="Parlez-nous de vous..."></textarea>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+                  <button class="btn-save" onclick="sauvegarderProfil()">💾 Sauvegarder les modifications</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activité récente -->
+            <div class="section-card">
+              <div class="section-head">
+                <h3>🕐 Activité Récente</h3>
+              </div>
+              <div class="section-body" id="activite-list">
+                <div class="activity-row">
+                  <div class="act-icon act-gold">📖</div>
+                  <div class="act-text">
+                    <div class="act-title">Consultation : Tafsîr Ibn Kathîr</div>
+                    <div class="act-time">Il y a 2 heures</div>
+                  </div>
+                  <span class="act-badge badge-member">Bibliothèque</span>
+                </div>
+                <div class="activity-row">
+                  <div class="act-icon act-green">🎓</div>
+                  <div class="act-text">
+                    <div class="act-title">Formation : Tajwid — Niveau 1</div>
+                    <div class="act-time">Hier à 14h30</div>
+                  </div>
+                  <span class="act-badge" style="background:rgba(61,122,82,0.12);color:var(--vert-clair);font-size:10px;padding:3px 10px;border-radius:10px;">Formation</span>
+                </div>
+                <div class="activity-row">
+                  <div class="act-icon act-blue">🔐</div>
+                  <div class="act-text">
+                    <div class="act-title">Connexion réussie</div>
+                    <div class="act-time" id="last-login">—</div>
+                  </div>
+                  <span class="sec-status sec-ok">Sécurisé</span>
+                </div>
+                <div class="activity-row">
+                  <div class="act-icon act-gold">📚</div>
+                  <div class="act-text">
+                    <div class="act-title">Consultation : Sahîh al-Bukhârî</div>
+                    <div class="act-time">Il y a 3 jours</div>
+                  </div>
+                  <span class="act-badge badge-member">Bibliothèque</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sécurité -->
+            <div class="section-card">
+              <div class="section-head">
+                <h3>🔐 Sécurité du Compte</h3>
+              </div>
+              <div class="section-body">
+                <div class="security-row">
+                  <div class="sec-left">
+                    <span class="sec-icon">📧</span>
+                    <div>
+                      <div class="sec-label">Authentification OTP</div>
+                      <div class="sec-sub">Connexion sécurisée par code email</div>
+                    </div>
+                  </div>
+                  <span class="sec-status sec-ok">Actif</span>
+                </div>
+                <div class="security-row">
+                  <div class="sec-left">
+                    <span class="sec-icon">🛡️</span>
+                    <div>
+                      <div class="sec-label">Session active</div>
+                      <div class="sec-sub" id="session-info">Session en cours</div>
+                    </div>
+                  </div>
+                  <button class="btn-danger" style="padding:6px 14px;font-size:10px;" onclick="sessionManager.logout()">Déconnecter</button>
+                </div>
+                <div class="security-row">
+                  <div class="sec-left">
+                    <span class="sec-icon">🗑️</span>
+                    <div>
+                      <div class="sec-label">Supprimer le compte</div>
+                      <div class="sec-sub">Action irréversible</div>
+                    </div>
+                  </div>
+                  <button class="btn-danger" style="padding:6px 14px;font-size:10px;" onclick="confirmerSuppression()">Supprimer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR DROITE -->
+          <div>
+            <!-- Abonnement -->
+            <div class="abonnement-card">
+              <div class="abo-icon" id="abo-icon">🆓</div>
+              <div class="abo-plan" id="abo-plan">Plan Gratuit</div>
+              <div class="abo-status" id="abo-status">Accès aux contenus de base</div>
+              <div class="abo-date" id="abo-date">Membre depuis aujourd'hui</div>
+              <a href="abonnement.html" class="btn-primary" style="display:block;text-align:center;font-size:11px;padding:12px;">✨ Passer Premium</a>
+            </div>
+
+            <!-- Accès rapides -->
+            <div class="section-card">
+              <div class="section-head"><h3>🔗 Accès Rapides</h3></div>
+              <div class="section-body" style="padding:16px;">
+                <div class="quick-links">
+                  <a class="quick-link" href="bibliotheque.html">
+                    <span class="ql-icon">📚</span>
+                    <span class="ql-text">Ma Bibliothèque</span>
+                    <span class="ql-arrow">→</span>
+                  </a>
+                  <a class="quick-link" href="formations.html">
+                    <span class="ql-icon">🎓</span>
+                    <span class="ql-text">Mes Formations</span>
+                    <span class="ql-arrow">→</span>
+                  </a>
+                  <a class="quick-link" href="mes-abonnements.html">
+                    <span class="ql-icon">💳</span>
+                    <span class="ql-text">Mes Abonnements</span>
+                    <span class="ql-arrow">→</span>
+                  </a>
+                  <a class="quick-link" href="dictionnaire.html">
+                    <span class="ql-icon">📖</span>
+                    <span class="ql-text">Dictionnaire</span>
+                    <span class="ql-arrow">→</span>
+                  </a>
+                  <a class="quick-link" href="salle-reunion.html">
+                    <span class="ql-icon">🤝</span>
+                    <span class="ql-text">Espace Bureau</span>
+                    <span class="ql-arrow">→</span>
+                  </a>
+                  <a class="quick-link" href="../index.html">
+                    <span class="ql-icon">🏠</span>
+                    <span class="ql-text">Page d'accueil</span>
+                    <span class="ql-arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Préférences -->
+            <div class="section-card">
+              <div class="section-head"><h3>⚙️ Préférences</h3></div>
+              <div class="section-body">
+                <div class="form-group" style="margin-bottom:14px;">
+                  <label>Langue préférée</label>
+                  <select id="pref-langue">
+                    <option value="fr">Français</option>
+                    <option value="ar">العربية</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:14px;">
+                  <label>Notifications</label>
+                  <select id="pref-notif">
+                    <option value="all">Toutes les notifications</option>
+                    <option value="important">Importantes seulement</option>
+                    <option value="none">Désactivées</option>
+                  </select>
+                </div>
+                <button class="btn-save" style="width:100%;margin-top:4px;" onclick="sauvegarderPrefs()">Sauvegarder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="../images/logo.png" alt="JFSI" class="logo-img" />
+          <p>Jardin des Frères et Sœurs en Islam — Espace de savoir et de fraternité.</p>
+          <div class="footer-arabic">وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ</div>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Accueil</a></li>
+            <li><a href="bibliotheque.html">Bibliothèque</a></li>
+            <li><a href="formations.html">Formations</a></li>
+            <li><a href="abonnement.html">Abonnements</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Ressources</h4>
+          <ul>
+            <li><a href="dictionnaire.html">Dictionnaire</a></li>
+            <li><a href="coran.html">Coran & Tafsîr</a></li>
+            <li><a href="hadith.html">Hadith</a></li>
+            <li><a href="fiqh.html">Fiqh</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Mon Compte</h4>
+          <ul>
+            <li><a href="profil.html">Mon Profil</a></li>
+            <li><a href="mes-abonnements.html">Mes Abonnements</a></li>
+            <li><a href="salle-reunion.html">Espace Bureau</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 JFSI — Tous droits réservés</p>
+        <span class="arabic-footer">بِسْمِ اللهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
+      </div>
+    </footer>
+
+    <script src="../js/global.js"></script>
+    <script src="../js/session.js"></script>
+    <script>
+      // ── DONNÉES PROFIL ──
+      const PROFIL_KEY = 'jfsi_profil_data';
+
+      function chargerProfil() {
+        // Charger depuis la session backend
+        fetch('/api/auth/session', { credentials: 'include' })
+          .then(r => r.json())
+          .then(data => {
+            if (!data.authenticated) {
+              notif('🔐 Connectez-vous pour accéder à votre profil', true);
+              setTimeout(() => sessionManager.openLoginModal(), 500);
+              return;
+            }
+
+            const user = data.user;
+            const contact = user.contact || '';
+            const role = user.role || 'free';
+
+            // Avatar
+            const initials = contact.substring(0, 2).toUpperCase();
+            document.getElementById('avatar-initials').textContent = initials;
+
+            // Nom et email
+            document.getElementById('profil-name').textContent = contact.split('@')[0];
+            document.getElementById('profil-email').textContent = contact;
+            document.getElementById('field-email').value = contact;
+
+            // Badge rôle
+            const badge = document.getElementById('profil-role-badge');
+            if (role === 'admin') {
+              badge.textContent = '👑 Administrateur';
+              badge.className = 'badge badge-role-admin';
+              document.getElementById('abo-icon').textContent = '👑';
+              document.getElementById('abo-plan').textContent = 'Administrateur';
+              document.getElementById('abo-status').textContent = 'Accès complet à toutes les fonctionnalités';
+              document.getElementById('stat-niveau').textContent = 'Admin';
+            } else if (role === 'premium') {
+              badge.textContent = '⭐ Premium';
+              badge.className = 'badge badge-role-premium';
+              document.getElementById('abo-icon').textContent = '⭐';
+              document.getElementById('abo-plan').textContent = 'Plan Premium';
+              document.getElementById('abo-status').textContent = 'Accès illimité à tout le contenu';
+              document.getElementById('stat-niveau').textContent = 'Premium';
+            } else {
+              badge.textContent = '🌱 Membre';
+              badge.className = 'badge badge-role-free';
+              document.getElementById('stat-niveau').textContent = 'Gratuit';
+            }
+
+            // Date membre
+            const today = new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            document.getElementById('profil-member-since').textContent = 'Membre depuis ' + today;
+            document.getElementById('abo-date').textContent = 'Membre depuis ' + today;
+
+            // Dernière connexion
+            const now = new Date().toLocaleString('fr-FR');
+            document.getElementById('last-login').textContent = now;
+            document.getElementById('session-info').textContent = 'Session active depuis ' + new Date().toLocaleTimeString('fr-FR');
+
+            // Stats simulées
+            document.getElementById('stat-jours').textContent = '1';
+            document.getElementById('stat-livres').textContent = Math.floor(Math.random() * 20 + 5);
+            document.getElementById('stat-formations').textContent = Math.floor(Math.random() * 5 + 1);
+
+            // Charger données locales sauvegardées
+            chargerDonneesLocales();
+          })
+          .catch(err => {
+            console.warn('Session non disponible', err);
+            chargerDonneesLocales();
+          });
+      }
+
+      function chargerDonneesLocales() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(PROFIL_KEY) || '{}');
+          if (saved.prenom) document.getElementById('field-prenom').value = saved.prenom;
+          if (saved.nom) document.getElementById('field-nom').value = saved.nom;
+          if (saved.tel) document.getElementById('field-tel').value = saved.tel;
+          if (saved.ville) document.getElementById('field-ville').value = saved.ville;
+          if (saved.pays) document.getElementById('field-pays').value = saved.pays;
+          if (saved.bio) document.getElementById('field-bio').value = saved.bio;
+          if (saved.langue) document.getElementById('pref-langue').value = saved.langue;
+          if (saved.notif) document.getElementById('pref-notif').value = saved.notif;
+
+          // Mettre à jour le nom affiché
+          if (saved.prenom || saved.nom) {
+            const fullName = [saved.prenom, saved.nom].filter(Boolean).join(' ');
+            document.getElementById('profil-name').textContent = fullName;
+            const initials = [(saved.prenom||'')[0], (saved.nom||'')[0]].filter(Boolean).join('').toUpperCase();
+            if (initials) document.getElementById('avatar-initials').textContent = initials;
+          }
+        } catch(e) {}
+      }
+
+      function sauvegarderProfil() {
+        const data = {
+          prenom: document.getElementById('field-prenom').value,
+          nom: document.getElementById('field-nom').value,
+          tel: document.getElementById('field-tel').value,
+          ville: document.getElementById('field-ville').value,
+          pays: document.getElementById('field-pays').value,
+          bio: document.getElementById('field-bio').value,
+        };
+        localStorage.setItem(PROFIL_KEY, JSON.stringify({...JSON.parse(localStorage.getItem(PROFIL_KEY)||'{}'), ...data}));
+
+        // Mettre à jour l'affichage
+        const fullName = [data.prenom, data.nom].filter(Boolean).join(' ');
+        if (fullName) document.getElementById('profil-name').textContent = fullName;
+        const initials = [(data.prenom||'')[0], (data.nom||'')[0]].filter(Boolean).join('').toUpperCase();
+        if (initials) document.getElementById('avatar-initials').textContent = initials;
+
+        notif('✅ Profil sauvegardé avec succès !');
+      }
+
+      function sauvegarderPrefs() {
+        const prefs = {
+          langue: document.getElementById('pref-langue').value,
+          notif: document.getElementById('pref-notif').value,
+        };
+        const existing = JSON.parse(localStorage.getItem(PROFIL_KEY) || '{}');
+        localStorage.setItem(PROFIL_KEY, JSON.stringify({...existing, ...prefs}));
+        notif('✅ Préférences sauvegardées !');
+      }
+
+      function confirmerSuppression() {
+        if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+          notif('Compte supprimé. Au revoir.', true);
+          setTimeout(() => {
+            sessionManager.logout();
+          }, 2000);
+        }
+      }
+
+      // Charger le profil au démarrage
+      document.addEventListener('DOMContentLoaded', chargerProfil);
+    </script>
+  </body>
+</html>
