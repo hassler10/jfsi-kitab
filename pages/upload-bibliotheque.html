@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFSI — Ajouter du Contenu</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+      body { background: var(--noir-doux); }
+
+      .upload-wrapper {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 120px 30px 80px;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeUp 0.6s ease both;
+      }
+      .page-header .tag {
+        font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+        color: var(--or); margin-bottom: 12px; display: block;
+      }
+      .page-header h1 {
+        font-family: 'Cinzel Decorative', serif;
+        font-size: clamp(22px, 3vw, 34px);
+        color: var(--blanc); margin-bottom: 10px;
+      }
+      .page-header p { font-size: 14px; color: var(--gris); }
+
+      /* ── TABS ── */
+      .method-tabs {
+        display: flex; gap: 4px;
+        background: rgba(13,31,21,0.8);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 10px; padding: 6px;
+        margin-bottom: 32px;
+        animation: fadeUp 0.6s 0.1s ease both;
+      }
+      .method-tab {
+        flex: 1; padding: 12px 16px; border-radius: 7px;
+        cursor: pointer; font-size: 12px; font-weight: 700;
+        letter-spacing: 1px; text-align: center;
+        font-family: 'Lato', sans-serif;
+        border: none; background: transparent;
+        color: var(--gris); transition: all 0.3s;
+      }
+      .method-tab.active {
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        color: var(--noir-doux);
+      }
+      .method-tab:not(.active):hover { color: var(--blanc); background: rgba(201,168,76,0.08); }
+
+      /* ── PANELS ── */
+      .method-panel { display: none; animation: fadeUp 0.4s ease; }
+      .method-panel.active { display: block; }
+
+      /* ── ZONE DROP ── */
+      .drop-zone {
+        border: 2px dashed rgba(201,168,76,0.3);
+        border-radius: 12px; padding: 60px 40px;
+        text-align: center; cursor: pointer;
+        transition: all 0.3s; position: relative;
+        background: rgba(13,31,21,0.5);
+        margin-bottom: 28px;
+      }
+      .drop-zone:hover, .drop-zone.drag-over {
+        border-color: var(--or);
+        background: rgba(201,168,76,0.05);
+      }
+      .drop-zone input[type="file"] {
+        position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      }
+      .drop-icon { font-size: 48px; margin-bottom: 16px; }
+      .drop-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: var(--blanc); margin-bottom: 8px; }
+      .drop-sub { font-size: 12px; color: var(--gris); margin-bottom: 16px; }
+      .drop-types {
+        display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+      }
+      .drop-type {
+        padding: 4px 12px; border-radius: 20px; font-size: 10px;
+        background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2);
+        color: var(--or); font-weight: 700; letter-spacing: 1px;
+      }
+
+      /* ── FICHIER SÉLECTIONNÉ ── */
+      .file-preview {
+        display: none;
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 10px; padding: 16px 20px;
+        margin-bottom: 24px;
+        align-items: center; gap: 14px;
+      }
+      .file-preview.show { display: flex; }
+      .file-icon-big { font-size: 36px; flex-shrink: 0; }
+      .file-info { flex: 1; }
+      .file-name { font-size: 14px; color: var(--blanc); font-weight: 600; margin-bottom: 3px; }
+      .file-size { font-size: 11px; color: var(--gris); }
+      .file-remove {
+        background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.25);
+        border-radius: 4px; color: var(--danger); padding: 6px 12px;
+        cursor: pointer; font-size: 11px; font-family: 'Lato', sans-serif;
+        transition: all 0.2s;
+      }
+      .file-remove:hover { background: rgba(231,76,60,0.2); }
+
+      /* ── BARRE DE PROGRESSION ── */
+      .progress-wrap { display: none; margin-bottom: 20px; }
+      .progress-wrap.show { display: block; }
+      .progress-label { font-size: 11px; color: var(--gris); margin-bottom: 8px; display: flex; justify-content: space-between; }
+      .progress-bar {
+        height: 6px; background: rgba(201,168,76,0.1);
+        border-radius: 3px; overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--or-fonce), var(--or));
+        border-radius: 3px; width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      /* ── FORMULAIRE ── */
+      .form-section {
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.12);
+        border-radius: 12px; padding: 28px;
+        margin-bottom: 20px;
+        animation: fadeUp 0.6s 0.15s ease both;
+      }
+      .form-section-title {
+        font-family: 'Cinzel Decorative', serif;
+        font-size: 13px; color: var(--or);
+        margin-bottom: 20px; padding-bottom: 10px;
+        border-bottom: 1px solid rgba(201,168,76,0.1);
+        display: flex; align-items: center; gap: 8px;
+      }
+      .fg { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+      .fg label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--or); }
+      .fg input, .fg select, .fg textarea {
+        padding: 12px 15px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(201,168,76,0.18);
+        border-radius: 5px; color: var(--blanc);
+        font-family: 'Lato', sans-serif; font-size: 13px; outline: none;
+        transition: all 0.3s;
+      }
+      .fg input:focus, .fg select:focus, .fg textarea:focus {
+        border-color: var(--or); background: rgba(255,255,255,0.07);
+        box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+      }
+      .fg input::placeholder { color: rgba(249,245,236,0.2); }
+      .fg select option { background: var(--vert); }
+      .fg textarea { resize: vertical; min-height: 90px; }
+      .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .fgrid .full { grid-column: 1/-1; }
+
+      /* ── LIEN EXTERNE ── */
+      .link-input-wrap {
+        position: relative;
+      }
+      .link-input-wrap .link-icon {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        font-size: 16px; pointer-events: none;
+      }
+      .link-input-wrap input { padding-left: 42px; }
+      .link-preview {
+        display: none;
+        margin-top: 10px; padding: 12px 16px;
+        background: rgba(52,152,219,0.08);
+        border: 1px solid rgba(52,152,219,0.2);
+        border-radius: 6px; font-size: 12px; color: rgba(249,245,236,0.7);
+        align-items: center; gap: 10px;
+      }
+      .link-preview.show { display: flex; }
+
+      /* ── TOGGLE PREMIUM ── */
+      .premium-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(201,168,76,0.1);
+        border-radius: 8px; cursor: pointer;
+        transition: all 0.3s;
+      }
+      .premium-toggle:hover { background: rgba(201,168,76,0.05); }
+      .pt-left { display: flex; align-items: center; gap: 12px; }
+      .pt-icon { font-size: 20px; }
+      .pt-label { font-size: 13px; color: var(--blanc); }
+      .pt-sub { font-size: 11px; color: var(--gris); }
+      .toggle-switch {
+        width: 46px; height: 24px;
+        background: rgba(138,122,106,0.3);
+        border-radius: 12px; position: relative;
+        transition: all 0.3s; flex-shrink: 0;
+      }
+      .toggle-switch::after {
+        content: ''; position: absolute;
+        top: 3px; left: 3px;
+        width: 18px; height: 18px;
+        border-radius: 50%; background: var(--gris);
+        transition: all 0.3s;
+      }
+      .toggle-switch.on { background: rgba(201,168,76,0.3); border: 1px solid rgba(201,168,76,0.5); }
+      .toggle-switch.on::after { left: 24px; background: var(--or); }
+
+      /* ── BOUTON SUBMIT ── */
+      .submit-btn {
+        width: 100%; padding: 16px;
+        background: linear-gradient(135deg, var(--or), var(--or-fonce));
+        border: none; border-radius: 6px; cursor: pointer;
+        font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--noir-doux); font-family: 'Lato', sans-serif;
+        transition: all 0.3s; margin-top: 8px;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        animation: fadeUp 0.6s 0.2s ease both;
+      }
+      .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(201,168,76,0.4); }
+      .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+      /* ── LISTE DES FICHIERS ── */
+      .library-section {
+        margin-top: 50px;
+        animation: fadeUp 0.6s 0.3s ease both;
+      }
+      .library-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .library-header h2 {
+        font-family: 'Cinzel Decorative', serif;
+        font-size: 16px; color: var(--or);
+      }
+      .library-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      .lib-card {
+        background: rgba(13,31,21,0.7);
+        border: 1px solid rgba(201,168,76,0.1);
+        border-radius: 10px; overflow: hidden;
+        transition: all 0.3s; position: relative;
+      }
+      .lib-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-4px); }
+      .lib-cover {
+        height: 130px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 46px;
+        background: linear-gradient(135deg, rgba(45,90,61,0.3), rgba(13,31,21,0.8));
+        position: relative;
+      }
+      .lib-premium-badge {
+        position: absolute; top: 8px; right: 8px;
+        font-size: 9px; padding: 3px 8px; border-radius: 10px;
+        background: rgba(201,168,76,0.2); border: 1px solid rgba(201,168,76,0.4);
+        color: var(--or); font-weight: 700;
+      }
+      .lib-body { padding: 14px; }
+      .lib-title { font-size: 12px; color: var(--blanc); font-weight: 600; margin-bottom: 4px; word-break: break-word; }
+      .lib-meta { font-size: 10px; color: var(--gris); margin-bottom: 10px; }
+      .lib-actions { display: flex; gap: 6px; }
+      .lib-btn {
+        flex: 1; padding: 6px; border-radius: 3px; cursor: pointer;
+        font-size: 10px; font-weight: 700; font-family: 'Lato', sans-serif;
+        transition: all 0.2s; border: none; text-align: center;
+      }
+      .lib-btn.view {
+        background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); color: var(--or);
+      }
+      .lib-btn.del {
+        background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.2); color: var(--danger);
+      }
+      .lib-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+
+      .empty-lib {
+        text-align: center; padding: 60px 20px;
+        color: var(--gris); font-size: 14px;
+        border: 1px dashed rgba(201,168,76,0.1);
+        border-radius: 10px;
+      }
+
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+      @media (max-width: 768px) {
+        .upload-wrapper { padding: 100px 16px 60px; }
+        .fgrid { grid-template-columns: 1fr; }
+        .method-tabs { flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arabesque-bg"></div>
+
+    <!-- NAVBAR -->
+    <nav>
+      <div class="nav-logo">
+        <a href="../index.html"><img src="../images/logo.png" alt="JFSI" class="logo-img" /></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="admin-dashboard.html">← Tableau de bord</a></li>
+        <li><a href="bibliotheque.html">Bibliothèque</a></li>
+      </ul>
+      <div class="nav-right" id="nav-right"></div>
+      <div class="nav-burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    </nav>
+
+    <div class="upload-wrapper">
+
+      <!-- EN-TÊTE -->
+      <div class="page-header">
+        <span class="tag">⚙️ Administration</span>
+        <h1>Ajouter du Contenu</h1>
+        <p>Enrichissez la bibliothèque JFSI avec des livres, cours audio, vidéos et plus</p>
+      </div>
+
+      <!-- ONGLETS MÉTHODE -->
+      <div class="method-tabs">
+        <button class="method-tab active" onclick="switchMethod('upload', this)">📤 Upload Fichier</button>
+        <button class="method-tab" onclick="switchMethod('lien', this)">🔗 Lien Externe</button>
+        <button class="method-tab" onclick="switchMethod('manuel', this)">✏️ Entrée Manuelle</button>
+      </div>
+
+      <!-- ═══ PANEL UPLOAD ═══ -->
+      <div class="method-panel active" id="panel-upload">
+
+        <!-- Zone de dépôt -->
+        <div class="drop-zone" id="drop-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+          <input type="file" id="file-input" accept=".pdf,.mp3,.mp4,.jpg,.jpeg,.png,.webp,.epub" onchange="fileSelected(event)" />
+          <div class="drop-icon">📁</div>
+          <div class="drop-title">Glissez votre fichier ici</div>
+          <div class="drop-sub">ou cliquez pour sélectionner</div>
+          <div class="drop-types">
+            <span class="drop-type">PDF</span>
+            <span class="drop-type">MP3</span>
+            <span class="drop-type">MP4</span>
+            <span class="drop-type">JPG/PNG</span>
+            <span class="drop-type">EPUB</span>
+          </div>
+        </div>
+
+        <!-- Aperçu fichier -->
+        <div class="file-preview" id="file-preview">
+          <div class="file-icon-big" id="preview-icon">📄</div>
+          <div class="file-info">
+            <div class="file-name" id="preview-name">—</div>
+            <div class="file-size" id="preview-size">—</div>
+          </div>
+          <button class="file-remove" onclick="removeFile()">✕ Retirer</button>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-label"><span id="progress-label">Upload en cours...</span><span id="progress-pct">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+
+        <!-- Métadonnées -->
+        <div class="form-section">
+          <div class="form-section-title">📝 Informations du Document</div>
+          <div class="fgrid">
+            <div class="fg">
+              <label>Titre *</label>
+              <input type="text" id="up-title" placeholder="Ex: Tafsîr Ibn Kathîr" />
+            </div>
+            <div class="fg">
+              <label>Auteur / Formateur</label>
+              <input type="text" id="up-author" placeholder="Ex: Ibn Kathîr" />
+            </div>
+            <div class="fg">
+              <label>Catégorie *</label>
+              <select id="up-category">
+                <option value="coran">📖 Coran & Tafsîr</option>
+                <option value="hadith">📜 Hadith & Sunna</option>
+                <option value="fiqh">⚖️ Fiqh & Jurisprudence</option>
+                <option value="aqida">🌙 Aqîda & Théologie</option>
+                <option value="sira">🌟 Sîra & Histoire</option>
+                <option value="spiritualite">💎 Spiritualité</option>
+                <option value="arabe">🔤 Langue Arabe</option>
+                <option value="formations">🎓 Formations</option>
+                <option value="conferences">🎙️ Conférences</option>
+                <option value="autres">📁 Autres</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Type de fichier</label>
+              <select id="up-type">
+                <option value="pdf">📄 PDF</option>
+                <option value="audio">🎧 Audio</option>
+                <option value="video">🎬 Vidéo</option>
+                <option value="image">🖼️ Image</option>
+                <option value="epub">📖 EPUB</option>
+              </select>
+            </div>
+            <div class="fg full">
+              <label>Description</label>
+              <textarea id="up-desc" placeholder="Décrivez brièvement le contenu de ce document..."></textarea>
+            </div>
+          </div>
+
+          <!-- Toggle Premium -->
+          <div class="premium-toggle" onclick="togglePremium('up')" id="up-premium-toggle">
+            <div class="pt-left">
+              <span class="pt-icon">⭐</span>
+              <div>
+                <div class="pt-label">Contenu Premium</div>
+                <div class="pt-sub">Réservé aux membres abonnés</div>
+              </div>
+            </div>
+            <div class="toggle-switch" id="up-ts"></div>
+          </div>
+          <input type="hidden" id="up-premium" value="false" />
+        </div>
+
+        <button class="submit-btn" onclick="soumettreUpload()" id="btn-upload">
+          <span>📤</span> Ajouter à la Bibliothèque
+        </button>
+      </div>
+
+      <!-- ═══ PANEL LIEN EXTERNE ═══ -->
+      <div class="method-panel" id="panel-lien">
+        <div class="form-section">
+          <div class="form-section-title">🔗 Lien Externe</div>
+
+          <div class="fg">
+            <label>URL du fichier / contenu *</label>
+            <div class="link-input-wrap">
+              <span class="link-icon">🌐</span>
+              <input type="url" id="lien-url" placeholder="https://drive.google.com/... ou https://youtube.com/..." oninput="previewLink()" />
+            </div>
+            <div class="link-preview" id="link-preview">
+              <span id="link-preview-icon">🔗</span>
+              <span id="link-preview-text">—</span>
+            </div>
+          </div>
+
+          <div class="fgrid">
+            <div class="fg">
+              <label>Titre *</label>
+              <input type="text" id="lien-title" placeholder="Titre du contenu" />
+            </div>
+            <div class="fg">
+              <label>Auteur</label>
+              <input type="text" id="lien-author" placeholder="Nom de l'auteur" />
+            </div>
+            <div class="fg">
+              <label>Catégorie *</label>
+              <select id="lien-category">
+                <option value="coran">📖 Coran & Tafsîr</option>
+                <option value="hadith">📜 Hadith & Sunna</option>
+                <option value="fiqh">⚖️ Fiqh & Jurisprudence</option>
+                <option value="aqida">🌙 Aqîda</option>
+                <option value="sira">🌟 Sîra</option>
+                <option value="formations">🎓 Formations</option>
+                <option value="conferences">🎙️ Conférences</option>
+                <option value="autres">📁 Autres</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Type</label>
+              <select id="lien-type">
+                <option value="pdf">📄 PDF (Drive)</option>
+                <option value="video">🎬 Vidéo (YouTube)</option>
+                <option value="audio">🎧 Audio</option>
+                <option value="text">📝 Article / Texte</option>
+              </select>
+            </div>
+            <div class="fg full">
+              <label>Description</label>
+              <textarea id="lien-desc" placeholder="Description du contenu..."></textarea>
+            </div>
+          </div>
+
+          <div class="premium-toggle" onclick="togglePremium('lien')" id="lien-premium-toggle">
+            <div class="pt-left">
+              <span class="pt-icon">⭐</span>
+              <div>
+                <div class="pt-label">Contenu Premium</div>
+                <div class="pt-sub">Réservé aux membres abonnés</div>
+              </div>
+            </div>
+            <div class="toggle-switch" id="lien-ts"></div>
+          </div>
+          <input type="hidden" id="lien-premium" value="false" />
+        </div>
+
+        <button class="submit-btn" onclick="soumettreLien()">
+          <span>🔗</span> Ajouter le Lien à la Bibliothèque
+        </button>
+      </div>
+
+      <!-- ═══ PANEL MANUEL ═══ -->
+      <div class="method-panel" id="panel-manuel">
+        <div class="form-section">
+          <div class="form-section-title">✏️ Entrée Manuelle</div>
+          <p style="font-size:13px;color:var(--gris);margin-bottom:20px;">Ajoutez un contenu sans fichier — juste les métadonnées et un chemin optionnel.</p>
+
+          <div class="fgrid">
+            <div class="fg">
+              <label>Titre *</label>
+              <input type="text" id="man-title" placeholder="Titre du document" />
+            </div>
+            <div class="fg">
+              <label>Auteur</label>
+              <input type="text" id="man-author" placeholder="Auteur / Source" />
+            </div>
+            <div class="fg">
+              <label>Catégorie *</label>
+              <select id="man-category">
+                <option value="coran">📖 Coran & Tafsîr</option>
+                <option value="hadith">📜 Hadith & Sunna</option>
+                <option value="fiqh">⚖️ Fiqh & Jurisprudence</option>
+                <option value="aqida">🌙 Aqîda</option>
+                <option value="sira">🌟 Sîra</option>
+                <option value="spiritualite">💎 Spiritualité</option>
+                <option value="arabe">🔤 Langue Arabe</option>
+                <option value="formations">🎓 Formations</option>
+                <option value="autres">📁 Autres</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Type</label>
+              <select id="man-type">
+                <option value="pdf">📄 PDF</option>
+                <option value="audio">🎧 Audio</option>
+                <option value="video">🎬 Vidéo</option>
+                <option value="text">📝 Texte</option>
+                <option value="epub">📖 EPUB</option>
+              </select>
+            </div>
+            <div class="fg full">
+              <label>Description</label>
+              <textarea id="man-desc" placeholder="Description complète du contenu..."></textarea>
+            </div>
+            <div class="fg full">
+              <label>Chemin / URL (optionnel)</label>
+              <input type="text" id="man-path" placeholder="/uploads/fichier.pdf ou https://..." />
+            </div>
+          </div>
+
+          <div class="premium-toggle" onclick="togglePremium('man')" id="man-premium-toggle">
+            <div class="pt-left">
+              <span class="pt-icon">⭐</span>
+              <div>
+                <div class="pt-label">Contenu Premium</div>
+                <div class="pt-sub">Réservé aux membres abonnés</div>
+              </div>
+            </div>
+            <div class="toggle-switch" id="man-ts"></div>
+          </div>
+          <input type="hidden" id="man-premium" value="false" />
+        </div>
+
+        <button class="submit-btn" onclick="soumettreManuel()">
+          <span>✅</span> Ajouter à la Bibliothèque
+        </button>
+      </div>
+
+      <!-- ═══ LISTE BIBLIOTHÈQUE ═══ -->
+      <div class="library-section">
+        <div class="library-header">
+          <h2>📚 Contenu actuel de la Bibliothèque</h2>
+          <button onclick="chargerBibliotheque()" style="background:transparent;border:1px solid rgba(201,168,76,0.25);border-radius:4px;color:var(--or);padding:7px 14px;cursor:pointer;font-size:11px;font-family:'Lato',sans-serif;">🔄 Actualiser</button>
+        </div>
+        <div class="library-grid" id="library-grid">
+          <div class="empty-lib">Chargement de la bibliothèque...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <script src="../js/global.js"></script>
+    <script src="../js/session.js"></script>
+    <script>
+      let selectedFile = null;
+      const FILE_ICONS = { pdf: '📄', audio: '🎧', video: '🎬', image: '🖼️', epub: '📖', text: '📝' };
+      const CAT_ICONS = { coran:'📖', hadith:'📜', fiqh:'⚖️', aqida:'🌙', sira:'🌟', spiritualite:'💎', arabe:'🔤', formations:'🎓', conferences:'🎙️', autres:'📁' };
+
+      // ── INIT ──
+      document.addEventListener('DOMContentLoaded', async () => {
+        await verifierAdmin();
+        chargerBibliotheque();
+      });
+
+      async function verifierAdmin() {
+        try {
+          const res = await fetch('/api/auth/session', { credentials: 'include' });
+          const data = await res.json();
+          if (!data.authenticated || data.user?.role !== 'admin') {
+            notif('⚠️ Accès réservé aux administrateurs', true);
+            setTimeout(() => window.location.href = '../index.html', 1500);
+          }
+        } catch(e) {}
+      }
+
+      // ── TABS ──
+      function switchMethod(method, btn) {
+        document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.method-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + method).classList.add('active');
+      }
+
+      // ── DRAG & DROP ──
+      function dragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+      function dragLeave(e) { document.getElementById('drop-zone').classList.remove('drag-over'); }
+      function dropFile(e) {
+        e.preventDefault();
+        document.getElementById('drop-zone').classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) traiterFichier(file);
+      }
+      function fileSelected(e) { if (e.target.files[0]) traiterFichier(e.target.files[0]); }
+
+      function traiterFichier(file) {
+        selectedFile = file;
+        const ext = file.name.split('.').pop().toLowerCase();
+        const typeMap = { pdf: 'pdf', mp3: 'audio', mp4: 'video', jpg: 'image', jpeg: 'image', png: 'image', webp: 'image', epub: 'epub' };
+        const type = typeMap[ext] || 'pdf';
+
+        document.getElementById('up-type').value = type;
+        document.getElementById('preview-icon').textContent = FILE_ICONS[type] || '📄';
+        document.getElementById('preview-name').textContent = file.name;
+        document.getElementById('preview-size').textContent = formatSize(file.size);
+        document.getElementById('file-preview').classList.add('show');
+        document.getElementById('drop-zone').style.display = 'none';
+
+        // Auto-remplir le titre
+        if (!document.getElementById('up-title').value) {
+          document.getElementById('up-title').value = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+        }
+        notif('✅ Fichier prêt : ' + file.name);
+      }
+
+      function removeFile() {
+        selectedFile = null;
+        document.getElementById('file-input').value = '';
+        document.getElementById('file-preview').classList.remove('show');
+        document.getElementById('drop-zone').style.display = 'block';
+        document.getElementById('progress-wrap').classList.remove('show');
+      }
+
+      function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+
+      // ── TOGGLE PREMIUM ──
+      function togglePremium(prefix) {
+        const hidden = document.getElementById(prefix + '-premium');
+        const ts = document.getElementById(prefix + '-ts');
+        const isOn = hidden.value === 'true';
+        hidden.value = isOn ? 'false' : 'true';
+        ts.classList.toggle('on', !isOn);
+      }
+
+      // ── LIEN PREVIEW ──
+      function previewLink() {
+        const url = document.getElementById('lien-url').value.trim();
+        const preview = document.getElementById('link-preview');
+        const icon = document.getElementById('link-preview-icon');
+        const text = document.getElementById('link-preview-text');
+
+        if (!url) { preview.classList.remove('show'); return; }
+
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+          icon.textContent = '🎬'; text.textContent = 'Vidéo YouTube détectée';
+          document.getElementById('lien-type').value = 'video';
+        } else if (url.includes('drive.google.com')) {
+          icon.textContent = '📁'; text.textContent = 'Google Drive détecté';
+        } else if (url.includes('.pdf')) {
+          icon.textContent = '📄'; text.textContent = 'Fichier PDF détecté';
+          document.getElementById('lien-type').value = 'pdf';
+        } else if (url.includes('.mp3') || url.includes('soundcloud')) {
+          icon.textContent = '🎧'; text.textContent = 'Audio détecté';
+          document.getElementById('lien-type').value = 'audio';
+        } else {
+          icon.textContent = '🔗'; text.textContent = 'Lien externe : ' + new URL(url).hostname;
+        }
+        preview.classList.add('show');
+      }
+
+      // ── SOUMETTRE UPLOAD ──
+      async function soumettreUpload() {
+        const title = document.getElementById('up-title').value.trim();
+        if (!title) { notif('⚠️ Le titre est requis', true); return; }
+
+        let filePath = '';
+
+        if (selectedFile) {
+          // Vérifier la taille (max 50MB)
+          if (selectedFile.size > 50 * 1024 * 1024) {
+            notif('⚠️ Fichier trop grand (max 50MB). Utilisez un lien externe.', true);
+            return;
+          }
+
+          // Simuler upload avec progression
+          const btn = document.getElementById('btn-upload');
+          btn.disabled = true;
+          btn.innerHTML = '⏳ Upload en cours...';
+          document.getElementById('progress-wrap').classList.add('show');
+
+          // Upload via FormData
+          const formData = new FormData();
+          formData.append('file', selectedFile);
+          formData.append('title', title);
+          formData.append('category', document.getElementById('up-category').value);
+          formData.append('type', document.getElementById('up-type').value);
+          formData.append('description', document.getElementById('up-desc').value);
+          formData.append('is_premium', document.getElementById('up-premium').value);
+
+          try {
+            // Simuler progression
+            let pct = 0;
+            const progressInterval = setInterval(() => {
+              pct = Math.min(pct + 5, 90);
+              document.getElementById('progress-fill').style.width = pct + '%';
+              document.getElementById('progress-pct').textContent = pct + '%';
+            }, 100);
+
+            const res = await fetch('/api/admin/upload', {
+              method: 'POST',
+              credentials: 'include',
+              body: formData
+            });
+
+            clearInterval(progressInterval);
+            document.getElementById('progress-fill').style.width = '100%';
+            document.getElementById('progress-pct').textContent = '100%';
+            document.getElementById('progress-label').textContent = 'Upload terminé !';
+
+            if (res.ok) {
+              const data = await res.json();
+              filePath = data.path || '';
+              notif('✅ Fichier uploadé et ajouté à la bibliothèque !');
+              removeFile();
+              chargerBibliotheque();
+            } else {
+              // Si upload échoue, on enregistre quand même les métadonnées
+              await enregistrerContenu(title, '', document.getElementById('up-category').value, document.getElementById('up-type').value, document.getElementById('up-desc').value, document.getElementById('up-premium').value === 'true');
+            }
+          } catch(e) {
+            // Fallback : enregistrer sans fichier
+            await enregistrerContenu(title, '', document.getElementById('up-category').value, document.getElementById('up-type').value, document.getElementById('up-desc').value, document.getElementById('up-premium').value === 'true');
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<span>📤</span> Ajouter à la Bibliothèque';
+          }
+        } else {
+          await enregistrerContenu(
+            title, '',
+            document.getElementById('up-category').value,
+            document.getElementById('up-type').value,
+            document.getElementById('up-desc').value,
+            document.getElementById('up-premium').value === 'true'
+          );
+        }
+      }
+
+      // ── SOUMETTRE LIEN ──
+      async function soumettreLien() {
+        const url = document.getElementById('lien-url').value.trim();
+        const title = document.getElementById('lien-title').value.trim();
+        if (!url || !title) { notif('⚠️ URL et titre requis', true); return; }
+        await enregistrerContenu(
+          title, url,
+          document.getElementById('lien-category').value,
+          document.getElementById('lien-type').value,
+          document.getElementById('lien-desc').value,
+          document.getElementById('lien-premium').value === 'true'
+        );
+        document.getElementById('lien-url').value = '';
+        document.getElementById('lien-title').value = '';
+        document.getElementById('lien-desc').value = '';
+        document.getElementById('link-preview').classList.remove('show');
+      }
+
+      // ── SOUMETTRE MANUEL ──
+      async function soumettreManuel() {
+        const title = document.getElementById('man-title').value.trim();
+        if (!title) { notif('⚠️ Le titre est requis', true); return; }
+        await enregistrerContenu(
+          title,
+          document.getElementById('man-path').value.trim(),
+          document.getElementById('man-category').value,
+          document.getElementById('man-type').value,
+          document.getElementById('man-desc').value,
+          document.getElementById('man-premium').value === 'true'
+        );
+        document.getElementById('man-title').value = '';
+        document.getElementById('man-desc').value = '';
+        document.getElementById('man-path').value = '';
+      }
+
+      // ── ENREGISTRER DANS LA DB ──
+      async function enregistrerContenu(title, filepath, category, type, description, is_premium) {
+        try {
+          const res = await fetch('/api/admin/content', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, file_path: filepath, category, type, description, is_premium })
+          });
+          if (res.ok) {
+            notif('✅ "' + title + '" ajouté à la bibliothèque !');
+            chargerBibliotheque();
+          } else {
+            const err = await res.json();
+            notif('❌ ' + (err.error || 'Erreur serveur'), true);
+          }
+        } catch(e) {
+          notif('❌ Erreur réseau', true);
+        }
+      }
+
+      // ── CHARGER BIBLIOTHÈQUE ──
+      async function chargerBibliotheque() {
+        try {
+          const res = await fetch('/api/admin/content', { credentials: 'include' });
+          if (!res.ok) throw new Error();
+          const items = await res.json();
+          renderBibliotheque(items);
+        } catch(e) {
+          document.getElementById('library-grid').innerHTML = '<div class="empty-lib">Impossible de charger la bibliothèque.</div>';
+        }
+      }
+
+      function renderBibliotheque(items) {
+        const grid = document.getElementById('library-grid');
+        if (!items.length) {
+          grid.innerHTML = '<div class="empty-lib">📭 Aucun contenu pour le moment.<br>Ajoutez votre premier document ci-dessus !</div>';
+          return;
+        }
+        grid.innerHTML = items.map(item => {
+          const icon = FILE_ICONS[item.type] || CAT_ICONS[item.category] || '📄';
+          const hasLink = item.file_path && item.file_path.length > 0;
+          return `
+            <div class="lib-card">
+              <div class="lib-cover">
+                ${icon}
+                ${item.is_premium ? '<span class="lib-premium-badge">⭐ Premium</span>' : ''}
+              </div>
+              <div class="lib-body">
+                <div class="lib-title">${item.title}</div>
+                <div class="lib-meta">${item.category || '—'} · ${item.type || '—'}</div>
+                <div class="lib-actions">
+                  ${hasLink ? `<button class="lib-btn view" onclick="ouvrirContenu('${item.file_path}')">👁️ Voir</button>` : '<button class="lib-btn view" disabled style="opacity:0.4;">Pas de fichier</button>'}
+                  <button class="lib-btn del" onclick="supprimerContenu(${item.id})">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function ouvrirContenu(path) {
+        if (path.startsWith('http')) { window.open(path, '_blank'); }
+        else { window.open(path, '_blank'); }
+      }
+
+      async function supprimerContenu(id) {
+        if (!confirm('Supprimer ce contenu de la bibliothèque ?')) return;
+        try {
+          const res = await fetch('/api/admin/content/' + id, { method: 'DELETE', credentials: 'include' });
+          if (res.ok) { notif('✅ Contenu supprimé !'); chargerBibliotheque(); }
+          else notif('❌ Erreur suppression', true);
+        } catch(e) { notif('❌ Erreur réseau', true); }
+      }
+    </script>
+  </body>
+</html>
